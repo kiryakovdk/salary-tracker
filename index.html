@@ -199,7 +199,7 @@ html,body{max-width:100%;overflow-x:hidden}
   <div class="stat"><span>В секунду</span><b id="sec">$0.001968</b></div>
   <div class="stat"><span>В минуту</span><b id="min">$0.12</b></div>
   <div class="stat"><span>В час</span><b id="hour">$7.08</b></div>
-  <div class="stat"><span>В оплач. день</span><b id="paidDay">$0.00</b></div>
+  <div class="stat"><span>В оплач. день</span><b>$170.00</b></div>
  </div>
 </div>
 
@@ -295,7 +295,7 @@ function totalPaidContract(a,b){return paidBetween(a,b)}
 function initDates(){
  let now=new Date();now.setSeconds(0,0);
  $("start").value=localInput(now);
- let end=new Date(now);end.setMonth(end.getMonth()+4);
+ let end=new Date(now);end.setMonth(end.getMonth()+6);
  $("end").value=localInput(end);
  let f=new Date(now);f.setDate(f.getDate()+30);
  $("forecast").value=localInput(f);
@@ -385,9 +385,8 @@ async function loadRates(){
 }
 function update(){
  let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), now=new Date();
- let perSec=salary/(30*86400), paidDay=salary/30, earned=paidBetween(start,now)*perSec;
+ let perSec=salary/(30*86400), earned=paidBetween(start,now)*perSec;
  $("usd").textContent=fmtUSD(earned);
- $("paidDay").textContent=fmtUSD(paidDay);
  $("sec").textContent=fmtUSD(perSec);
  $("min").textContent=fmtUSD(perSec*60);
  $("hour").textContent=fmtUSD(perSec*3600);
