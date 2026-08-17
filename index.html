@@ -58,6 +58,8 @@ input:focus{border-color:#4d626e}
 .progress{height:11px;background:#070b0e;border:1px solid #20292f;border-radius:99px;overflow:hidden}
 .bar{height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--green));transition:width .5s}
 .progress-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:8px}
+
+.ticker{display:flex;overflow:hidden;background:#080c0f;border:1px solid #1c252b;border-radius:12px;margin-top:14px;white-space:nowrap}.ticker-track{display:flex;animation:tickerScroll 28s linear infinite}.tick{display:flex;align-items:center;gap:7px;padding:11px 18px;border-right:1px solid #1b242a;font-variant-numeric:tabular-nums;font-size:12px}.tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.5px}.tick .price{color:#eef3f5;font-weight:700}.tick .up{color:#54e39a;font-size:10px}@keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .currency .box{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:14px}
 .currency .value{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -99,13 +101,11 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
   <div><label>Месячная зарплата, USD</label><input id="salary" type="number" min="0" step=".01" value="5100"></div>
   <div><label>Начало зарплаты</label><input id="start" type="datetime-local"></div>
   <div><label>Конец контракта</label><input id="end" type="datetime-local"></div>
-  <div><label>Сколько заработаю к дате</label><input id="forecast" type="datetime-local"></div>
+  <div><label>Прогноз до даты</label><input id="forecast" type="datetime-local"></div>
  </div>
  <div class="buttons">
-  <button class="secondary" id="now7">+7 дней</button>
-  <button class="secondary" id="nowForecast">+30 дней</button>
-  <button class="secondary" id="nowMonth">+1 месяц</button>
-  <button class="secondary" id="toContract">До конца контракта</button>
+  <button class="secondary" id="nowEnd">Поставить конец через 4 месяца</button>
+  <button class="secondary" id="nowForecast">Прогноз +30 дней</button>
   <button class="secondary" id="reset">Сбросить</button>
  </div>
 </div>
@@ -133,6 +133,8 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
  </div>
 </div>
 
+<div class="ticker"><div class="ticker-track" id="tickerTrack"></div><div class="ticker-track" id="tickerTrackClone"></div></div>
+
 <div class="card">
  <div class="section-title">CURRENCY</div>
  <div class="currency">
@@ -151,8 +153,8 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
 <div class="card">
  <div class="section-title">FORECAST</div>
  <div class="forecast">
-  <div class="bigbox"><div class="small">К этой дате заработаю</div><b id="forecastEarn">$0.00</b></div>
-  <div class="bigbox"><div class="small">Осталось заработать до даты</div><b id="forecastLeft">$0.00</b></div>
+  <div class="bigbox"><div class="small">Заработаю к выбранной дате</div><b id="forecastEarn">$0.00</b></div>
+  <div class="bigbox"><div class="small">Сколько осталось заработать</div><b id="forecastLeft">$0.00</b></div>
  </div>
 </div>
 
@@ -173,7 +175,7 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
 
 <script>
 const $=id=>document.getElementById(id);
-let rates={usdRub:null,eurRub:null};
+let rates={usdRub:null,eurRub:null,cnyRub:null};
 
 function pad(n){return String(n).padStart(2,"0")}
 function localInput(d){
@@ -222,59 +224,21 @@ function load(){
   ["salary","start","end","forecast","sleepStart","sleepEnd"].forEach(k=>{if(x[k]!=null)$(k).value=x[k]});
  }catch(e){initDates()}
 }
+function renderTicker(){
+ if(!rates.usdRub||!rates.eurRub||!rates.cnyRub)return;
+ const a=[["USD/RUB",rates.usdRub.toFixed(4)],["EUR/RUB",rates.eurRub.toFixed(4)],["CNY/RUB",rates.cnyRub.toFixed(4)],["EUR/USD",(rates.eurRub/rates.usdRub).toFixed(5)]];
+ const s=a.map(x=>`<div class="tick"><span class="pair">${x[0]}</span><span class="price">${x[1]}</span><span class="up">● LIVE</span></div>`).join("");
+ $("tickerTrack").innerHTML=s;$("tickerTrackClone").innerHTML=s;
+}
 async function loadRates(){
-  const sources = [
-    "https://www.cbr.ru/scripts/XML_daily.asp",
-    "https://corsproxy.io/?url=" + encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp"),
-    "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp")
-  ];
-
-  for (const url of sources) {
-    try {
-      const r = await fetch(url, {cache:"no-store"});
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      const text = await r.text();
-      const x = new DOMParser().parseFromString(text, "text/xml");
-
-      let usd = null, eur = null;
-      x.querySelectorAll("Valute").forEach(v => {
-        const code = v.querySelector("CharCode")?.textContent;
-        const val = parseFloat((v.querySelector("Value")?.textContent || "").replace(",", "."));
-        const nom = parseFloat(v.querySelector("Nominal")?.textContent || "1");
-        if (code === "USD" && Number.isFinite(val)) usd = val / nom;
-        if (code === "EUR" && Number.isFinite(val)) eur = val / nom;
-      });
-
-      if (!usd || !eur) throw new Error("USD/EUR не найдены");
-
-      rates.usdRub = usd;
-      rates.eurRub = eur;
-      localStorage.setItem("salaryTrackerRates",
-        JSON.stringify({usdRub:usd, eurRub:eur, updated:Date.now()}));
-
-      const stamp = new Date().toLocaleString("ru-RU");
-      $("rubRate").textContent = "1 USD = ₽" + usd.toFixed(4);
-      $("eurRate").textContent = "1 EUR = ₽" + eur.toFixed(4);
-      $("rubRate").title = "ЦБ РФ • обновлено " + stamp;
-      $("eurRate").title = "ЦБ РФ • обновлено " + stamp;
-      update();
-      return;
-    } catch(e) {}
-  }
-
-  const saved = JSON.parse(localStorage.getItem("salaryTrackerRates") || "null");
-  if (saved && saved.usdRub && saved.eurRub) {
-    rates.usdRub = saved.usdRub;
-    rates.eurRub = saved.eurRub;
-    $("rubRate").textContent = "Последний курс ЦБ: ₽" + rates.usdRub.toFixed(4);
-    $("eurRate").textContent = "Последний курс ЦБ: ₽" + rates.eurRub.toFixed(4);
-  } else {
-    rates.usdRub = 78.4756;
-    rates.eurRub = 89.6034;
-    $("rubRate").textContent = "Нет связи с ЦБ • резерв ₽" + rates.usdRub.toFixed(4);
-    $("eurRate").textContent = "Нет связи с ЦБ • резерв ₽" + rates.eurRub.toFixed(4);
-  }
-  update();
+ const urls=["https://www.cbr.ru/scripts/XML_daily.asp","https://corsproxy.io/?url="+encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp"),"https://api.allorigins.win/raw?url="+encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp")];
+ for(const url of urls)try{
+  const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw 0;
+  const x=new DOMParser().parseFromString(await r.text(),"text/xml");let usd,eur,cny;
+  x.querySelectorAll("Valute").forEach(v=>{let c=v.querySelector("CharCode")?.textContent,n=parseFloat(v.querySelector("Nominal")?.textContent||"1"),v1=parseFloat((v.querySelector("Value")?.textContent||"").replace(",","."));if(c==="USD")usd=v1/n;if(c==="EUR")eur=v1/n;if(c==="CNY")cny=v1/n});
+  if(!usd||!eur||!cny)throw 0;rates={usdRub:usd,eurRub:eur,cnyRub:cny};localStorage.setItem("salaryTrackerRates",JSON.stringify({...rates,updated:Date.now()}));$("rubRate").textContent="1 USD = ₽"+usd.toFixed(4);$("eurRate").textContent="1 EUR = ₽"+eur.toFixed(4);renderTicker();update();return;
+ }catch(e){}
+ const s=JSON.parse(localStorage.getItem("salaryTrackerRates")||"null");rates=s&&s.usdRub&&s.eurRub&&s.cnyRub?s:{usdRub:78.4756,eurRub:89.6034,cnyRub:10.95};$("rubRate").textContent="Курс USD: ₽"+rates.usdRub.toFixed(4);$("eurRate").textContent="Курс EUR: ₽"+rates.eurRub.toFixed(4);renderTicker();update();
 }
 function update(){
  let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), now=new Date();
@@ -326,22 +290,8 @@ function updateSleep(perSec){
 }
 ["salary","start","end","forecast","sleepStart","sleepEnd"].forEach(id=>$(id).addEventListener("input",update));
 $("reset").onclick=()=>{localStorage.removeItem("salaryTracker");initDates();$("salary").value=5100;update()};
-$("now7").onclick=()=>{
-  let d=new Date(); d.setDate(d.getDate()+7);
-  $("forecast").value=localInput(d); update();
-};
-$("nowForecast").onclick=()=>{
-  let d=new Date(); d.setDate(d.getDate()+30);
-  $("forecast").value=localInput(d); update();
-};
-$("nowMonth").onclick=()=>{
-  let d=new Date(); d.setMonth(d.getMonth()+1);
-  $("forecast").value=localInput(d); update();
-};
-$("toContract").onclick=()=>{
-  const end=getDate("end");
-  if(end){ $("forecast").value=localInput(end); update(); }
-};
+$("nowEnd").onclick=()=>{let d=getDate("start")||new Date();d=new Date(d);d.setMonth(d.getMonth()+4);$("end").value=localInput(d);update()};
+$("nowForecast").onclick=()=>{let d=new Date();d.setDate(d.getDate()+30);$("forecast").value=localInput(d);update()};
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
