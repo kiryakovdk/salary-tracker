@@ -78,60 +78,16 @@ to{transform:translateX(-50%)}
 
 
 
-.ticker{
-  position:relative;
-  display:block;
-  width:100%;
-  max-width:100%;
-  height:38px;
-  margin:10px 0 16px;
-  box-sizing:border-box;
-  overflow:hidden;
-  contain:layout paint;
-  background:#05080a;
-  border:1px solid #26323a;
-  border-radius:10px;
-}
-.ticker-track{
-  position:absolute;
-  top:0;
-  left:0;
-  display:flex;
-  align-items:center;
-  width:max-content;
-  height:100%;
-  max-width:none;
-  margin:0;
-  padding:0;
-  white-space:nowrap;
-  will-change:transform;
-}
-.ticker-main{animation:tickerMain 24s linear infinite;}
-.ticker-clone{animation:tickerClone 24s linear infinite;}
-.tick{
-  display:inline-flex;
-  flex:0 0 auto;
-  align-items:center;
-  gap:7px;
-  height:100%;
-  padding:0 16px;
-  box-sizing:border-box;
-  border-right:1px solid #202a30;
-  font-size:12px;
-  font-variant-numeric:tabular-nums;
-}
+.ticker{position:relative;display:block;width:100%;max-width:100%;height:38px;margin:10px 0 16px;box-sizing:border-box;overflow:hidden;contain:layout paint;background:#05080a;border:1px solid #26323a;border-radius:10px}
+.ticker-track{position:absolute;top:0;left:0;display:flex;align-items:center;width:max-content;max-width:none;height:100%;margin:0;padding:0;white-space:nowrap;will-change:transform}
+.ticker-main{animation:tickerMain 24s linear infinite}
+.ticker-clone{animation:tickerClone 24s linear infinite}
+.tick{display:inline-flex;flex:0 0 auto;align-items:center;gap:7px;height:100%;padding:0 16px;box-sizing:border-box;border-right:1px solid #202a30;font-size:12px;font-variant-numeric:tabular-nums}
 .tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
 .tick .price{color:#f2f5f6;font-weight:700}
 .tick .live-dot{color:#54e39a;font-size:9px}
-@keyframes tickerMain{
-  from{transform:translate3d(0,0,0)}
-  to{transform:translate3d(-100%,0,0)}
-}
-@keyframes tickerClone{
-  from{transform:translate3d(100%,0,0)}
-  to{transform:translate3d(0,0,0)}
-}
-
+@keyframes tickerMain{from{transform:translate3d(0,0,0)}to{transform:translate3d(-100%,0,0)}}
+@keyframes tickerClone{from{transform:translate3d(100%,0,0)}to{transform:translate3d(0,0,0)}}
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .currency .box{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:14px}
 .currency .value{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -153,11 +109,6 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
  .stats{grid-template-columns:repeat(2,1fr)}
 }
 
-html,
-body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
 html,body{max-width:100%;overflow-x:hidden}
 </style>
 
@@ -411,12 +362,11 @@ async function loadRates(){
 }
 function update(){
  let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), now=new Date();
- let currentMonthStart=new Date(now.getFullYear(),now.getMonth(),1);
-let currentPerSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),salary);
-let currentPaidDay=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
-let earned=paidAmountBetween(start,now,salary);
-$("usd").textContent=fmtUSD(earned);
-$("paidDay").textContent=fmtUSD(currentPaidDay);
+ let currentPerSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),salary);
+ let currentPaidDay=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
+ let earned=paidAmountBetween(start,now,salary);
+ $("usd").textContent=fmtUSD(earned);
+ $("paidDay").textContent=fmtUSD(currentPaidDay);
 $("sec").textContent=fmtUSD(currentPerSec);
 $("min").textContent=fmtUSD(currentPerSec*60);
 $("hour").textContent=fmtUSD(currentPerSec*3600);
