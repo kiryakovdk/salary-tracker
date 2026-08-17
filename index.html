@@ -59,7 +59,45 @@ input:focus{border-color:#4d626e}
 .bar{height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--green));transition:width .5s}
 .progress-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:8px}
 
-.ticker{display:flex;overflow:hidden;background:#080c0f;border:1px solid #1c252b;border-radius:12px;margin-top:14px;white-space:nowrap}.ticker-track{display:flex;animation:tickerScroll 28s linear infinite}.tick{display:flex;align-items:center;gap:7px;padding:11px 18px;border-right:1px solid #1b242a;font-variant-numeric:tabular-nums;font-size:12px}.tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.5px}.tick .price{color:#eef3f5;font-weight:700}.tick .up{color:#54e39a;font-size:10px}@keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+to{transform:translateX(-50%)}}
+
+
+.ticker{
+  display:block;
+  width:100%;
+  overflow:hidden;
+  background:#05080a;
+  border:1px solid #26323a;
+  border-radius:10px;
+  margin:10px 0 16px;
+  height:38px;
+  position:relative;
+}
+.ticker-track{
+  display:inline-flex;
+  height:100%;
+  align-items:center;
+  animation:tickerScroll 24s linear infinite;
+  white-space:nowrap;
+}
+.tick{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  height:100%;
+  padding:0 16px;
+  border-right:1px solid #202a30;
+  font-size:12px;
+  font-variant-numeric:tabular-nums;
+}
+.tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
+.tick .price{color:#f2f5f6;font-weight:700}
+.tick .live-dot{color:#54e39a;font-size:9px}
+@keyframes tickerScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .currency .box{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:14px}
 .currency .value{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -133,10 +171,14 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
  </div>
 </div>
 
-<div class="ticker"><div class="ticker-track" id="tickerTrack"></div><div class="ticker-track" id="tickerTrackClone"></div></div>
-
 <div class="card">
  <div class="section-title">CURRENCY</div>
+ <div class="ticker" aria-label="Курсы валют">
+  <div class="ticker-track" id="tickerTrack"></div>
+  <div class="ticker-track" id="tickerTrackClone"></div>
+</div>
+<div class="ticker-track" id="tickerTrackClone"></div>
+ </div>
  <div class="currency">
   <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
   <div class="box"><div class="small">Евро</div><div class="value" id="eur">€0.00</div><div class="rate" id="eurRate">Курс ЦБ: загрузка...</div></div>
@@ -225,20 +267,67 @@ function load(){
  }catch(e){initDates()}
 }
 function renderTicker(){
- if(!rates.usdRub||!rates.eurRub||!rates.cnyRub)return;
- const a=[["USD/RUB",rates.usdRub.toFixed(4)],["EUR/RUB",rates.eurRub.toFixed(4)],["CNY/RUB",rates.cnyRub.toFixed(4)],["EUR/USD",(rates.eurRub/rates.usdRub).toFixed(5)]];
- const s=a.map(x=>`<div class="tick"><span class="pair">${x[0]}</span><span class="price">${x[1]}</span><span class="up">● LIVE</span></div>`).join("");
- $("tickerTrack").innerHTML=s;$("tickerTrackClone").innerHTML=s;
+  if(!rates.usdRub || !rates.eurRub || !rates.cnyRub) return;
+  const items=[
+    ["USD/RUB", rates.usdRub.toFixed(4)],
+    ["EUR/RUB", rates.eurRub.toFixed(4)],
+    ["CNY/RUB", rates.cnyRub.toFixed(4)],
+    ["EUR/USD", (rates.eurRub/rates.usdRub).toFixed(5)]
+  ];
+  const content=items.map(x =>
+    `<div class="tick"><span class="pair">${x[0]}</span><span class="price">${x[1]}</span><span class="live-dot">● LIVE</span></div>`
+  ).join("");
+  $("tickerTrack").innerHTML=content;
+  $("tickerTrackClone").innerHTML=content;
 }
+
 async function loadRates(){
- const urls=["https://www.cbr.ru/scripts/XML_daily.asp","https://corsproxy.io/?url="+encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp"),"https://api.allorigins.win/raw?url="+encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp")];
- for(const url of urls)try{
-  const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw 0;
-  const x=new DOMParser().parseFromString(await r.text(),"text/xml");let usd,eur,cny;
-  x.querySelectorAll("Valute").forEach(v=>{let c=v.querySelector("CharCode")?.textContent,n=parseFloat(v.querySelector("Nominal")?.textContent||"1"),v1=parseFloat((v.querySelector("Value")?.textContent||"").replace(",","."));if(c==="USD")usd=v1/n;if(c==="EUR")eur=v1/n;if(c==="CNY")cny=v1/n});
-  if(!usd||!eur||!cny)throw 0;rates={usdRub:usd,eurRub:eur,cnyRub:cny};localStorage.setItem("salaryTrackerRates",JSON.stringify({...rates,updated:Date.now()}));$("rubRate").textContent="1 USD = ₽"+usd.toFixed(4);$("eurRate").textContent="1 EUR = ₽"+eur.toFixed(4);renderTicker();update();return;
- }catch(e){}
- const s=JSON.parse(localStorage.getItem("salaryTrackerRates")||"null");rates=s&&s.usdRub&&s.eurRub&&s.cnyRub?s:{usdRub:78.4756,eurRub:89.6034,cnyRub:10.95};$("rubRate").textContent="Курс USD: ₽"+rates.usdRub.toFixed(4);$("eurRate").textContent="Курс EUR: ₽"+rates.eurRub.toFixed(4);renderTicker();update();
+  const sources=[
+    "https://www.cbr.ru/scripts/XML_daily.asp",
+    "https://corsproxy.io/?url="+encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp"),
+    "https://api.allorigins.win/raw?url="+encodeURIComponent("https://www.cbr.ru/scripts/XML_daily.asp")
+  ];
+
+  for(const url of sources){
+    try{
+      const r=await fetch(url,{cache:"no-store"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const x=new DOMParser().parseFromString(await r.text(),"text/xml");
+      let usd=null,eur=null,cny=null;
+
+      x.querySelectorAll("Valute").forEach(v=>{
+        const code=v.querySelector("CharCode")?.textContent;
+        const value=parseFloat((v.querySelector("Value")?.textContent||"").replace(",","."));
+        const nominal=parseFloat(v.querySelector("Nominal")?.textContent||"1");
+        if(code==="USD" && Number.isFinite(value)) usd=value/nominal;
+        if(code==="EUR" && Number.isFinite(value)) eur=value/nominal;
+        if(code==="CNY" && Number.isFinite(value)) cny=value/nominal;
+      });
+
+      if(!usd || !eur || !cny) throw new Error("USD/EUR/CNY не найдены");
+
+      rates={usdRub:usd,eurRub:eur,cnyRub:cny};
+      localStorage.setItem("salaryTrackerRates",JSON.stringify({...rates,updated:Date.now()}));
+
+      $("rubRate").textContent="1 USD = ₽"+usd.toFixed(4);
+      $("eurRate").textContent="1 EUR = ₽"+eur.toFixed(4);
+      renderTicker();
+      update();
+      return;
+    }catch(e){}
+  }
+
+  const saved=JSON.parse(localStorage.getItem("salaryTrackerRates")||"null");
+  if(saved && saved.usdRub && saved.eurRub && saved.cnyRub){
+    rates=saved;
+  }else{
+    rates={usdRub:78.4756,eurRub:89.6034,cnyRub:10.95};
+  }
+
+  $("rubRate").textContent="Курс USD: ₽"+rates.usdRub.toFixed(4);
+  $("eurRate").textContent="Курс EUR: ₽"+rates.eurRub.toFixed(4);
+  renderTicker();
+  update();
 }
 function update(){
  let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), now=new Date();
