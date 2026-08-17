@@ -77,18 +77,62 @@ to{transform:translateX(-50%)}
 }
 
 
-
-
-.ticker{position:relative;display:block;width:100%;max-width:100%;height:38px;margin:10px 0 16px;box-sizing:border-box;overflow:hidden;background:#05080a;border:1px solid #26323a;border-radius:10px}
-.ticker-track{position:absolute;top:0;left:0;display:flex;align-items:center;width:max-content;height:100%;white-space:nowrap;will-change:transform}
-.ticker-main{animation:tickerMain 24s linear infinite}
-.ticker-clone{animation:tickerClone 24s linear infinite}
-.tick{display:inline-flex;flex:0 0 auto;align-items:center;gap:7px;height:100%;padding:0 16px;box-sizing:border-box;border-right:1px solid #202a30;font-size:12px;font-variant-numeric:tabular-nums}
+.ticker{
+  position:relative;
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:38px;
+  margin:10px 0 16px;
+  box-sizing:border-box;
+  overflow:hidden;
+  contain:paint;
+  background:#05080a;
+  border:1px solid #26323a;
+  border-radius:10px;
+}
+.ticker-track{
+  position:absolute;
+  top:0;
+  left:0;
+  display:flex;
+  align-items:center;
+  width:max-content;
+  max-width:none;
+  height:100%;
+  white-space:nowrap;
+  will-change:transform;
+}
+.ticker-main{
+  animation:tickerMain 24s linear infinite;
+}
+.ticker-clone{
+  animation:tickerClone 24s linear infinite;
+}
+.tick{
+  display:inline-flex;
+  flex:0 0 auto;
+  align-items:center;
+  gap:7px;
+  height:100%;
+  padding:0 16px;
+  box-sizing:border-box;
+  border-right:1px solid #202a30;
+  font-size:12px;
+  font-variant-numeric:tabular-nums;
+}
 .tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
 .tick .price{color:#f2f5f6;font-weight:700}
 .tick .live-dot{color:#54e39a;font-size:9px}
-@keyframes tickerMain{from{transform:translate3d(0,0,0)}to{transform:translate3d(-100%,0,0)}}
-@keyframes tickerClone{from{transform:translate3d(100%,0,0)}to{transform:translate3d(0,0,0)}}
+
+@keyframes tickerMain{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+@keyframes tickerClone{
+  from{transform:translateX(100%)}
+  to{transform:translateX(0)}
+}
 
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .currency .box{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:14px}
@@ -111,6 +155,11 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
  .stats{grid-template-columns:repeat(2,1fr)}
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 html,body{max-width:100%;overflow-x:hidden}
 </style>
 
@@ -181,7 +230,6 @@ html,body{max-width:100%;overflow-x:hidden}
  <div class="section-title">TODAY</div>
  <div class="row"><span>Начислено сегодня</span><span id="todayEarn">$0.00</span></div>
  <div class="row"><span>Статус 31-го числа</span><span id="day31">Оплачивается</span></div>
-  <div class="row"><span>Расчёт месяца</span><span id="monthRule">—</span></div>
  <div class="row"><span>До конца сегодняшнего оплачиваемого дня</span><span id="todayLeft">--</span></div>
 </div>
 
@@ -231,46 +279,19 @@ function fmtDuration(s){
  return `${d} дн. ${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-/* Зарплата считается отдельно по каждому календарному месяцу.
-   31-е число не оплачивается. Февраль оплачивается полностью за 28/29 дней,
-   поэтому месячная зарплата не уменьшается из-за короткого месяца. */
-function payableDaysInMonth(year,month){
-  const days=new Date(year,month+1,0).getDate();
-  return days===31 ? 30 : days;
-}
-function paidSecondsInMonth(year,month){
-  return payableDaysInMonth(year,month)*86400;
-}
-function paidAmountBetween(a,b,salary){
-  if(!a||!b||b<=a||salary<=0)return 0;
-  let total=0,c=new Date(a);
-  while(c<b){
-    const year=c.getFullYear(), month=c.getMonth();
-    const next=new Date(year,month+1,1);
-    const e=b<next?b:next;
-    let seconds=0;
-    if(c.getDate()!==31) seconds=(e-c)/1000;
-    total += seconds * salary / paidSecondsInMonth(year,month);
-    c=e;
-  }
-  return Math.max(0,total);
-}
-function monthlyPerSecond(year,month,salary){
-  return salary/paidSecondsInMonth(year,month);
-}
+/* Оплачиваемые секунды: каждый календарный 31-й день полностью исключается. */
 function paidBetween(a,b){
-  if(!a||!b||b<=a)return 0;
-  let total=0,c=new Date(a);
-  while(c<b){
-    const year=c.getFullYear(), month=c.getMonth();
-    const next=new Date(year,month+1,1);
-    const e=b<next?b:next;
-    if(c.getDate()!==31) total+=(e-c)/1000;
-    c=e;
-  }
-  return Math.max(0,total);
+ if(!a||!b||b<=a)return 0;
+ let total=0,c=new Date(a);
+ while(c<b){
+  let next=new Date(c.getFullYear(),c.getMonth()+1,1);
+  let e=b<next?b:next;
+  if(c.getDate()!==31) total+=(e-c)/1000;
+  c=e;
+ }
+ return Math.max(0,total);
 }
-function totalPaidContract(a,b,salary){return paidAmountBetween(a,b,salary)}
+function totalPaidContract(a,b){return paidBetween(a,b)}
 function initDates(){
  let now=new Date();now.setSeconds(0,0);
  $("start").value=localInput(now);
@@ -364,14 +385,12 @@ async function loadRates(){
 }
 function update(){
  let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), now=new Date();
- let currentPerSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),salary);
- let currentPaidDay=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
- let earned=paidAmountBetween(start,now,salary);
+ let perSec=salary/(30*86400), paidDay=salary/30, earned=paidBetween(start,now)*perSec;
  $("usd").textContent=fmtUSD(earned);
- $("paidDay").textContent=fmtUSD(currentPaidDay);
-$("sec").textContent=fmtUSD(currentPerSec);
-$("min").textContent=fmtUSD(currentPerSec*60);
-$("hour").textContent=fmtUSD(currentPerSec*3600);
+ $("paidDay").textContent=fmtUSD(paidDay);
+ $("sec").textContent=fmtUSD(perSec);
+ $("min").textContent=fmtUSD(perSec*60);
+ $("hour").textContent=fmtUSD(perSec*3600);
  $("rub").textContent=rates.usdRub?"₽"+(earned*rates.usdRub).toLocaleString("ru-RU",{minimumFractionDigits:2,maximumFractionDigits:2}):"₽—";
  $("eur").textContent=rates.usdRub&&rates.eurRub?"€"+(earned*rates.usdRub/rates.eurRub).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}):"€—";
 
@@ -385,30 +404,24 @@ $("hour").textContent=fmtUSD(currentPerSec*3600);
   $("bar").style.width=Math.min(100,pct)+"%";
   $("progressText").textContent=pct.toFixed(1)+"%";
   $("remaining").textContent=now<end?"Осталось: "+fmtDuration((end-now)/1000):"Контракт завершён";
-  $("contractTotal").textContent=fmtUSD(totalPaidContract(start,end,salary));
+  $("contractTotal").textContent=fmtUSD(totalPaidContract(start,end)*perSec);
  }
  let is31=now.getDate()===31;
  $("day31").textContent=is31?"⏸ 31-е число не оплачивается":"✓ Оплачивается";
  $("day31").className=is31?"paused":"";
- const monthDays=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
- $("monthRule").textContent =
-   monthDays===28 ? "28 оплачиваемых дней" :
-   monthDays===29 ? "29 оплачиваемых дней" :
-   monthDays===31 ? "30 оплачиваемых дней (31-е не оплачивается)" :
-   "30 оплачиваемых дней";
  let dayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
- let today=paidAmountBetween(dayStart,now,salary);
+ let today=paidBetween(dayStart,now)*perSec;
  $("todayEarn").textContent=fmtUSD(today);
  let next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
  $("todayLeft").textContent=fmtDuration((next-now)/1000);
 
  let f=getDate("forecast");
  if(f&&start){
-  let fe=paidAmountBetween(start,f,salary);
+  let fe=paidBetween(start,f)*perSec;
   $("forecastEarn").textContent=fmtUSD(fe);
   $("forecastLeft").textContent=fmtUSD(Math.max(0,fe-earned));
  }
- updateSleep(currentPerSec);
+ updateSleep(perSec);
  save();
 }
 function updateSleep(perSec){
