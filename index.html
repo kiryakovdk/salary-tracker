@@ -73,29 +73,41 @@ to{transform:translateX(-50%)}
 }
 
 
+to{transform:translateX(-50%)}
+}
+
+
 .ticker{
+  position:relative;
   display:block;
   width:100%;
   max-width:100%;
-  box-sizing:border-box;
-  overflow:hidden;
-  position:relative;
-  isolation:isolate;
   height:38px;
   margin:10px 0 16px;
+  box-sizing:border-box;
+  overflow:hidden;
+  contain:paint;
   background:#05080a;
   border:1px solid #26323a;
   border-radius:10px;
 }
 .ticker-track{
-  display:inline-flex;
+  position:absolute;
+  top:0;
+  left:0;
+  display:flex;
+  align-items:center;
   width:max-content;
   max-width:none;
   height:100%;
-  align-items:center;
   white-space:nowrap;
-  animation:tickerScroll 24s linear infinite;
   will-change:transform;
+}
+.ticker-main{
+  animation:tickerMain 24s linear infinite;
+}
+.ticker-clone{
+  animation:tickerClone 24s linear infinite;
 }
 .tick{
   display:inline-flex;
@@ -104,26 +116,22 @@ to{transform:translateX(-50%)}
   gap:7px;
   height:100%;
   padding:0 16px;
+  box-sizing:border-box;
   border-right:1px solid #202a30;
   font-size:12px;
   font-variant-numeric:tabular-nums;
 }
-.tick .pair{
-  color:#8d99a2;
-  font-weight:700;
-  letter-spacing:.4px;
-}
-.tick .price{
-  color:#f2f5f6;
-  font-weight:700;
-}
-.tick .live-dot{
-  color:#54e39a;
-  font-size:9px;
-}
-@keyframes tickerScroll{
+.tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
+.tick .price{color:#f2f5f6;font-weight:700}
+.tick .live-dot{color:#54e39a;font-size:9px}
+
+@keyframes tickerMain{
   from{transform:translateX(0)}
-  to{transform:translateX(-50%)}
+  to{transform:translateX(-100%)}
+}
+@keyframes tickerClone{
+  from{transform:translateX(100%)}
+  to{transform:translateX(0)}
 }
 
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -152,6 +160,7 @@ body {
   max-width: 100%;
   overflow-x: hidden;
 }
+html,body{max-width:100%;overflow-x:hidden}
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -208,10 +217,8 @@ body {
 <div class="card">
  <div class="section-title">CURRENCY</div>
  <div class="ticker" aria-label="Курсы валют">
-  <div class="ticker-track" id="tickerTrack"></div>
-  <div class="ticker-track" id="tickerTrackClone"></div>
-</div>
-<div class="ticker-track" id="tickerTrackClone"></div>
+  <div class="ticker-track ticker-main" id="tickerTrack"></div>
+  <div class="ticker-track ticker-clone" id="tickerTrackClone"></div>
  </div>
  <div class="currency">
   <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
