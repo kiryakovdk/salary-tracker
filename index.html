@@ -99,11 +99,13 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
   <div><label>Месячная зарплата, USD</label><input id="salary" type="number" min="0" step=".01" value="5100"></div>
   <div><label>Начало зарплаты</label><input id="start" type="datetime-local"></div>
   <div><label>Конец контракта</label><input id="end" type="datetime-local"></div>
-  <div><label>Прогноз до даты</label><input id="forecast" type="datetime-local"></div>
+  <div><label>Сколько заработаю к дате</label><input id="forecast" type="datetime-local"></div>
  </div>
  <div class="buttons">
-  <button class="secondary" id="nowEnd">Поставить конец через 4 месяца</button>
-  <button class="secondary" id="nowForecast">Прогноз +30 дней</button>
+  <button class="secondary" id="now7">+7 дней</button>
+  <button class="secondary" id="nowForecast">+30 дней</button>
+  <button class="secondary" id="nowMonth">+1 месяц</button>
+  <button class="secondary" id="toContract">До конца контракта</button>
   <button class="secondary" id="reset">Сбросить</button>
  </div>
 </div>
@@ -149,8 +151,8 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
 <div class="card">
  <div class="section-title">FORECAST</div>
  <div class="forecast">
-  <div class="bigbox"><div class="small">Заработаю к выбранной дате</div><b id="forecastEarn">$0.00</b></div>
-  <div class="bigbox"><div class="small">Сколько осталось заработать</div><b id="forecastLeft">$0.00</b></div>
+  <div class="bigbox"><div class="small">К этой дате заработаю</div><b id="forecastEarn">$0.00</b></div>
+  <div class="bigbox"><div class="small">Осталось заработать до даты</div><b id="forecastLeft">$0.00</b></div>
  </div>
 </div>
 
@@ -324,8 +326,22 @@ function updateSleep(perSec){
 }
 ["salary","start","end","forecast","sleepStart","sleepEnd"].forEach(id=>$(id).addEventListener("input",update));
 $("reset").onclick=()=>{localStorage.removeItem("salaryTracker");initDates();$("salary").value=5100;update()};
-$("nowEnd").onclick=()=>{let d=getDate("start")||new Date();d=new Date(d);d.setMonth(d.getMonth()+4);$("end").value=localInput(d);update()};
-$("nowForecast").onclick=()=>{let d=new Date();d.setDate(d.getDate()+30);$("forecast").value=localInput(d);update()};
+$("now7").onclick=()=>{
+  let d=new Date(); d.setDate(d.getDate()+7);
+  $("forecast").value=localInput(d); update();
+};
+$("nowForecast").onclick=()=>{
+  let d=new Date(); d.setDate(d.getDate()+30);
+  $("forecast").value=localInput(d); update();
+};
+$("nowMonth").onclick=()=>{
+  let d=new Date(); d.setMonth(d.getMonth()+1);
+  $("forecast").value=localInput(d); update();
+};
+$("toContract").onclick=()=>{
+  const end=getDate("end");
+  if(end){ $("forecast").value=localInput(end); update(); }
+};
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
