@@ -79,26 +79,40 @@ to{transform:translateX(-50%)}
 
 
 
+
 .ticker{
+  position:relative;
   width:100%;
   max-width:100%;
   height:38px;
   margin:10px 0 16px;
   box-sizing:border-box;
   overflow:hidden;
-  position:relative;
+  clip-path:inset(0 round 10px);
   background:#05080a;
   border:1px solid #26323a;
   border-radius:10px;
 }
 .ticker-track{
+  position:absolute;
+  top:0;
+  left:0;
   display:flex;
+  flex-wrap:nowrap;
   align-items:center;
   width:max-content;
   height:100%;
+  margin:0;
+  padding:0;
   white-space:nowrap;
   will-change:transform;
   animation:tickerMove 26s linear infinite;
+}
+.ticker-group{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  height:100%;
 }
 .tick{
   display:inline-flex;
@@ -107,8 +121,8 @@ to{transform:translateX(-50%)}
   gap:7px;
   height:100%;
   padding:0 16px;
-  border-right:1px solid #202a30;
   box-sizing:border-box;
+  border-right:1px solid #202a30;
   font-size:12px;
   font-variant-numeric:tabular-nums;
 }
@@ -116,8 +130,8 @@ to{transform:translateX(-50%)}
 .tick .price{color:#f2f5f6;font-weight:700}
 .tick .live-dot{color:#54e39a;font-size:9px}
 @keyframes tickerMove{
-  from{transform:translateX(0)}
-  to{transform:translateX(-50%)}
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-50%,0,0)}
 }
 
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -199,7 +213,8 @@ html,body{max-width:100%;overflow-x:hidden}
  <div class="section-title">CURRENCY</div>
  <div class="ticker" aria-label="Курсы валют">
   <div class="ticker-track" id="tickerTrack"></div>
- </div>
+</div>
+</div>
 <div class="currency">
   <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
   <div class="box"><div class="small">Евро</div><div class="value" id="eur">€0.00</div><div class="rate" id="eurRate">Курс ЦБ: загрузка...</div></div>
@@ -339,12 +354,15 @@ function renderTicker(){
     ["EUR/USD",(rates.eurRub/rates.usdRub).toFixed(5)]
   ];
 
-  const one=items.map(x=>
+  const group=items.map(x =>
     `<div class="tick"><span class="pair">${x[0]}</span><span class="price">${x[1]}</span><span class="live-dot">● LIVE</span></div>`
   ).join("");
 
-  $("tickerTrack").innerHTML=one+one;
+  $("tickerTrack").innerHTML=
+    `<div class="ticker-group">${group}</div>`+
+    `<div class="ticker-group">${group}</div>`;
 }
+
 
 async function loadRates(){
   const sources=[
