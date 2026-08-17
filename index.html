@@ -69,26 +69,37 @@ input:focus{border-color:#4d626e}
 to{transform:translateX(-50%)}}
 
 
+to{transform:translateX(-50%)}
+}
+
+
 .ticker{
   display:block;
   width:100%;
+  max-width:100%;
+  box-sizing:border-box;
   overflow:hidden;
+  position:relative;
+  isolation:isolate;
+  height:38px;
+  margin:10px 0 16px;
   background:#05080a;
   border:1px solid #26323a;
   border-radius:10px;
-  margin:10px 0 16px;
-  height:38px;
-  position:relative;
 }
 .ticker-track{
   display:inline-flex;
+  width:max-content;
+  max-width:none;
   height:100%;
   align-items:center;
-  animation:tickerScroll 24s linear infinite;
   white-space:nowrap;
+  animation:tickerScroll 24s linear infinite;
+  will-change:transform;
 }
 .tick{
   display:inline-flex;
+  flex:0 0 auto;
   align-items:center;
   gap:7px;
   height:100%;
@@ -97,9 +108,19 @@ to{transform:translateX(-50%)}}
   font-size:12px;
   font-variant-numeric:tabular-nums;
 }
-.tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
-.tick .price{color:#f2f5f6;font-weight:700}
-.tick .live-dot{color:#54e39a;font-size:9px}
+.tick .pair{
+  color:#8d99a2;
+  font-weight:700;
+  letter-spacing:.4px;
+}
+.tick .price{
+  color:#f2f5f6;
+  font-weight:700;
+}
+.tick .live-dot{
+  color:#54e39a;
+  font-size:9px;
+}
 @keyframes tickerScroll{
   from{transform:translateX(0)}
   to{transform:translateX(-50%)}
@@ -124,6 +145,12 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
 @media(max-width:650px){
  .grid,.forecast,.currency{grid-template-columns:minmax(0,1fr)}
  .stats{grid-template-columns:repeat(2,1fr)}
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 </style>
 
@@ -182,9 +209,9 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
  <div class="section-title">CURRENCY</div>
  <div class="ticker" aria-label="Курсы валют">
   <div class="ticker-track" id="tickerTrack"></div>
-  <div class="ticker-track" id="tickerTrackClone" style="display:none"></div>
+  <div class="ticker-track" id="tickerTrackClone"></div>
 </div>
-<div class="ticker-track" id="tickerTrackClone" style="display:none"></div>
+<div class="ticker-track" id="tickerTrackClone"></div>
  </div>
  <div class="currency">
   <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
