@@ -77,6 +77,7 @@ to{transform:translateX(-50%)}
 }
 
 
+
 .ticker{
   position:relative;
   display:block;
@@ -86,7 +87,7 @@ to{transform:translateX(-50%)}
   margin:10px 0 16px;
   box-sizing:border-box;
   overflow:hidden;
-  contain:paint;
+  contain:layout paint;
   background:#05080a;
   border:1px solid #26323a;
   border-radius:10px;
@@ -98,17 +99,15 @@ to{transform:translateX(-50%)}
   display:flex;
   align-items:center;
   width:max-content;
-  max-width:none;
   height:100%;
+  max-width:none;
+  margin:0;
+  padding:0;
   white-space:nowrap;
   will-change:transform;
 }
-.ticker-main{
-  animation:tickerMain 24s linear infinite;
-}
-.ticker-clone{
-  animation:tickerClone 24s linear infinite;
-}
+.ticker-main{animation:tickerMain 24s linear infinite;}
+.ticker-clone{animation:tickerClone 24s linear infinite;}
 .tick{
   display:inline-flex;
   flex:0 0 auto;
@@ -124,14 +123,13 @@ to{transform:translateX(-50%)}
 .tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
 .tick .price{color:#f2f5f6;font-weight:700}
 .tick .live-dot{color:#54e39a;font-size:9px}
-
 @keyframes tickerMain{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-100%,0,0)}
 }
 @keyframes tickerClone{
-  from{transform:translateX(100%)}
-  to{transform:translateX(0)}
+  from{transform:translate3d(100%,0,0)}
+  to{transform:translate3d(0,0,0)}
 }
 
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
