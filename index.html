@@ -77,6 +77,14 @@ to{transform:translateX(-50%)}
 }
 
 
+to{transform:translateX(-100%)}
+}
+@keyframes tickerClone{
+  from{transform:translateX(100%)}
+  to{transform:translateX(0)}
+}
+
+
 .ticker{
   position:relative;
   display:block;
@@ -90,6 +98,8 @@ to{transform:translateX(-50%)}
   background:#05080a;
   border:1px solid #26323a;
   border-radius:10px;
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-image:linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
 }
 .ticker-track{
   position:absolute;
@@ -102,12 +112,7 @@ to{transform:translateX(-50%)}
   height:100%;
   white-space:nowrap;
   will-change:transform;
-}
-.ticker-main{
-  animation:tickerMain 24s linear infinite;
-}
-.ticker-clone{
-  animation:tickerClone 24s linear infinite;
+  animation:tickerScroll 24s linear infinite;
 }
 .tick{
   display:inline-flex;
@@ -124,14 +129,9 @@ to{transform:translateX(-50%)}
 .tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
 .tick .price{color:#f2f5f6;font-weight:700}
 .tick .live-dot{color:#54e39a;font-size:9px}
-
-@keyframes tickerMain{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
-}
-@keyframes tickerClone{
+@keyframes tickerScroll{
   from{transform:translateX(100%)}
-  to{transform:translateX(0)}
+  to{transform:translateX(-100%)}
 }
 
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -218,9 +218,8 @@ html,body{max-width:100%;overflow-x:hidden}
  <div class="section-title">CURRENCY</div>
  <div class="ticker" aria-label="Курсы валют">
   <div class="ticker-track ticker-main" id="tickerTrack"></div>
-  <div class="ticker-track ticker-clone" id="tickerTrackClone"></div>
- </div>
- <div class="currency">
+</div>
+<div class="currency">
   <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
   <div class="box"><div class="small">Евро</div><div class="value" id="eur">€0.00</div><div class="rate" id="eurRate">Курс ЦБ: загрузка...</div></div>
  </div>
@@ -332,7 +331,6 @@ function renderTicker(){
     `<div class="tick"><span class="pair">${x[0]}</span><span class="price">${x[1]}</span><span class="live-dot">● LIVE</span></div>`
   ).join("");
   $("tickerTrack").innerHTML=content;
-  $("tickerTrackClone").innerHTML=content;
 }
 
 async function loadRates(){
