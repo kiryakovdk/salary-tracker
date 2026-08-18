@@ -80,10 +80,8 @@ to{transform:translateX(-50%)}
 
 
 .ticker{
-  position:relative;
   display:block;
   width:100%;
-  max-width:100%;
   height:38px;
   margin:10px 0 16px;
   box-sizing:border-box;
@@ -93,16 +91,12 @@ to{transform:translateX(-50%)}
   border-radius:10px;
 }
 .ticker-track{
-  position:absolute;
-  top:0;
-  left:0;
   display:flex;
   align-items:center;
   width:max-content;
   height:100%;
   white-space:nowrap;
   animation:tickerMove 28s linear infinite;
-  will-change:transform;
 }
 .ticker-group{
   display:flex;
@@ -126,8 +120,8 @@ to{transform:translateX(-50%)}
 .tick .price{color:#f2f5f6;font-weight:700}
 .tick .live-dot{color:#54e39a;font-size:9px}
 @keyframes tickerMove{
-  from{transform:translate3d(0,0,0)}
-  to{transform:translate3d(-50%,0,0)}
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
 }
 
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -342,15 +336,18 @@ function load(){
 
 function renderTicker(){
   if(!rates.usdRub || !rates.eurRub || !rates.cnyRub) return;
+
   const items=[
     ["USD/RUB",rates.usdRub.toFixed(4)],
     ["EUR/RUB",rates.eurRub.toFixed(4)],
     ["CNY/RUB",rates.cnyRub.toFixed(4)],
     ["EUR/USD",(rates.eurRub/rates.usdRub).toFixed(5)]
   ];
+
   const group=items.map(([pair,price]) =>
     `<div class="tick"><span class="pair">${pair}</span><span class="price">${price}</span><span class="live-dot">● LIVE</span></div>`
   ).join("");
+
   $("tickerTrack").innerHTML=
     `<div class="ticker-group">${group}</div>`+
     `<div class="ticker-group">${group}</div>`;
