@@ -88,14 +88,14 @@ to{transform:translateX(-50%)}
   margin:10px 0 16px;
   box-sizing:border-box;
   overflow:hidden;
-  contain:strict;
   background:#05080a;
   border:1px solid #26323a;
   border-radius:10px;
 }
 .ticker-track{
   position:absolute;
-  inset:0 auto 0 0;
+  top:0;
+  left:0;
   display:flex;
   align-items:center;
   width:max-content;
@@ -342,18 +342,15 @@ function load(){
 
 function renderTicker(){
   if(!rates.usdRub || !rates.eurRub || !rates.cnyRub) return;
-
   const items=[
     ["USD/RUB",rates.usdRub.toFixed(4)],
     ["EUR/RUB",rates.eurRub.toFixed(4)],
     ["CNY/RUB",rates.cnyRub.toFixed(4)],
     ["EUR/USD",(rates.eurRub/rates.usdRub).toFixed(5)]
   ];
-
   const group=items.map(([pair,price]) =>
     `<div class="tick"><span class="pair">${pair}</span><span class="price">${price}</span><span class="live-dot">● LIVE</span></div>`
   ).join("");
-
   $("tickerTrack").innerHTML=
     `<div class="ticker-group">${group}</div>`+
     `<div class="ticker-group">${group}</div>`;
@@ -380,7 +377,6 @@ async function loadRates(){
         if(code==="USD" && Number.isFinite(value)) usd=value/nominal;
         if(code==="EUR" && Number.isFinite(value)) eur=value/nominal;
         if(code==="CNY" && Number.isFinite(value)) cny=value/nominal;
-        if(code==="CNY" && Number.isFinite(value)) cny=value/nominal;
       });
 
       if(!usd || !eur || !cny) throw new Error("USD/EUR/CNY не найдены");
@@ -390,6 +386,7 @@ async function loadRates(){
 
       $("rubRate").textContent="1 USD = ₽"+usd.toFixed(4);
       $("eurRate").textContent="1 EUR = ₽"+eur.toFixed(4);
+      renderTicker();
       update();
       return;
     }catch(e){}
