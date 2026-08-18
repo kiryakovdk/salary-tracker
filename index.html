@@ -78,6 +78,63 @@ to{transform:translateX(-50%)}
 
 
 
+
+.ticker{
+  display:block;
+  position:relative;
+  width:100%;
+  height:40px;
+  margin:10px 0 16px;
+  box-sizing:border-box;
+  overflow:hidden;
+  border:1px solid #26323a;
+  border-radius:10px;
+  background:#05080a;
+}
+.ticker-window{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  border-radius:9px;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 32px,#000 calc(100% - 32px),transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0,#000 32px,#000 calc(100% - 32px),transparent 100%);
+}
+.ticker-track{
+  display:flex;
+  align-items:center;
+  width:max-content;
+  height:100%;
+  white-space:nowrap;
+  animation:tickerMove 28s linear infinite;
+  will-change:transform;
+}
+.ticker-group{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  height:100%;
+}
+.tick{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  gap:7px;
+  height:100%;
+  padding:0 16px;
+  box-sizing:border-box;
+  border-right:1px solid #202a30;
+  font-size:12px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.tick .pair{color:#8d99a2;font-weight:700;letter-spacing:.4px}
+.tick .price{color:#f2f5f6;font-weight:700}
+.tick .live-dot{color:#54e39a;font-size:9px}
+@keyframes tickerMove{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+
 .currency{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .currency .box{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:14px}
 .currency .value{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -100,6 +157,7 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
 }
 
 html,body{max-width:100%;overflow-x:hidden}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -155,6 +213,11 @@ html,body{max-width:100%;overflow-x:hidden}
 
 <div class="card">
  <div class="section-title">CURRENCY</div>
+ <div class="ticker" aria-label="Курсы валют">
+  <div class="ticker-window">
+   <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+ </div>
 <div class="currency">
   <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
   <div class="box"><div class="small">Евро</div><div class="value" id="eur">€0.00</div><div class="rate" id="eurRate">Курс ЦБ: загрузка...</div></div>
@@ -283,6 +346,26 @@ function load(){
   });
  }catch(e){initDates()}
 }
+
+function renderTicker(){
+  if(!rates.usdRub || !rates.eurRub || !rates.cnyRub) return;
+
+  const items=[
+    ["USD/RUB",rates.usdRub.toFixed(4)],
+    ["EUR/RUB",rates.eurRub.toFixed(4)],
+    ["CNY/RUB",rates.cnyRub.toFixed(4)],
+    ["EUR/USD",(rates.eurRub/rates.usdRub).toFixed(5)]
+  ];
+
+  const group=items.map(([pair,price]) =>
+    `<div class="tick"><span class="pair">${pair}</span><span class="price">${price}</span><span class="live-dot">● LIVE</span></div>`
+  ).join("");
+
+  $("tickerTrack").innerHTML=
+    `<div class="ticker-group">${group}</div>`+
+    `<div class="ticker-group">${group}</div>`;
+}
+
 async function loadRates(){
   const sources=[
     "https://www.cbr.ru/scripts/XML_daily.asp",
@@ -313,6 +396,7 @@ async function loadRates(){
 
       $("rubRate").textContent="1 USD = ₽"+usd.toFixed(4);
       $("eurRate").textContent="1 EUR = ₽"+eur.toFixed(4);
+      renderTicker();
       update();
       return;
     }catch(e){}
@@ -327,6 +411,7 @@ async function loadRates(){
 
   $("rubRate").textContent="Курс USD: ₽"+rates.usdRub.toFixed(4);
   $("eurRate").textContent="Курс EUR: ₽"+rates.eurRub.toFixed(4);
+  renderTicker();
   update();
 }
 function update(){
