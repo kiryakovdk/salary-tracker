@@ -146,6 +146,14 @@ button.secondary{background:#192127;color:#dfe7ea;border:1px solid #2a363e}
 .buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
 .warning{color:var(--amber)}
 .paused{color:var(--amber)!important}
+.countdown-card .countdown-value{font-size:30px;font-weight:800;letter-spacing:.5px;margin:10px 0 12px;font-variant-numeric:tabular-nums}
+.countdown-card .progress-wrap{margin-top:6px}
+.countdown-card .progress-bar{height:8px;background:#182126;border-radius:999px;overflow:hidden}
+.countdown-card .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:999px;transition:width .4s ease}
+.overtime-card{transition:opacity .25s,border-color .25s}
+.overtime-card.inactive{opacity:.55}
+.overtime-card.active{border-color:#24543f}
+.overtime-card.active .section-title{color:var(--green)}
 .forecast{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .bigbox{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:16px}
 .bigbox b{display:block;font-size:25px;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -230,6 +238,34 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
  <div class="row"><span>Статус 31-го числа</span><span id="day31">Оплачивается</span></div>
   <div class="row"><span>Расчёт месяца</span><span id="monthRule">—</span></div>
  <div class="row"><span>До конца сегодняшнего оплачиваемого дня</span><span id="todayLeft">--</span></div>
+</div>
+
+<div class="card countdown-card">
+ <div class="section-title">CONTRACT COUNTDOWN</div>
+ <div class="small" id="countdownStatus">До окончания контракта</div>
+ <div class="countdown-value" id="contractCountdown">-- дн. --:--:--</div>
+ <div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="contractProgress"></div></div>
+  <div class="progress-meta"><span id="contractProgressText">0%</span><span id="countdownDays">-- дней осталось</span></div>
+ </div>
+</div>
+
+<div class="card overtime-card inactive" id="overtimeCard">
+ <div class="section-title">OVERTIME</div>
+ <div class="small" id="overtimeStatus">После окончания контракта</div>
+ <div class="forecast">
+  <div class="bigbox"><div class="small">Переработано после контракта</div><b id="overtimeTime">0 дн. 00:00:00</b></div>
+  <div class="bigbox"><div class="small">Заработано после контракта</div><b id="overtimeEarn">$0.00</b></div>
+ </div>
+ <div class="row" style="margin-top:10px"><span>В день</span><span id="overtimeDay">$0.00</span></div>
+ <div class="row"><span>В час</span><span id="overtimeHour">$0.00</span></div>
+</div>
+
+<div class="card">
+ <div class="section-title">TOTAL EARNED</div>
+ <div class="bigbox"><div class="small">Контракт + переработка</div><b id="totalEarned">$0.00</b></div>
+ <div class="row" style="margin-top:10px"><span>Контракт</span><span id="totalContract">$0.00</span></div>
+ <div class="row"><span>Overtime</span><span id="totalOvertime">$0.00</span></div>
 </div>
 
 <div class="card">
@@ -414,11 +450,56 @@ async function loadRates(){
   renderTicker();
   update();
 }
+function updateOvertime(end,now,salary){
+ const card=$("overtimeCard");
+ if(!end || now<=end){
+  card.classList.add("inactive"); card.classList.remove("active");
+  $("overtimeStatus").textContent=end?"Переработка начнётся после окончания контракта":"Укажи конец контракта";
+  $("overtimeTime").textContent="0 дн. 00:00:00";
+  $("overtimeEarn").textContent="$0.00";
+  $("overtimeDay").textContent="$0.00";
+  $("overtimeHour").textContent="$0.00";
+  return 0;
+ }
+ card.classList.remove("inactive"); card.classList.add("active");
+ const seconds=(now-end)/1000;
+ const earned=paidAmountBetween(end,now,salary);
+ const dayRate=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
+ $("overtimeStatus").textContent="CONTRACT ENDED • OVERTIME ACTIVE";
+ $("overtimeTime").textContent=fmtDuration(seconds);
+ $("overtimeEarn").textContent=fmtUSD(earned);
+ $("overtimeDay").textContent=fmtUSD(dayRate);
+ $("overtimeHour").textContent=fmtUSD(dayRate/24);
+ return earned;
+}
+function updateContractCountdown(start,end,now){
+ const value=$("contractCountdown"),status=$("countdownStatus");
+ const fill=$("contractProgress"),pt=$("contractProgressText"),days=$("countdownDays");
+ if(!start||!end){
+  value.textContent="-- дн. --:--:--"; status.textContent="Укажи даты контракта";
+  fill.style.width="0%"; pt.textContent="0%"; days.textContent="-- дней осталось"; return;
+ }
+ const total=end-start,remaining=Math.max(0,end-now);
+ const elapsed=Math.max(0,Math.min(now-start,total));
+ const pct=total>0?(elapsed/total)*100:100;
+ if(remaining<=0){
+  value.textContent="0 дн. 00:00:00"; status.textContent="CONTRACT ENDED";
+  fill.style.width="100%"; pt.textContent="100%"; days.textContent="Контракт завершён"; return;
+ }
+ const t=Math.floor(remaining/1000),d=Math.floor(t/86400),h=Math.floor((t%86400)/3600);
+ const m=Math.floor((t%3600)/60),s=t%60;
+ value.textContent=`${d} дн. ${pad(h)}:${pad(m)}:${pad(s)}`;
+ status.textContent="До окончания контракта";
+ fill.style.width=`${pct.toFixed(2)}%`; pt.textContent=`${pct.toFixed(1)}%`;
+ days.textContent=`${d} дней осталось`;
+}
 function update(){
  let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), now=new Date();
+ updateContractCountdown(start,end,now);
  let currentPerSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),salary);
  let currentPaidDay=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
  let earned=paidAmountBetween(start,now,salary);
+ let overtimeEarned=updateOvertime(end,now,salary);
  $("usd").textContent=fmtUSD(earned);
  $("paidDay").textContent=fmtUSD(currentPaidDay);
 $("sec").textContent=fmtUSD(currentPerSec);
@@ -439,6 +520,9 @@ $("hour").textContent=fmtUSD(currentPerSec*3600);
   $("remaining").textContent=now<end?"Осталось: "+fmtDuration((end-now)/1000):"Контракт завершён";
   $("contractTotal").textContent=fmtUSD(totalPaidContract(start,end,salary));
  }
+ $("totalContract").textContent=fmtUSD(start&&end?totalPaidContract(start,end,salary):0);
+ $("totalOvertime").textContent=fmtUSD(overtimeEarned);
+ $("totalEarned").textContent=fmtUSD((start&&end?totalPaidContract(start,end,salary):0)+overtimeEarned);
  let is31=now.getDate()===31;
  $("day31").textContent=is31?"⏸ 31-е число не оплачивается":"✓ Оплачивается";
  $("day31").className=is31?"paused":"";
