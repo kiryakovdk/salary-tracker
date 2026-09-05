@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Salary Tracker</title>
+<title>Salary Tracker v0.13.2</title>
 <style>
 :root{
   --bg:#070a0d;--panel:#10151a;--panel2:#0b1014;--line:#202930;
@@ -146,10 +146,87 @@ button.secondary{background:#192127;color:#dfe7ea;border:1px solid #2a363e}
 .buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
 .warning{color:var(--amber)}
 .paused{color:var(--amber)!important}
+/* FIX18: prominent total time on board */
+.board-time-card{border-color:#24543f;background:linear-gradient(145deg,#101a16,#0d1317)}
+.board-time-card .section-title{color:var(--green)}
+.board-time-main{font-size:42px;font-weight:800;line-height:1.05;text-align:center;margin:10px 0 6px;font-variant-numeric:tabular-nums;letter-spacing:-.8px}
+.duration-value{display:inline-flex;align-items:baseline;white-space:nowrap;font-variant-numeric:tabular-nums}
+.duration-days{font-size:1em;font-weight:800;line-height:1}
+.duration-unit{font-size:.75em;font-weight:800;line-height:1;margin-left:0}
+.duration-clock{font-size:1em;font-weight:800;line-height:1;margin-left:7px}
+.duration-inline{display:inline-flex;align-items:baseline;white-space:nowrap;font-variant-numeric:tabular-nums}
+.duration-inline .duration-days{font-weight:inherit}
+.duration-inline .duration-clock{font-weight:inherit}
+
+.board-time-status{text-align:center;color:var(--green);font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+.board-time-meta{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:16px;background:#202a30;border-radius:10px;overflow:hidden}
+.board-time-stat{background:#090e12;padding:12px;text-align:center}
+.board-time-stat span{display:block;color:var(--muted);font-size:11px}
+.board-time-stat b{display:block;font-size:17px;margin-top:4px;font-variant-numeric:tabular-nums}
+/* FIX22: keep duration components on one line inside the compact time cells */
+.board-time-stat b .duration-value{display:inline-flex!important;align-items:baseline;white-space:nowrap;vertical-align:baseline}
+.board-time-stat b .duration-value > .duration-days,
+.board-time-stat b .duration-value > .duration-unit,
+.board-time-stat b .duration-value > .duration-clock{display:inline!important;white-space:nowrap}
+.board-time-stat b .duration-unit{font-size:.75em!important;margin-left:0!important}
+.board-time-stat b .duration-clock{margin-left:5px}
+@media(max-width:650px){.board-time-main{font-size:34px}}
+
+.today-card .today-main{text-align:center;padding:4px 0 2px}
+.today-card .today-main .small{font-size:10px;letter-spacing:1.8px;text-transform:uppercase}
+.today-amount{font-size:38px;font-weight:780;color:var(--green);font-variant-numeric:tabular-nums;letter-spacing:-1px;margin-top:4px}
+.today-card .progress-meta{margin-top:7px}
 .overtime-card{transition:opacity .25s,border-color .25s}
 .overtime-card.inactive{opacity:.55}
 .overtime-card.active{border-color:#24543f}
 .overtime-card.active .section-title{color:var(--green)}
+.salary-graph{width:100%;height:220px;margin-top:8px;overflow:hidden}
+.salary-graph svg{display:block;width:100%;height:100%}
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:var(--muted)}
+.chart-legend span{display:inline-flex;align-items:center;gap:5px}
+.legend-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green)}
+
+.woa-entry{border:1px solid #202a30;border-radius:10px;padding:12px;margin-top:10px;background:#0b1013}
+.woa-entry-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.woa-entry-title{font-size:12px;font-weight:700;letter-spacing:.4px}
+.woa-remove{border:0;background:transparent;color:#8b969d;font-size:18px;line-height:1;cursor:pointer}
+.woa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.woa-date-label{
+  display:block !important;
+  color:var(--muted) !important;
+  font-size:9px !important;
+  font-weight:400 !important;
+  line-height:1.2 !important;
+  letter-spacing:.4px !important;
+  margin:0 0 7px !important;
+  text-transform:uppercase !important;
+  transform:none !important;
+  -webkit-transform:none !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+.woa-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.woa-stat{border:1px solid #202a30;border-radius:8px;padding:8px}
+.woa-stat-label{font-size:9px;color:var(--muted);text-transform:uppercase}
+.woa-stat-value{font-size:13px;margin-top:3px}
+.woa-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.woa-total{margin-top:12px;padding-top:10px;border-top:1px solid #202a30}
+.woa-total-row{display:flex;justify-content:space-between;margin:4px 0}
+.woa-total-row strong{font-size:15px}
+.app-version{text-align:center;color:var(--muted);font-size:10px;letter-spacing:.3px;padding:14px 0 18px;opacity:.8}
+.total-earned-row{margin-top:9px;padding-top:9px;border-top:1px solid #263139;font-weight:750}
+.total-earned-row span:last-child{font-size:16px;color:var(--green);font-variant-numeric:tabular-nums}
+.earnings-note{font-size:10px;color:var(--muted);margin-top:8px}
+.history-item{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:13px;margin-top:9px}
+.history-item:first-child{margin-top:0}
+.history-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.history-title{font-weight:700;font-size:13px}
+.history-date{font-size:11px;color:var(--muted)}
+.history-total{font-size:20px;font-weight:750;color:var(--green);margin-top:7px;font-variant-numeric:tabular-nums}
+.history-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.history-cell{font-size:11px;color:var(--muted)}
+.history-cell b{display:block;color:var(--text);font-size:12px;margin-top:2px}
 .forecast{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .bigbox{background:#090e12;border:1px solid #1c252b;border-radius:12px;padding:16px}
 .bigbox b{display:block;font-size:25px;margin-top:4px;font-variant-numeric:tabular-nums}
@@ -160,8 +237,383 @@ footer{text-align:center;color:#56626a;font-size:10px;margin-top:18px;line-heigh
  .stats{grid-template-columns:repeat(2,1fr)}
 }
 
-html,body{max-width:100%;overflow-x:hidden}
+html{min-height:100%;background:#050709}html,body{min-height:100%;max-width:100%;overflow-x:hidden}
 html,body{width:100%;max-width:100%;overflow-x:hidden}
+
+/* ---------- Mobile bottom navigation ---------- */
+body{padding-bottom:88px}
+.bottom-nav{
+ position:fixed;left:0;right:0;bottom:0;z-index:1000;
+ padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+ background:rgba(8,12,15,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ border-top:1px solid #202a30;
+}
+.bottom-nav-inner{
+ max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+}
+.nav-btn{
+ appearance:none;border:0;background:transparent;color:#7f8a92;
+ min-height:52px;border-radius:12px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:3px;font:inherit;cursor:pointer;
+}
+.nav-btn .nav-icon{font-size:18px;line-height:1}
+.nav-btn .nav-label{font-size:9px;letter-spacing:.3px;font-weight:700}
+.nav-btn.active{color:var(--green);background:#0e1714}
+.nav-btn:active{transform:scale(.98)}
+.screen-card{display:none}
+.screen-card.screen-home{display:block}
+.more-subhint{font-size:10px;color:var(--muted);margin:-2px 0 8px}.screen-info{display:none}.screen-info.screen-more{display:none}
+@media(min-width:800px){
+ .bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(760px,100%);border:1px solid #202a30;border-bottom:0;border-radius:16px 16px 0 0}
+}
+
+
+/* ---------- Liquid Glass visual layer ---------- */
+:root{
+  --glass-bg:rgba(21,27,31,.46);
+  --glass-bg-strong:rgba(20,27,32,.58);
+  --glass-border:rgba(255,255,255,.14);
+  --glass-border-soft:rgba(255,255,255,.08);
+  --glass-highlight:rgba(255,255,255,.07);
+  --glass-shadow:0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06);
+}
+body{
+  background:
+    radial-gradient(900px 520px at 10% 0%,rgba(56,90,94,.22),transparent 62%),
+    radial-gradient(720px 500px at 100% 20%,rgba(24,70,62,.16),transparent 64%),
+    linear-gradient(180deg,#081015 0%,#05080b 55%,#040609 100%);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:-15%;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(38% 28% at 22% 18%,rgba(90,130,134,.11),transparent 70%),
+    radial-gradient(32% 24% at 78% 42%,rgba(80,145,124,.08),transparent 70%),
+    radial-gradient(26% 24% at 40% 82%,rgba(255,255,255,.035),transparent 72%);
+  filter:blur(38px);
+  transform:translateZ(0);
+}
+.wrap{position:relative}
+.card,.hero,.bigbox,.stat,.board-time-stat,.woa-stat,.currency .box,
+.today-card,.overtime-card,.forecast,.stats{
+  background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 42%,rgba(0,0,0,.12));
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
+  -webkit-backdrop-filter:blur(24px) saturate(135%);
+  backdrop-filter:blur(24px) saturate(135%);
+}
+.card,.hero{
+  position:relative;
+  overflow:hidden;
+}
+.card::before,.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.075),transparent 26%,transparent 72%,rgba(255,255,255,.025));
+  opacity:.8;
+}
+.card::after,.hero::after{
+  content:"";
+  position:absolute;
+  top:-35%;
+  left:-12%;
+  width:65%;
+  height:70%;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.045),transparent 65%);
+  filter:blur(14px);
+}
+.section-title,.kicker{
+  letter-spacing:.14em;
+}
+input,button,.secondary{
+  -webkit-backdrop-filter:blur(18px) saturate(125%);
+  backdrop-filter:blur(18px) saturate(125%);
+}
+input{
+  background:rgba(6,11,14,.38)!important;
+  border-color:rgba(255,255,255,.13)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 24px rgba(0,0,0,.16);
+}
+input:focus{
+  border-color:rgba(104,226,163,.46)!important;
+  box-shadow:0 0 0 3px rgba(104,226,163,.09),inset 0 1px 0 rgba(255,255,255,.04),0 10px 28px rgba(0,0,0,.18);
+}
+.secondary,.woa-actions button{
+  background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.045))!important;
+  border:1px solid rgba(255,255,255,.13)!important;
+  box-shadow:0 10px 22px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.secondary:hover,.woa-actions button:hover{
+  background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.06))!important;
+}
+.hero .amount,.today-amount{
+  text-shadow:0 0 28px rgba(104,226,163,.11);
+}
+.progress{
+  background:rgba(0,0,0,.28)!important;
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.32);
+}
+.progress .bar{
+  box-shadow:0 0 18px rgba(104,226,163,.22),inset 0 1px 0 rgba(255,255,255,.25);
+}
+.bottom-nav{
+  background:rgba(10,15,18,.70)!important;
+  border-top:1px solid rgba(255,255,255,.12)!important;
+  box-shadow:0 -18px 44px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.045);
+  -webkit-backdrop-filter:blur(28px) saturate(150%)!important;
+  backdrop-filter:blur(28px) saturate(150%)!important;
+}
+.nav-btn{
+  background:transparent!important;
+}
+.nav-btn.active{
+  background:linear-gradient(145deg,rgba(95,227,163,.16),rgba(255,255,255,.045))!important;
+  border:1px solid rgba(104,226,163,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 7px 20px rgba(0,0,0,.14);
+}
+.ticker-window,.currency .box{
+  -webkit-backdrop-filter:blur(18px) saturate(125%);
+  backdrop-filter:blur(18px) saturate(125%);
+}
+@media (prefers-reduced-transparency:reduce){
+  .card,.hero,.bigbox,.stat,.board-time-stat,.woa-stat,.currency .box,
+  .today-card,.overtime-card,.forecast,.stats,.bottom-nav{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+}
+
+
+/* ---------- Stable iPhone bottom navigation ---------- */
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0 !important;
+  z-index:1000;
+  box-sizing:border-box;
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+  min-height:0;
+  display:block;
+}
+.bottom-nav-inner{
+  width:100%;
+  max-width:760px;
+  margin:0 auto;
+  transform:none !important;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+}
+.nav-btn{
+  min-height:52px;
+}
+@media(min-width:800px){
+  .bottom-nav{
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
+    width:min(760px,100%);
+    min-height:0;
+  }
+  .bottom-nav-inner{
+    transform:none !important;
+  }
+}
+@media(min-width:800px){
+  .bottom-nav{
+    min-height:112px;
+    border-bottom:0;
+  }
+}
+
+
+.contract-month-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.contract-month-tabs::-webkit-scrollbar{display:none}
+.contract-month-tab{
+  flex:0 0 auto;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.035);
+  color:var(--muted);border-radius:12px;padding:9px 13px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)
+}
+.contract-month-tab.active{
+  color:var(--green);border-color:rgba(104,226,163,.24);
+  background:linear-gradient(145deg,rgba(95,227,163,.14),rgba(255,255,255,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05)
+}
+.contract-month-label{font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.contract-month-total{font-size:36px;font-weight:780;color:var(--green);letter-spacing:-1px;margin-top:3px}
+.contract-month-subtitle{font-size:11px;color:var(--muted);margin:0 0 10px}
+.contract-month-list{margin-top:14px;border-top:1px solid rgba(255,255,255,.08);padding-top:6px}
+.contract-month-summary{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:12px}
+.contract-month-summary:last-child{border-bottom:0}
+.contract-month-summary span:last-child{font-weight:700}
+
+
+.history-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.history-item-rich{margin-bottom:10px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);overflow:hidden}
+.history-item-rich summary{list-style:none;cursor:pointer;padding:13px 14px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.history-item-rich summary::-webkit-details-marker{display:none}
+.history-item-rich summary:after{content:"⌄";color:var(--muted);font-size:14px}
+.history-item-rich[open] summary:after{content:"⌃"}
+.history-contract-title{font-weight:750;font-size:14px}
+.history-contract-date{font-size:10px;color:var(--muted);margin-top:3px}
+.history-contract-total{font-size:18px;color:var(--green);font-weight:780;align-self:center}
+.history-detail{padding:0 14px 14px}
+.history-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.history-detail-grid .row{margin:0}
+.history-month{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.history-month-head{display:flex;justify-content:space-between;gap:8px;font-weight:750}
+.history-month-lines{margin-top:4px}
+.history-month-line{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:11px;padding:3px 0}
+.history-month-line.total{color:var(--text);font-weight:700}
+@media(max-width:520px){.history-actions,.history-detail-grid{grid-template-columns:1fr}}
+
+
+
+/* === UNIFIED APP SHELL / BOTTOM NAV v0.13.2 === */
+html, body {
+  min-height: 100%;
+  margin: 0;
+}
+body {
+  min-height: 100dvh;
+  padding: 0 !important;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* The application content always fills the viewport above the nav.
+   Short screens therefore cannot pull the nav upward. */
+.wrap {
+  min-height: 100dvh !important;
+  box-sizing: border-box !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+}
+
+/* One fixed nav for every screen, independent of content height. */
+.bottom-nav {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  width: 100% !important;
+  height: calc(88px + env(safe-area-inset-bottom)) !important;
+  margin: 0 !important;
+  padding: 0 0 env(safe-area-inset-bottom) !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  transform: none !important;
+  z-index: 99999 !important;
+  border-radius: 0 !important;
+}
+
+.bottom-nav-inner {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 760px !important;
+  height: 88px !important;
+  margin: 0 auto !important;
+  padding: 8px 12px !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  align-items: start !important;
+  transform: none !important;
+}
+
+.nav-btn {
+  width: 100% !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Give short screens a real scrollable canvas, while keeping nav fixed. */
+.screen {
+  min-height: calc(100dvh - 88px - env(safe-area-inset-bottom)) !important;
+  box-sizing: border-box !important;
+}
+
+/* iPhone / narrow screens */
+@media (max-width: 799px) {
+  .wrap {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav {
+    height: calc(96px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav-inner {
+    height: 96px !important;
+    padding: 10px 12px !important;
+  }
+  .nav-btn {
+    height: 70px !important;
+    min-height: 70px !important;
+  }
+  .screen {
+    min-height: calc(100dvh - 96px - env(safe-area-inset-bottom)) !important;
+  }
+}
+
+
+/* === FINAL iOS SAFE-AREA / HEADER ALIGNMENT === */
+.wrap{
+  padding-top:calc(48px + env(safe-area-inset-top)) !important;
+}
+
+/* The nav remains fixed, but the button row sits slightly lower inside it. */
+@media (max-width:799px){
+  .bottom-nav{
+    height:calc(96px + env(safe-area-inset-bottom)) !important;
+    padding:0 0 env(safe-area-inset-bottom) !important;
+  }
+  .bottom-nav-inner{
+    height:96px !important;
+    padding:18px 12px 4px !important;
+    box-sizing:border-box !important;
+    transform:none !important;
+  }
+  .nav-btn{
+    height:70px !important;
+    min-height:70px !important;
+  }
+}
+
+
+/* === FINAL VISUAL MICRO-ADJUSTMENT === */
+@media (max-width:799px){
+  .wrap{
+    padding-top:calc(32px + env(safe-area-inset-top)) !important;
+  }
+
+  .bottom-nav{
+    height:calc(100px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .bottom-nav-inner{
+    height:100px !important;
+    padding:24px 12px 4px !important;
+    box-sizing:border-box !important;
+    transform:none !important;
+  }
+
+  .nav-btn{
+    height:70px !important;
+    min-height:70px !important;
+  }
+}
+
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -178,105 +630,204 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
  <h1>⚓ SALARY TRACKER</h1><div class="badge">LIVE</div>
 </header>
 
-<div class="card">
- <div class="grid">
-  <div><label>Месячная зарплата, USD</label><input id="salary" type="number" min="0" step=".01" value="5100"></div>
-  <div><label>Начало зарплаты</label><input id="start" type="date"></div>
-  <div><label>Конец контракта</label><input id="end" type="date"></div>
-  <div><label>Фактическое списание</label><input id="signoff" type="date"></div>
-  <div><label>Прогноз до даты</label><input id="forecast" type="date"></div>
- </div>
- <div class="buttons">
-  <button class="secondary" id="nowEnd">Поставить конец через 4 месяца</button>
-  <button class="secondary" id="nowForecast">Прогноз +30 дней</button>
-  <button class="secondary" id="reset">Сбросить</button>
+<div class="card board-time-card screen-card screen-home" id="boardTimeCard">
+ <div class="section-title">TIME ON BOARD</div>
+ <div class="board-time-main" id="boardTime">0D 00:00:00</div>
+ <div class="board-time-status" id="boardTimeStatus">ON BOARD</div>
+ <div class="board-time-meta">
+  <div class="board-time-stat"><span>Contract time</span><b id="boardContractTime">0D 00:00:00</b></div>
+  <div class="board-time-stat"><span>Overtime time</span><b id="boardOvertimeTime">0D 00:00:00</b></div>
  </div>
 </div>
 
-<div class="card hero">
- <div class="kicker">Заработано с начала зарплаты</div>
+
+<div class="card hero screen-card screen-home" id="heroCard">
+ <div class="kicker">TOTAL EARNED</div>
  <div class="amount" id="usd">$0.00</div>
- <div class="live" id="liveStatus">НАЧИСЛЕНИЕ ИДЁТ</div>
+ <div class="live" id="liveStatus">EARNING RUNNING</div>
  <div class="stats">
-  <div class="stat"><span>В секунду</span><b id="sec">$0.001968</b></div>
-  <div class="stat"><span>В минуту</span><b id="min">$0.12</b></div>
-  <div class="stat"><span>В час</span><b id="hour">$7.08</b></div>
-  <div class="stat"><span>В оплач. день</span><b id="paidDay">$0.00</b></div>
+  <div class="stat"><span>Per second</span><b id="sec">$0.001968</b></div>
+  <div class="stat"><span>Per minute</span><b id="min">$0.12</b></div>
+  <div class="stat"><span>Per hour</span><b id="hour">$7.08</b></div>
+  <div class="stat"><span>Per paid day</span><b id="paidDay">$0.00</b></div>
  </div>
 </div>
 
-<div class="card">
+<div class="card today-card screen-card screen-home" id="todayCard">
+ <div class="section-title">TODAY</div>
+ <div class="today-main">
+  <div class="small">EARNED TODAY</div>
+  <div class="today-amount" id="todayEarnBig">$0.00</div>
+ </div>
+ <div class="progress" style="margin-top:14px"><div class="bar" id="todayProgressBar"></div></div>
+ <div class="progress-meta">
+  <span id="todayProgress">0%</span>
+  <span id="todayLeft">--</span>
+ </div>
+ <div class="row"><span>Paid time today</span><span id="todayPaidTime">0D 00:00:00</span></div>
+ <div class="row"><span>Travel to vessel (today)</span><span id="todayTravel">$0.00</span></div>
+ <div class="row"><span>Basic Salary</span><span id="todayBasic">$0.00</span></div>
+ <div class="row"><span>Overtime</span><span id="todayOvertime">$0.00</span></div>
+ <div class="row"><span>WOA</span><span id="todayWoa">$0.00</span></div>
+ 
+ <div class="row"><span>31st day status</span><span id="day31">Paid</span></div>
+ <div class="row"><span>Monthly calculation</span><span id="monthRule">—</span></div>
+</div>
+
+
+
+<div class="card screen-card screen-contract" id="contractMonthlyCard">
+ <div class="section-title">CONTRACT EARNINGS</div>
+ <div class="contract-month-tabs" id="contractMonthTabs"></div>
+ <div class="contract-month-label" id="contractMonthLabel">—</div>
+ <div class="contract-month-total" id="contractMonthTotal">$0.00</div>
+ <div class="contract-month-subtitle">Earned in selected month • up to current date</div>
+ <div class="row"><span>Travel to vessel</span><span id="monthTravel">$0.00</span></div>
+ <div class="row"><span>Basic Salary</span><span id="monthBasic">$0.00</span></div>
+ <div class="row"><span>Overtime</span><span id="monthOvertime">$0.00</span></div>
+ <div class="row"><span>WOA</span><span id="monthWoa">$0.00</span></div>
+ <div class="row"><span>Travel expenses reimbursed</span><span id="monthExpense">$0.00</span></div>
+ <div class="row total-earned-row"><span>Month total</span><span id="monthTotalRow">$0.00</span></div>
+ <div class="contract-month-list" id="contractMonthList"></div>
+</div>
+
+<div class="card screen-card screen-contract" id="earningsGoalCard">
+ 
+ <div class="grid">
+  <div>
+   <label>Target, USD</label>
+   <input id="earningsGoal" type="number" min="0" step="0.01" placeholder="10000">
+  </div>
+  <div class="bigbox">
+   <div class="small">Estimated target date</div>
+   <b id="earningsGoalDate">—</b>
+  </div>
+ </div>
+ <div class="progress" style="margin-top:12px"><div class="bar" id="earningsGoalBar"></div></div>
+ <div class="progress-meta"><span id="earningsGoalProgress">Set a target</span><span id="earningsGoalRemaining">Remaining: —</span></div>
+</div>
+
+<div class="card screen-card screen-contract" id="contractStatusCard">
  <div class="section-title">CONTRACT STATUS</div>
  <div class="progress"><div class="bar" id="bar"></div></div>
- <div class="progress-meta"><span id="progressText">0%</span><span id="remaining">Осталось: --</span></div>
+ <div class="progress-meta"><span id="progressText">0%</span><span id="remaining">Remaining: --</span></div>
  <div style="margin-top:10px">
-  <div class="row"><span>Период</span><span id="period">--</span></div>
-  <div class="row"><span>Фактическое списание</span><span id="signoffStatus">--</span></div>
-  <div class="row"><span>Прошло оплачиваемого времени</span><span id="elapsed">0 дн. 00:00:00</span></div>
-  <div class="row"><span>Ожидаемая зарплата за контракт</span><span id="contractTotal">$0.00</span></div>
+  <div class="row"><span>Period</span><span id="period">--</span></div>
+  <div class="row"><span>Actual sign-off</span><span id="signoffStatus">--</span></div>
+  <div class="row"><span>Contract time</span><span id="elapsed">0D 00:00:00</span></div>
+  <div class="row"><span>Expected contract salary</span><span id="contractTotal">$0.00</span></div>
  </div>
 </div>
 
-<div class="card">
+<div class="card screen-card screen-more" id="currencyCard">
  <div class="section-title">CURRENCY</div>
- <div class="ticker" aria-label="Курсы валют">
+ <div class="ticker" aria-label="Exchange rates">
   <div class="ticker-window">
    <div class="ticker-track" id="tickerTrack"></div>
   </div>
  </div>
 <div class="currency">
-  <div class="box"><div class="small">Российские рубли</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Курс ЦБ: загрузка...</div></div>
-  <div class="box"><div class="small">Евро</div><div class="value" id="eur">€0.00</div><div class="rate" id="eurRate">Курс ЦБ: загрузка...</div></div>
+  <div class="box"><div class="small">Russian rubles</div><div class="value" id="rub">₽0.00</div><div class="rate" id="rubRate">Central Bank rate: loading...</div></div>
+  <div class="box"><div class="small">Euro</div><div class="value" id="eur">€0.00</div><div class="rate" id="eurRate">Central Bank rate: loading...</div></div>
  </div>
 </div>
 
-<div class="card">
- <div class="section-title">TODAY</div>
- <div class="row"><span>Начислено сегодня</span><span id="todayEarn">$0.00</span></div>
- <div class="row"><span>Статус 31-го числа</span><span id="day31">Оплачивается</span></div>
-  <div class="row"><span>Расчёт месяца</span><span id="monthRule">—</span></div>
- <div class="row"><span>До конца сегодняшнего оплачиваемого дня</span><span id="todayLeft">--</span></div>
-</div>
-
-<div class="card overtime-card inactive" id="overtimeCard">
+<div class="card overtime-card inactive screen-card screen-contract" id="overtimeCard">
  <div class="section-title">OVERTIME</div>
- <div class="small" id="overtimeStatus">После окончания контракта</div>
+ <div class="small" id="overtimeStatus">After contract end</div>
  <div class="forecast">
-  <div class="bigbox"><div class="small">Переработано после контракта</div><b id="overtimeTime">0 дн. 00:00:00</b></div>
-  <div class="bigbox"><div class="small">Заработано после контракта</div><b id="overtimeEarn">$0.00</b></div>
+  <div class="bigbox"><div class="small">Overtime after contract</div><b id="overtimeTime">0D 00:00:00</b></div>
+  <div class="bigbox"><div class="small">Earned after contract</div><b id="overtimeEarn">$0.00</b></div>
  </div>
- <div class="row" style="margin-top:10px"><span>В день</span><span id="overtimeDay">$0.00</span></div>
- <div class="row"><span>В час</span><span id="overtimeHour">$0.00</span></div>
+ <div class="row" style="margin-top:10px"><span>Per day</span><span id="overtimeDay">$0.00</span></div>
+ <div class="row"><span>Per hour</span><span id="overtimeHour">$0.00</span></div>
 </div>
 
-<div class="card">
- <div class="section-title">TOTAL EARNED</div>
- <div class="bigbox"><div class="small">Контракт + переработка</div><b id="totalEarned">$0.00</b></div>
- <div class="row" style="margin-top:10px"><span>Контракт</span><span id="totalContract">$0.00</span></div>
- <div class="row"><span>Overtime</span><span id="totalOvertime">$0.00</span></div>
+
+<div class="card screen-card screen-woa" id="woaCard">
+ <div class="section-title">WARLIKE OPERATIONS AREA</div>
+ <div id="woaEntries"></div>
+ <div class="woa-actions">
+  <button class="secondary" type="button" id="addWoaBtn">+ Add WOA Entry</button>
+  <span class="small" id="woaCount">0 entries</span>
+ </div>
+ <div class="woa-total">
+  <div class="woa-total-row"><span>Actual WOA</span><span id="woaActualDays">0 days</span></div>
+  <div class="woa-total-row"><span>Paid WOA</span><span id="woaPaidDays">0 days</span></div>
+  <div class="woa-total-row"><strong>Basic Wage earned</strong><strong id="woaEarned">$0.00</strong></div>
+ </div>
 </div>
 
-<div class="card">
+<div class="card screen-card screen-contract" id="salaryGraphCard">
+ <div class="section-title">SALARY PROGRESS</div>
+ <div id="salaryGraph" class="salary-graph"></div>
+ <div class="chart-legend">
+  <span><i class="legend-dot"></i> Earned: Salary + Overtime + WOA</span>
+  <span id="chartEndLabel">Contract End: --</span>
+  <span id="chartSignoffLabel">Sign-off: --</span>
+ </div>
+</div>
+
+<div class="card screen-card screen-history" id="allTimeCard">
+ <div class="section-title">ALL-TIME EARNINGS</div>
+ <div class="bigbox">
+  <div class="small">All completed contracts</div>
+  <b id="allTimeTotal">$0.00</b>
+ </div>
+ <div class="row" style="margin-top:10px"><span>Contracts</span><span id="allTimeContracts">0</span></div>
+</div>
+
+<div class="card screen-card screen-history" id="historyCard">
+ <div class="section-title">CONTRACT HISTORY</div>
+ <div id="historyList"><div class="small">No completed contracts yet.</div></div>
+ <div class="history-actions">
+  <button id="testContract" class="secondary" type="button">TEST CONTRACT</button>
+  <button id="clearTestHistory" class="secondary" type="button">CLEAR TEST HISTORY</button>
+ </div>
+ <div class="row" style="margin-top:12px"><span>Total contracts</span><span id="historyCount">0</span></div>
+ <div class="row"><span>Total earned</span><span id="historyTotal">$0.00</span></div>
+ </div>
+ <div class="card screen-card screen-contract" id="forecastCard">
  <div class="section-title">FORECAST</div>
  <div class="forecast">
-  <div class="bigbox"><div class="small">Заработаю к выбранной дате</div><b id="forecastEarn">$0.00</b></div>
-  <div class="bigbox"><div class="small">Сколько осталось заработать</div><b id="forecastLeft">$0.00</b></div>
+  <div class="bigbox"><div class="small">Earned by selected date</div><b id="forecastEarn">$0.00</b></div>
+  <div class="bigbox"><div class="small">Remaining to earn</div><b id="forecastLeft">$0.00</b></div>
  </div>
 </div>
 
-<div class="card">
+<div class="card screen-card screen-more" id="sleepCard">
  <div class="section-title">SLEEP MODE 😴</div>
  <div class="grid">
-  <div><label>Лёг спать</label><input id="sleepStart" type="time" value="00:00"></div>
-  <div><label>Проснулся</label><input id="sleepEnd" type="time" value="08:00"></div>
+  <div><label>Sleep start</label><input id="sleepStart" type="time" value="00:00"></div>
+  <div><label>Wake up</label><input id="sleepEnd" type="time" value="08:00"></div>
  </div>
- <div class="row" style="margin-top:10px"><span>Пока спал, заработано</span><span id="sleepEarn">$0.00</span></div>
+ <div class="row" style="margin-top:10px"><span>Earned while asleep</span><span id="sleepEarn">$0.00</span></div>
 </div>
 
-<footer>
-Зарплата распределяется на 30 оплачиваемых суток. В месяцах с 31 днём 31-е число не начисляется.<br>
-Курсы RUB/EUR загружаются по официальным курсам ЦБ РФ. Данные сохраняются в браузере.
-</footer>
+<div class="card screen-card screen-more" id="settingsCard">
+ <div class="section-title">SETTINGS</div>
+ <div class="grid">
+  <div><label>Monthly salary, USD</label><input id="salary" type="number" min="0" step=".01" value="5100"></div>
+  <div><label>Basic Wage, USD / month</label><input id="woaBasicWage" type="number" min="0" step=".01" placeholder="0"></div>
+  <div><label>Travel expenses, USD</label><input id="travelExpenses" type="number" min="0" step=".01" placeholder="0"></div>
+  <div><label>Travel to vessel</label><input id="travelStart" type="date"></div>
+  <div><label>Pay start</label><input id="start" type="date"></div>
+  <div><label>Contract end</label><input id="end" type="date"></div>
+  <div><label>Actual sign-off</label><input id="signoff" type="date"></div>
+  <div><label>Forecast date</label><input id="forecast" type="date"></div>
+ </div>
+ <div class="buttons">
+  <button class="secondary" id="nowEnd">Set end +4 months</button>
+  <button class="secondary" id="nowForecast">Forecast +30 days</button>
+  <button class="secondary" id="reset">Reset</button>
+ </div>
+</div>
+
+<div class="screen-info screen-more"><footer>
+Salary is calculated over 30 paid days per month. Travel to vessel is paid at the Basic Wage rate and ends on Pay Start. Travel expenses are reimbursed once in the first earning month and added to earnings. In 31-day months, the 31st day is not paid, except when it falls in the first partial earning month.<br>
+USD/RUB, EUR/RUB and CNY/RUB rates are loaded from the official Central Bank of Russia. Rates refresh every 6 hours. Data is stored in the browser.
+</footer></div>
+
 </div>
 
 <script>
@@ -296,15 +847,50 @@ function getDate(id){
  return Number.isNaN(d.getTime())?null:d;
 }
 function fmtUSD(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function getTravelStart(){
+  return getDate("travelStart");
+}
+function getTravelExpenses(){
+  return Math.max(0,parseFloat($("travelExpenses")?.value)||0);
+}
+function firstEarningMonthExpense(asOf,payStart){
+  const expense=getTravelExpenses();
+  if(!expense||!asOf||!payStart)return 0;
+  const firstMonth=asOf.getFullYear()===payStart.getFullYear() &&
+                   asOf.getMonth()===payStart.getMonth();
+  return firstMonth?expense:0;
+}
+function getOnboardStart(){
+  return getDate("start");
+}
+function travelEarnedBetween(a,b,basicWage,payStart){
+  const travel=getTravelStart();
+  if(!travel||!payStart||travel>=payStart||basicWage<=0||!a||!b||b<=a)return 0;
+  const from=a<travel?travel:a;
+  const to=b>payStart?payStart:b;
+  if(to<=from)return 0;
+  return paidAmountBetween(from,to,basicWage,travel);
+}
+function travelEarnedUntil(asOf,basicWage,payStart){
+  if(!asOf)return 0;
+  return travelEarnedBetween(getTravelStart(),asOf,basicWage,payStart);
+}
+
 function fmtDuration(s){
  s=Math.max(0,Math.floor(s));let d=Math.floor(s/86400);s%=86400;
  let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;
- return `${d} дн. ${pad(h)}:${pad(m)}:${pad(s)}`;
+ return `${d}D ${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+function fmtDurationHTML(s, inline=false){
+ s=Math.max(0,Math.floor(s));let d=Math.floor(s/86400);s%=86400;
+ let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;
+ const cls=inline?'duration-inline':'duration-value';
+ return `<span class="${cls}"><span class="duration-days">${d}</span><span class="duration-unit">D</span><span class="duration-clock">${pad(h)}:${pad(m)}:${pad(s)}</span></span>`;
 }
 
-/* Зарплата считается отдельно по каждому календарному месяцу.
-   31-е число не оплачивается. Февраль оплачивается полностью за 28/29 дней,
-   поэтому месячная зарплата не уменьшается из-за короткого месяца. */
+/* Salary is calculated separately for each calendar month.
+   The 31st day is not paid. February is fully paid for 28/29 days,
+   so the monthly salary is not reduced for shorter months. */
 function payableDaysInMonth(year,month){
   const days=new Date(year,month+1,0).getDate();
   return days===31 ? 30 : days;
@@ -312,16 +898,45 @@ function payableDaysInMonth(year,month){
 function paidSecondsInMonth(year,month){
   return payableDaysInMonth(year,month)*86400;
 }
-function paidAmountBetween(a,b,salary){
+function sameMonth(a,b){
+  return a && b &&
+    a.getFullYear()===b.getFullYear() &&
+    a.getMonth()===b.getMonth();
+}
+function isPaidCalendarDay(date,payStart){
+  if(!date)return false;
+  // The first partial month is special: if pay starts after the 1st,
+  // every calendar day from Pay Start through month-end is paid,
+  // including the 31st.
+  if(payStart && sameMonth(date,payStart) && payStart.getDate()!==1){
+    return true;
+  }
+  // In later 31-day months, the 31st calendar day is unpaid.
+  return date.getDate()!==31;
+}
+function paidAmountBetween(a,b,salary,payStart){
   if(!a||!b||b<=a||salary<=0)return 0;
+  payStart = payStart || a;
   let total=0,c=new Date(a);
   while(c<b){
     const year=c.getFullYear(), month=c.getMonth();
     const next=new Date(year,month+1,1);
     const e=b<next?b:next;
-    let seconds=0;
-    if(c.getDate()!==31) seconds=(e-c)/1000;
-    total += seconds * salary / paidSecondsInMonth(year,month);
+
+    // Work day-by-day only around the 31st boundary, otherwise use the
+    // entire month segment for efficiency.
+    const segmentIsFirstPartial = sameMonth(c,payStart) && payStart.getDate()!==1;
+    if(segmentIsFirstPartial){
+      total += ((e-c)/1000) * salary / paidSecondsInMonth(year,month);
+    }else if(c.getDate()!==31){
+      const month31 = new Date(year,month,31,0,0,0,0);
+      if(month31>=e || month31<c){
+        total += ((e-c)/1000) * salary / paidSecondsInMonth(year,month);
+      }else{
+        total += Math.max(0,(month31-c)/1000) * salary / paidSecondsInMonth(year,month);
+        // The 31st itself is unpaid; nothing is added for [31st, monthEnd).
+      }
+    }
     c=e;
   }
   return Math.max(0,total);
@@ -329,14 +944,25 @@ function paidAmountBetween(a,b,salary){
 function monthlyPerSecond(year,month,salary){
   return salary/paidSecondsInMonth(year,month);
 }
-function paidBetween(a,b){
+function paidBetween(a,b,payStart){
   if(!a||!b||b<=a)return 0;
+  payStart = payStart || a;
   let total=0,c=new Date(a);
   while(c<b){
     const year=c.getFullYear(), month=c.getMonth();
     const next=new Date(year,month+1,1);
     const e=b<next?b:next;
-    if(c.getDate()!==31) total+=(e-c)/1000;
+    const segmentIsFirstPartial = sameMonth(c,payStart) && payStart.getDate()!==1;
+    if(segmentIsFirstPartial){
+      total += (e-c)/1000;
+    }else if(c.getDate()!==31){
+      const month31 = new Date(year,month,31,0,0,0,0);
+      if(month31>=e || month31<c){
+        total += (e-c)/1000;
+      }else{
+        total += Math.max(0,(month31-c)/1000);
+      }
+    }
     c=e;
   }
   return Math.max(0,total);
@@ -354,7 +980,9 @@ function initDates(){
 function save(){
  localStorage.setItem("salaryTracker",JSON.stringify({
   salary:$("salary").value,start:$("start").value,end:$("end").value,signoff:$("signoff").value,forecast:$("forecast").value,
-  sleepStart:$("sleepStart").value,sleepEnd:$("sleepEnd").value
+  sleepStart:$("sleepStart").value,sleepEnd:$("sleepEnd").value,
+  travelStart:$("travelStart").value,
+  woaBasicWage:$("woaBasicWage").value,travelExpenses:$("travelExpenses").value
  }));
 }
 function load(){
@@ -362,9 +990,9 @@ function load(){
  if(!x){initDates();return}
  try{
   x=JSON.parse(x);
-  ["salary","start","end","signoff","forecast","sleepStart","sleepEnd"].forEach(k=>{
+  ["salary","woaBasicWage","travelExpenses","travelStart","start","end","signoff","forecast","sleepStart","sleepEnd"].forEach(k=>{
    if(x[k]!=null){
-     $(k).value=(["start","end","forecast"].includes(k) && String(x[k]).includes("T"))
+     $(k).value=(["travelStart","start","end","forecast"].includes(k) && String(x[k]).includes("T"))
        ? String(x[k]).slice(0,10)
        : x[k];
    }
@@ -414,7 +1042,7 @@ async function loadRates(){
         if(code==="CNY" && Number.isFinite(value)) cny=value/nominal;
       });
 
-      if(!usd || !eur || !cny) throw new Error("USD/EUR/CNY не найдены");
+      if(!usd || !eur || !cny) throw new Error("USD/EUR/CNY not found");
 
       rates={usdRub:usd,eurRub:eur,cnyRub:cny};
       localStorage.setItem("salaryTrackerRates",JSON.stringify({...rates,updated:Date.now()}));
@@ -434,17 +1062,17 @@ async function loadRates(){
     rates={usdRub:78.4756,eurRub:89.6034,cnyRub:10.95};
   }
 
-  $("rubRate").textContent="Курс USD: ₽"+rates.usdRub.toFixed(4);
-  $("eurRate").textContent="Курс EUR: ₽"+rates.eurRub.toFixed(4);
+  $("rubRate").textContent="USD rate: ₽"+rates.usdRub.toFixed(4);
+  $("eurRate").textContent="EUR rate: ₽"+rates.eurRub.toFixed(4);
   renderTicker();
   update();
 }
-function updateOvertime(end,signoff,now,salary){
+function updateOvertime(end,signoff,now,salary,payStart){
  const card=$("overtimeCard");
  if(!end || now<=end){
   card.classList.add("inactive"); card.classList.remove("active");
-  $("overtimeStatus").textContent=end?"Переработка начнётся после окончания контракта":"Укажи конец контракта";
-  $("overtimeTime").textContent="0 дн. 00:00:00";
+  $("overtimeStatus").textContent=end?"Overtime starts after contract end":"Set contract end";
+  $("overtimeTime").textContent="0d 00:00:00";
   $("overtimeEarn").textContent="$0.00";
   $("overtimeDay").textContent="$0.00";
   $("overtimeHour").textContent="$0.00";
@@ -456,85 +1084,1017 @@ function updateOvertime(end,signoff,now,salary){
  card.classList.toggle("active",active);
  card.classList.toggle("inactive",!active);
  const seconds=Math.max(0,(effectiveNow-end)/1000);
- const earned=paidAmountBetween(end,effectiveNow,salary);
+ const earned=paidAmountBetween(end,effectiveNow,salary,payStart);
  const dayRate=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
  $("overtimeStatus").textContent=active?"CONTRACT ENDED • OVERTIME ACTIVE":"OVERTIME COMPLETED";
- $("overtimeTime").textContent=fmtDuration(seconds);
+ $("overtimeTime").innerHTML=fmtDurationHTML(seconds);
  $("overtimeEarn").textContent=fmtUSD(earned);
  $("overtimeDay").textContent=fmtUSD(dayRate);
  $("overtimeHour").textContent=fmtUSD(dayRate/24);
  return earned;
 }
+
+function getHistory(){
+ try{
+  const x=JSON.parse(localStorage.getItem("salaryTrackerHistory")||"[]");
+  return Array.isArray(x)?x:[];
+ }catch(e){return []}
+}
+function saveHistory(history){
+ localStorage.setItem("salaryTrackerHistory",JSON.stringify(history));
+}
+
+function renderAllTime(){
+ const history=getHistory();
+ const total=history.reduce((s,x)=>s+(Number(x.total)||((Number(x.contract)||0)+(Number(x.overtime)||0)+(Number(x.woa)||0))),0);
+ $("allTimeTotal").textContent=fmtUSD(total);
+ $("allTimeContracts").textContent=history.length;
+}
+
+function renderHistory(){
+ const history=getHistory();
+ renderAllTime();
+ const list=$("historyList");
+ $("historyCount").textContent=history.length;
+ const total=history.reduce((sum,x)=>sum+(Number(x.total)||0),0);
+ $("historyTotal").textContent=fmtUSD(total);
+
+ if(!history.length){
+   list.innerHTML='<div class="small">No completed contracts yet.</div>';
+   return;
+ }
+
+ list.innerHTML=history.slice().reverse().map((x,i)=>{
+   const number=history.length-i;
+   const travel=Number(x.travel)||0;
+   const basic=Number(x.basic ?? x.contractOnboard ?? (Number(x.contract)||0)-travel-(Number(x.travelExpense)||0))||0;
+   const overtime=Number(x.overtime)||0;
+   const woa=Number(x.woa)||0;
+   const expense=Number(x.travelExpense)||0;
+   const months=Array.isArray(x.months)?x.months:[];
+   return `<details class="history-item-rich">
+     <summary>
+      <div>
+       <div class="history-contract-title">Contract #${number}${x.test?" • TEST":""}</div>
+       <div class="history-contract-date">${x.start} → ${x.signoff}</div>
+      </div>
+      <div class="history-contract-total">${fmtUSD(x.total)}</div>
+     </summary>
+     <div class="history-detail">
+      <div class="history-detail-grid">
+       <div class="row"><span>Travel to vessel</span><span>${fmtUSD(travel)}</span></div>
+       <div class="row"><span>Basic Salary</span><span>${fmtUSD(basic)}</span></div>
+       <div class="row"><span>Overtime</span><span>${fmtUSD(overtime)}</span></div>
+       <div class="row"><span>WOA</span><span>${fmtUSD(woa)}</span></div>
+       <div class="row"><span>Travel expenses</span><span>${fmtUSD(expense)}</span></div>
+       <div class="row total-earned-row"><span>Contract total</span><span>${fmtUSD(x.total)}</span></div>
+      </div>
+      ${months.length?`<div class="history-month"><div class="small">MONTHLY BREAKDOWN</div>
+       ${months.map(month=>`<div class="history-month">
+        <div class="history-month-head"><span>${month.label}</span><span>${fmtUSD(month.total||0)}</span></div>
+        <div class="history-month-lines">
+         <div class="history-month-line"><span>Travel</span><span>${fmtUSD(month.travel||0)}</span></div>
+         <div class="history-month-line"><span>Basic Salary</span><span>${fmtUSD(month.basic||0)}</span></div>
+         <div class="history-month-line"><span>Overtime</span><span>${fmtUSD(month.overtime||0)}</span></div>
+         <div class="history-month-line"><span>WOA</span><span>${fmtUSD(month.woa||0)}</span></div>
+         <div class="history-month-line"><span>Travel expenses</span><span>${fmtUSD(month.expense||0)}</span></div>
+         <div class="history-month-line total"><span>Month total</span><span>${fmtUSD(month.total||0)}</span></div>
+        </div>
+       </div>`).join("")}</div>`:""}
+     </div>
+    </details>`;
+ }).join("");
+}
+function getWoaEarnedForPeriod(periodStart,periodEnd){
+ const monthly=parseFloat($("woaBasicWage")?.value)||0;
+ if(!periodStart||!periodEnd||monthly<=0||periodEnd<=periodStart)return 0;
+ const entries=getWoaEntries();
+ if(!entries.length)return 0;
+ let total=0;
+ entries.forEach(entry=>{
+  const s=woaDate(entry.start), e=woaDate(entry.end);
+  if(!s || s>=periodEnd)return;
+  if(e && e<=periodStart)return;
+
+  // Count WOA earned during this contract/sign-off period.
+  // If the WOA entry started during the period, the 5-day minimum applies.
+  const effectiveStart=s>periodStart?s:periodStart;
+  const effectiveEnd=e && e<periodEnd?e:periodEnd;
+  if(effectiveEnd<=effectiveStart)return;
+
+  const actual=calendarDaysInclusive(effectiveStart,effectiveEnd);
+  const paidCalendar=countPaidCalendarDays(effectiveStart,effectiveEnd,periodStart);
+  const paid=s>=periodStart ? Math.max(paidCalendar,WOA_MIN_DAYS) : paidCalendar;
+  total += paid*(monthly/30);
+ });
+ return Math.max(0,total);
+}
+
+function archiveCompletedContract(start,end,signoff,salary){
+ if(!start||!end||!signoff||signoff<=end||signoff>new Date())return;
+
+ const key=[start.getTime(),end.getTime(),signoff.getTime(),salary].join("|");
+ const history=getHistory();
+ if(history.some(x=>x.key===key))return;
+
+ const basicWage=parseFloat($("woaBasicWage")?.value)||0;
+ const contractOnboard=totalPaidContract(start,end,salary);
+ const travelStart=getTravelStart();
+ const travel=travelStart && travelStart<start
+   ? travelEarnedBetween(travelStart,start,basicWage,start)
+   : 0;
+ const travelExpense=getTravelExpenses();
+ const contract=contractOnboard+travel+travelExpense;
+ const overtime=paidAmountBetween(end,signoff,salary,start);
+ const woa=getWoaEarnedForPeriod(start,signoff);
+ const total=contract+overtime+woa;
+
+ const months=typeof buildContractMonths==="function"
+   ? buildContractMonths(signoff,start,end,signoff,travelStart,salary,basicWage,travelExpense)
+   : [];
+
+ history.push({
+   key,
+   start:start.toLocaleDateString("en-US"),
+   end:end.toLocaleDateString("en-US"),
+   signoff:signoff.toLocaleDateString("en-US"),
+   salary,
+   basic:contractOnboard,
+   travel,
+   travelExpense,
+   contract,
+   overtime,
+   woa,
+   overtimeTime:fmtDuration((signoff-end)/1000),
+   months,
+   total
+ });
+ saveHistory(history);
+ renderHistory();
+}
+
+
+function createTestContract(){
+ const salary=5100;
+ const start=new Date(2026,0,1,0,0,0);
+ const end=new Date(2026,0,10,0,0,0);
+ const signoff=new Date(2026,0,12,0,0,0);
+ const key=["TEST",start.getTime(),end.getTime(),signoff.getTime(),salary].join("|");
+ const history=getHistory();
+ if(history.some(x=>x.key===key)){renderHistory();return;}
+ const contract=totalPaidContract(start,end,salary);
+ const overtime=paidAmountBetween(end,signoff,salary,start);
+ const months=typeof buildContractMonths==="function"
+   ? buildContractMonths(signoff,start,end,signoff,null,salary,0,0):[];
+ history.push({
+   key,test:true,start:start.toLocaleDateString("en-US"),
+   end:end.toLocaleDateString("en-US"),
+   signoff:signoff.toLocaleDateString("en-US"),
+   salary,basic:contract,travel:0,travelExpense:0,contract,
+   overtime,woa:0,overtimeTime:fmtDuration((signoff-end)/1000),
+   months,total:contract+overtime
+ });
+ saveHistory(history);
+ renderHistory();
+}
+
+
+function clearTestHistory(){
+ const history=getHistory().filter(x=>!x.test);
+ saveHistory(history);
+ renderHistory();
+}
+
+
+
+
+
+/* ---------- WOA / Warlike Operations Area ---------- */
+const WOA_MIN_DAYS=5;
+const WOA_STORAGE_KEY="salaryTrackerWoaEntries";
+const WOA_WAGE_KEY="salaryTrackerWoaBasicWage";
+
+function getWoaEntries(){
+ try{
+  const raw=localStorage.getItem(WOA_STORAGE_KEY);
+  const arr=raw?JSON.parse(raw):[];
+  return Array.isArray(arr)?arr:[];
+ }catch(e){return []}
+}
+function saveWoaEntries(entries){localStorage.setItem(WOA_STORAGE_KEY,JSON.stringify(entries))}
+function woaDate(v){
+ if(!v)return null;
+ const d=new Date(v+"T00:00:00");
+ return isNaN(d.getTime())?null:d;
+}
+function calendarDaysInclusive(start,end){
+ if(!start||!end||end<start)return 0;
+ const a=new Date(start.getFullYear(),start.getMonth(),start.getDate());
+ const b=new Date(end.getFullYear(),end.getMonth(),end.getDate());
+ return Math.floor((b-a)/86400000)+1;
+}
+function countPaidCalendarDays(start,end,payStart){
+ if(!start||!end||end<start)return 0;
+ let d=new Date(start.getFullYear(),start.getMonth(),start.getDate());
+ const last=new Date(end.getFullYear(),end.getMonth(),end.getDate());
+ let count=0;
+ while(d<=last){
+   if(isPaidCalendarDay(d,payStart))count++;
+   d.setDate(d.getDate()+1);
+ }
+ return count;
+}
+function woaActualDays(start,end){
+ return calendarDaysInclusive(start,end);
+}
+function calcWoaEntry(entry,monthly,asOf){
+ const s=woaDate(entry.start);
+ if(!s||monthly<=0)return {actual:0,paid:0,earned:0};
+
+ const e=woaDate(entry.end);
+ const now=asOf instanceof Date ? asOf : new Date();
+ const payStart=getDate("start");
+
+ if(!e){
+  if(now < s)return {actual:0,paid:0,earned:0};
+  const endDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const actual=calendarDaysInclusive(s,endDay);
+  const paid=Math.max(countPaidCalendarDays(s,endDay,payStart),WOA_MIN_DAYS);
+  return {actual,paid,earned:paid*(monthly/30)};
+ }
+
+ if(e<s)return {actual:0,paid:0,earned:0};
+
+ const actual=woaActualDays(s,e);
+ const paid=Math.max(countPaidCalendarDays(s,e,payStart),WOA_MIN_DAYS);
+ return {actual,paid,earned:paid*(monthly/30)};
+}
+function validateWoaEntries(entries){
+ const v=entries.map((x,i)=>({i,s:woaDate(x.start),e:woaDate(x.end)}))
+  .filter(x=>x.s&&x.e&&x.e>=x.s).sort((a,b)=>a.s-b.s);
+ for(let i=1;i<v.length;i++){
+  if(v[i].s<v[i-1].e)return {ok:false,a:v[i-1].i+1,b:v[i].i+1};
+ }
+ return {ok:true};
+}
+function getWoaEarned(asOf){
+ const entries=getWoaEntries();
+ const monthly=parseFloat($("woaBasicWage")?.value)||0;
+ if(monthly<=0 || !validateWoaEntries(entries).ok)return 0;
+
+ const d=asOf instanceof Date ? asOf : new Date();
+ const payStart=getDate("start");
+ const day=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+ let total=0;
+ const daily=monthly/30;
+
+ entries.forEach(entry=>{
+  const s=woaDate(entry.start);
+  const e=woaDate(entry.end);
+  if(!s || day<s)return;
+
+  const effectiveEnd = e && day>e ? e : day;
+  if(effectiveEnd<s)return;
+
+  const paidDays=countPaidCalendarDays(s,effectiveEnd,payStart);
+  total += Math.max(paidDays,WOA_MIN_DAYS)*daily;
+ });
+
+ return Math.max(0,total);
+}
+function formatWoaDays(v){
+ // WOA uses inclusive calendar days for completed entries:
+ // 0.1..1.0 => 1 day, 1.01..2.0 => 2 days, etc.
+ const n = Number(v) || 0;
+ const days = n > 0 ? Math.ceil(n - 1e-9) : 0;
+ const word = days === 1 ? "day" : "days";
+ return `${days} ${word}`;
+}
+function renderWoa(){
+ const c=$("woaEntries"); if(!c)return;
+ const entries=getWoaEntries(),monthly=parseFloat($("woaBasicWage")?.value)||0;
+ c.innerHTML="";
+ let actual=0,paid=0,earned=0;
+ entries.forEach((entry,i)=>{
+  const x=calcWoaEntry(entry,monthly,new Date());
+  actual+=x.actual;paid+=x.paid;earned+=x.earned;
+  const el=document.createElement("div");
+  el.className="woa-entry";
+  el.innerHTML=`
+   <div class="woa-entry-head">
+    <span class="woa-entry-title">WOA #${i+1}</span>
+    <button class="woa-remove" type="button" data-woa-remove="${i}">×</button>
+   </div>
+   <div class="woa-grid">
+    <div class="field"><label class="woa-date-label">Start</label><input type="date" data-woa-start="${i}" value="${entry.start||""}"></div>
+    <div class="field"><label class="woa-date-label">End</label><input type="date" data-woa-end="${i}" value="${entry.end||""}"></div>
+   </div>
+   <div class="woa-meta">
+    <div class="woa-stat"><div class="woa-stat-label">Actual</div><div class="woa-stat-value">${formatWoaDays(x.actual)}</div></div>
+    <div class="woa-stat"><div class="woa-stat-label">Paid</div><div class="woa-stat-value">${formatWoaDays(x.paid)}</div></div>
+   </div>
+   <div class="small" style="margin-top:8px">Basic Wage: $${x.earned.toFixed(2)}</div>`;
+  c.appendChild(el);
+ });
+ $("woaCount").textContent=`${entries.length} ${entries.length===1?"entry":"entries"}`;
+ $("woaActualDays").textContent=`${formatWoaDays(actual)}`;
+ $("woaPaidDays").textContent=`${formatWoaDays(paid)}`;
+ $("woaEarned").textContent=fmtUSD(earned);
+ let w=$("woaOverlapWarning");
+ if(!w){
+  w=document.createElement("div");w.id="woaOverlapWarning";w.className="small";
+  w.style.marginTop="8px";c.parentElement.appendChild(w);
+ }
+ const check=validateWoaEntries(entries);
+ w.textContent=check.ok?"":"⚠️ WOA entries #"+check.a+" and #"+check.b+" overlap. Fix the dates to avoid double payment.";
+ w.style.color=check.ok?"":"#e6a45b";
+}
+
+// Recalculate WOA visible day totals as time advances.
+function refreshWoaStats(){
+ const container=$("woaEntries");
+ if(!container)return;
+ const entries=getWoaEntries();
+ const monthly=parseFloat($("woaBasicWage")?.value)||0;
+ let actual=0,paid=0,earned=0;
+
+ entries.forEach((entry,i)=>{
+  const x=calcWoaEntry(entry,monthly,new Date());
+  actual+=x.actual; paid+=x.paid; earned+=x.earned;
+  const row=container.querySelector(`.woa-entry:nth-child(${i+1})`);
+  if(!row)return;
+  const stats=row.querySelectorAll(".woa-stat-value");
+  if(stats[0])stats[0].textContent=`${formatWoaDays(x.actual)}`;
+  if(stats[1])stats[1].textContent=`${formatWoaDays(x.paid)}`;
+  const small=row.querySelector(".small");
+  if(small)small.textContent=`Basic Wage: $${x.earned.toFixed(2)}`;
+ });
+
+ if($("woaCount"))$("woaCount").textContent=`${entries.length} ${entries.length===1?"entry":"entries"}`;
+ if($("woaActualDays"))$("woaActualDays").textContent=`${formatWoaDays(actual)}`;
+ if($("woaPaidDays"))$("woaPaidDays").textContent=`${formatWoaDays(paid)}`;
+ if($("woaEarned"))$("woaEarned").textContent=fmtUSD(earned);
+
+ const warning=$("woaOverlapWarning");
+ if(warning){
+  const check=validateWoaEntries(entries);
+  warning.textContent=check.ok?"":"⚠️ WOA entries #"+check.a+" and #"+check.b+" overlap. Fix the dates to avoid double payment.";
+  warning.style.color=check.ok?"":"#e6a45b";
+ }
+}
+function initWoa(){
+ const wage=$("woaBasicWage");
+ if(wage){
+  const savedSettings=JSON.parse(localStorage.getItem("salaryTracker")||"null");
+  const savedLegacy=localStorage.getItem(WOA_WAGE_KEY);
+  if(savedSettings && savedSettings.woaBasicWage!=null){
+    wage.value=savedSettings.woaBasicWage;
+  }else if(savedLegacy!==null){
+    wage.value=savedLegacy;
+  }
+  wage.addEventListener("input",()=>{
+   localStorage.setItem(WOA_WAGE_KEY,wage.value);
+   try{save()}catch(e){}
+   renderWoa();
+   try{update()}catch(e){}
+  });
+ }
+ const add=$("addWoaBtn");
+ if(add)add.addEventListener("click",()=>{
+  const a=getWoaEntries();a.push({start:"",end:""});saveWoaEntries(a);renderWoa();
+ });
+ const c=$("woaEntries");
+ if(c){
+  c.addEventListener("change",ev=>{
+   const t=ev.target,si=t.getAttribute("data-woa-start"),ei=t.getAttribute("data-woa-end");
+   if(si===null&&ei===null)return;
+   const a=getWoaEntries(),i=si!==null?Number(si):Number(ei);
+   if(!a[i])return;
+   if(si!==null)a[i].start=t.value;if(ei!==null)a[i].end=t.value;
+   const check=validateWoaEntries(a);
+   if(!check.ok){alert("WOA periods cannot overlap. Please correct the dates.");}
+   saveWoaEntries(a);refreshWoaStats();try{update()}catch(e){}
+  });
+  c.addEventListener("click",ev=>{
+   const b=ev.target.closest("[data-woa-remove]");if(!b)return;
+   const a=getWoaEntries();a.splice(Number(b.getAttribute("data-woa-remove")),1);
+   saveWoaEntries(a);renderWoa();try{update()}catch(e){}
+  });
+ }
+ renderWoa();
+}
+
+function woaEarnedAtDate(date, monthly){
+ if(!date || !monthly || monthly<=0) return 0;
+
+ const entries=getWoaEntries();
+ let total=0;
+
+ entries.forEach(entry=>{
+  const s=woaDate(entry.start), e=woaDate(entry.end);
+  if(!s || !e || e<s) return;
+
+  // Nothing is earned before entering the WOA.
+  if(date<=s) return;
+
+  // WOA completed: apply the minimum 5 paid days.
+  if(date>=e){
+   total += WOA_MIN_DAYS*(monthly/30);
+   return;
+  }
+
+  // WOA is still in progress: accrue only actual elapsed days.
+  const actual=(date-s)/86400000;
+  if(actual>0) total += actual*(monthly/30);
+ });
+
+ return total;
+}
+
+
+function earnedAtDate(date,start,end,signoff,now,salary){
+ if(!date || !start || !salary) return 0;
+
+ const actualLimit = signoff && signoff < now ? signoff : now;
+ const d = date > actualLimit ? actualLimit : date;
+
+ const regular = paidAmountBetween(start,d,salary,start);
+ const woa = getWoaEarned(d);
+
+ return Math.max(0,regular + woa);
+}
+
+
+function graphEarnedAtDate(date,start,end,signoff,now,salary){
+ // Keep graph values identical to Earnings Breakdown: Basic + Overtime + WOA.
+ return earningsAtDate(date,start,end,signoff,now,salary).total;
+}
+
+function renderSalaryGraph(start,end,signoff,now,salary,currentEarned){
+ const box=document.getElementById("salaryGraph");
+ if(!box) return;
+
+ if(!start || !end || !salary){
+  box.innerHTML='<div class="small" style="padding:12px">Set contract dates and salary</div>';
+  return;
+ }
+
+ // The graph is strictly cumulative: it shows only money earned up to
+ // each moment. A future contract end is never plotted as earned money.
+ const actualEnd = (signoff && signoff < now) ? signoff : now;
+ const first=start.getTime();
+ const last=Math.max(first,actualEnd.getTime());
+ const day=86400000;
+ const points=[];
+
+ // Use daily points plus exact contract/WOA event points.
+ const times=new Set([first,last]);
+ for(let t=first;t<=last;t+=day) times.add(t);
+ if(end.getTime()>=first && end.getTime()<=last) times.add(end.getTime());
+ getWoaEntries().forEach(entry=>{
+  const ws=woaDate(entry.start), we=woaDate(entry.end);
+  if(ws && ws.getTime()>=first && ws.getTime()<=last) times.add(ws.getTime());
+  if(we && we.getTime()>=first && we.getTime()<=last) times.add(we.getTime());
+ });
+ [...times].sort((a,b)=>a-b).forEach(t=>{
+  const d=new Date(t);
+  points.push([t,graphEarnedAtDate(d,start,end,signoff,now,salary)]);
+ });
+
+ // All points come from the same earnedAtDate() calculation as the main total.
+ // The final point is therefore the same number, without a second graph-only formula.
+ const finalEarned=Math.max(0,Number(currentEarned)||0);
+ points[points.length-1][1]=finalEarned;
+
+ const w=Math.max(280,box.clientWidth||320);
+ const h=220,L=44,R=10,T=12,B=30;
+ const span=Math.max(1,last-first);
+ const pw=w-L-R,ph=h-T-B;
+ const max=Math.max(1,...points.map(p=>p[1]));
+ const yMax=Math.max(100,Math.ceil(max/100)*100);
+
+ const X=t=>L+((t-first)/span)*pw;
+ const Y=v=>T+ph-(v/yMax)*ph;
+ const ns="http://www.w3.org/2000/svg";
+
+ let s=`<svg viewBox="0 0 ${w} ${h}" xmlns="${ns}" aria-label="Salary progress">`;
+
+ for(let i=0;i<=4;i++){
+  const y=T+ph*i/4;
+  const value=yMax*(1-i/4);
+  const compact=value>=1000
+    ? "$"+(value/1000).toFixed(value%1000===0?0:1)+"k"
+    : "$"+Math.round(value);
+  s+=`<line x1="${L}" y1="${y}" x2="${w-R}" y2="${y}" stroke="#202a30"/>`;
+  s+=`<text x="3" y="${y+4}" fill="#7f8a92" font-size="10">${compact}</text>`;
+ }
+
+ if(end.getTime()<=last){
+  const endX=X(end.getTime());
+  s+=`<line x1="${endX}" y1="${T}" x2="${endX}" y2="${T+ph}" stroke="#65727a" stroke-dasharray="4 4"/>`;
+ }
+
+ let path="";
+ points.forEach((p,i)=>{
+  const px=X(p[0]),py=Y(p[1]);
+  if(i===0) path=`M ${px} ${py}`;
+  else{
+   const prevY=Y(points[i-1][1]);
+   path+=` L ${px} ${prevY} L ${px} ${py}`;
+  }
+ });
+ s+=`<path d="${path}" fill="none" stroke="#65d18a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+ const current=points[points.length-1];
+ if(current){
+  s+=`<circle cx="${X(current[0])}" cy="${Y(current[1])}" r="4" fill="#0b1013" stroke="#65d18a" stroke-width="2"/>`;
+ }
+
+ const labels=[[start,"Start"]];
+ if(end.getTime()<=last) labels.push([end,"Contract End"]);
+ labels.push([actualEnd,"Today"]);
+ labels.forEach(([d,label])=>{
+  const p=points.find(x=>x[0]===d.getTime());
+  if(!p)return;
+  s+=`<text x="${X(p[0])}" y="${h-8}" fill="#7f8a92" font-size="10" text-anchor="middle">${label}</text>`;
+ });
+
+ s+="</svg>";
+ box.innerHTML=s;
+
+ if($("chartEndLabel")){
+  $("chartEndLabel").textContent=
+   "Contract End: "+end.toLocaleDateString("en-US")+
+   (end>now?" (future)":"");
+ }
+ if($("chartSignoffLabel")){
+  $("chartSignoffLabel").textContent=
+   "Actual: "+actualEnd.toLocaleDateString("en-US");
+ }
+}
+
+
+
+function updateBoardTime(start,end,signoff,now){
+ const boardEnd=(signoff && signoff<=now)?signoff:now;
+ const totalSeconds=start && boardEnd>start ? (boardEnd-start)/1000 : 0;
+ const contractEnd=end ? new Date(Math.min(boardEnd.getTime(),end.getTime())) : boardEnd;
+ const contractSeconds=start && contractEnd>start ? (contractEnd-start)/1000 : 0;
+ const overtimeSeconds=end && boardEnd>end ? (boardEnd-end)/1000 : 0;
+
+ $("boardTime").innerHTML=fmtDurationHTML(totalSeconds);
+ $("boardContractTime").innerHTML=fmtDurationHTML(contractSeconds);
+ $("boardOvertimeTime").innerHTML=fmtDurationHTML(overtimeSeconds);
+
+ if(signoff && signoff<=now){
+   $("boardTimeStatus").textContent="SIGNED OFF • TIME ON BOARD COMPLETE";
+   $("boardTimeStatus").style.color="var(--muted)";
+ }else if(start){
+   $("boardTimeStatus").textContent="ON BOARD • TIME RUNNING";
+   $("boardTimeStatus").style.color="var(--green)";
+ }else{
+   $("boardTimeStatus").textContent="ENTER START DATE";
+   $("boardTimeStatus").style.color="var(--muted)";
+ }
+}
+
+function earningsAtDate(asOf,start,end,signoff,now,salary){
+ const limit=(signoff && signoff<now)?signoff:now;
+ const d=asOf>limit?limit:asOf;
+ const basicWage=parseFloat($("woaBasicWage")?.value)||0;
+ if(!d || salary<=0) return {travel:0,basic:0,overtime:0,woa:0,expense:0,total:0};
+
+ const travel=travelEarnedUntil(d,basicWage,start);
+ const basicEnd=end ? new Date(Math.min(d.getTime(),end.getTime())) : d;
+ const basic=start && basicEnd>start ? paidAmountBetween(start,basicEnd,salary,start) : 0;
+ const overtime=(end && d>end) ? paidAmountBetween(end,d,salary,start) : 0;
+ const woa=Math.max(0,getWoaEarned(d));
+
+ const expense=(start && d>=start) ? getTravelExpenses() : 0;
+ return {travel,basic,overtime,woa,expense,total:Math.max(0,travel+basic+overtime+woa+expense)};
+}
+
+
+
+function updateEarningsGoal(currentEarned, salary, now){
+ const target=Math.max(0,parseFloat($("earningsGoal").value)||0);
+ const bar=$("earningsGoalBar"), progress=$("earningsGoalProgress"), remaining=$("earningsGoalRemaining"), dateEl=$("earningsGoalDate");
+ if(!target){
+  bar.style.width="0%";
+  progress.textContent="Set a target";
+  remaining.textContent="Remaining: —";
+  dateEl.textContent="—";
+  return;
+ }
+ const earned=Math.max(0,Number(currentEarned)||0);
+ const pct=Math.min(100,(earned/target)*100);
+ bar.style.width=pct+"%";
+ progress.textContent=pct.toFixed(1)+"%";
+ const left=Math.max(0,target-earned);
+ if(left<=0){
+  remaining.textContent="Goal reached";
+  dateEl.textContent="Reached";
+  return;
+ }
+ remaining.textContent="Remaining: "+fmtUSD(left);
+
+ // Estimate from the current base earning rate. If the contract has ended,
+ // the existing overtime rate is used by the normal tracker separately; the
+ // goal estimate remains a simple forward projection from the current salary rate.
+ const perSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),salary);
+ if(perSec<=0){ dateEl.textContent="—"; return; }
+ const seconds=left/perSec;
+ const eta=new Date(now.getTime()+seconds*1000);
+ dateEl.textContent=eta.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+}
+
+
+function monthStartDate(d){
+  return new Date(d.getFullYear(),d.getMonth(),1);
+}
+function monthEndExclusive(d){
+  return new Date(d.getFullYear(),d.getMonth()+1,1);
+}
+function monthKey(d){
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+}
+function monthLabel(d){
+  return d.toLocaleDateString("en-US",{month:"short",year:"numeric"});
+}
+function maxDate(a,b){ return new Date(Math.max(a.getTime(),b.getTime())); }
+function minDate(a,b){ return new Date(Math.min(a.getTime(),b.getTime())); }
+
+function woaEarnedForMonth(monthStart,monthEnd,contractStart,reportEnd,monthlyWage){
+  if(monthlyWage<=0)return 0;
+  const entries=getWoaEntries();
+  if(!entries.length)return 0;
+  const daily=monthlyWage/30;
+  let total=0;
+
+  entries.forEach(entry=>{
+    const s=woaDate(entry.start);
+    if(!s || s>reportEnd)return;
+    const entryEnd=woaDate(entry.end);
+    let e=entryEnd && entryEnd<reportEnd ? entryEnd : reportEnd;
+    if(e<monthStart || s>=monthEnd)return;
+
+    // WOA minimum is allocated to the month in which the WOA starts.
+    const overlapStart=maxDate(s,monthStart);
+    const overlapEnd=new Date(Math.min(e.getTime(),new Date(monthEnd.getTime()-1).getTime()));
+    if(overlapEnd<overlapStart)return;
+
+    const actualWhole=calendarDaysInclusive(s,e);
+    const paidWhole=countPaidCalendarDays(s,e,contractStart);
+    const minCredit = Math.max(paidWhole,WOA_MIN_DAYS);
+
+    if(monthKey(s)===monthKey(monthStart)){
+      const monthPaid=countPaidCalendarDays(overlapStart,overlapEnd,contractStart);
+      // The 5-day minimum is credited in the WOA start month.
+      const monthCredit=Math.max(monthPaid,WOA_MIN_DAYS);
+      total += monthCredit*daily;
+    }else{
+      const monthPaid=countPaidCalendarDays(overlapStart,overlapEnd,contractStart);
+      total += monthPaid*daily;
+    }
+  });
+  return total;
+}
+
+function getContractReportEnd(now,end,signoff){
+  if(signoff && signoff<=now)return signoff;
+  return now;
+}
+
+function buildContractMonths(now,start,end,signoff,travelStart,salary,basicWage,travelExpense){
+ if(!start || !salary)return [];
+
+ const reportEnd=getContractReportEnd(now,end,signoff);
+ const reportStart=(travelStart && travelStart<start)?travelStart:start;
+ if(reportEnd<reportStart)return [];
+
+ const first=monthStartDate(reportStart);
+ const last=monthStartDate(reportEnd);
+ const months=[];
+
+ for(let cursor=new Date(first); cursor<=last; cursor.setMonth(cursor.getMonth()+1)){
+   const ms=new Date(cursor);
+   const me=monthEndExclusive(ms);
+
+   // Travel is a one-time pre-boarding period. It is shown only in the
+   // calendar month containing the Travel to vessel date.
+   const isTravelMonth=travelStart &&
+     ms.getFullYear()===travelStart.getFullYear() &&
+     ms.getMonth()===travelStart.getMonth();
+
+   const travelFrom=isTravelMonth ? travelStart : null;
+   const travelTo=isTravelMonth ? minDate(me,start) : null;
+   const travelEnd=(travelTo && travelTo<=reportEnd)?travelTo:(
+     travelTo ? reportEnd : null
+   );
+   const travel=(travelFrom && travelEnd && travelEnd>travelFrom)
+     ? paidAmountBetween(travelFrom,travelEnd,basicWage,travelStart)
+     : 0;
+
+   const basicFrom=maxDate(ms,start);
+   const basicMonthEnd=end ? minDate(me,end) : me;
+   const basicTo=minDate(basicMonthEnd,reportEnd);
+   const basic=(basicTo>basicFrom)
+     ? paidAmountBetween(basicFrom,basicTo,salary,start)
+     : 0;
+
+   const otFrom=end ? maxDate(ms,end) : null;
+   const otMonthEnd=end ? minDate(me,reportEnd) : null;
+   const overtime=(otFrom && otMonthEnd && otMonthEnd>otFrom)
+     ? paidAmountBetween(otFrom,otMonthEnd,salary,start)
+     : 0;
+
+   const woa=woaEarnedForMonth(ms,me,start,reportEnd,basicWage);
+
+   // Travel expenses are reimbursed once, in the first contract month.
+   const isFirstMonth=ms.getFullYear()===start.getFullYear() &&
+                      ms.getMonth()===start.getMonth();
+   const expense=(isFirstMonth && reportEnd>=start)?travelExpense:0;
+
+   const total=travel+basic+overtime+woa+expense;
+   months.push({
+     key:monthKey(ms), label:monthLabel(ms),
+     travel,basic,overtime,woa,expense,total
+   });
+ }
+ return months;
+}
+
+let contractMonthSelectedKey=null;
+function renderContractMonths(now,start,end,signoff,travelStart,salary,basicWage,travelExpense){
+  const tabs=$("contractMonthTabs");
+  const list=$("contractMonthList");
+  if(!tabs || !list)return;
+
+  const months=buildContractMonths(now,start,end,signoff,travelStart,salary,basicWage,travelExpense);
+  tabs.innerHTML="";
+  list.innerHTML="";
+
+  if(!months.length){
+    $("contractMonthLabel").textContent="No contract data";
+    $("contractMonthTotal").textContent="$0.00";
+    $("monthTravel").textContent="$0.00";
+    $("monthBasic").textContent="$0.00";
+    $("monthOvertime").textContent="$0.00";
+    $("monthWoa").textContent="$0.00";
+    $("monthExpense").textContent="$0.00";
+    $("monthTotalRow").textContent="$0.00";
+    return;
+  }
+
+  if(!contractMonthSelectedKey || !months.some(m=>m.key===contractMonthSelectedKey)){
+    contractMonthSelectedKey=months[months.length-1].key;
+  }
+
+  months.forEach(month=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="contract-month-tab"+(month.key===contractMonthSelectedKey?" active":"");
+    b.textContent=month.label;
+    b.addEventListener("click",()=>{
+      contractMonthSelectedKey=month.key;
+      renderContractMonths(now,start,end,signoff,travelStart,salary,basicWage,travelExpense);
+    });
+    tabs.appendChild(b);
+
+    const row=document.createElement("div");
+    row.className="contract-month-summary";
+    row.innerHTML=`<span>${month.label}</span><span>${fmtUSD(month.total)}</span>`;
+    list.appendChild(row);
+  });
+
+  const selected=months.find(m=>m.key===contractMonthSelectedKey) || months[months.length-1];
+  $("contractMonthLabel").textContent=selected.label;
+  $("contractMonthTotal").textContent=fmtUSD(selected.total);
+  $("monthTravel").textContent=fmtUSD(selected.travel);
+  $("monthBasic").textContent=fmtUSD(selected.basic);
+  $("monthOvertime").textContent=fmtUSD(selected.overtime);
+  $("monthWoa").textContent=fmtUSD(selected.woa);
+  $("monthExpense").textContent=fmtUSD(selected.expense);
+  $("monthTotalRow").textContent=fmtUSD(selected.total);
+}
+
 function update(){
- let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), end=getDate("end"), signoff=getDate("signoff"), now=new Date();
- let currentPerSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),salary);
- let currentPaidDay=salary/payableDaysInMonth(now.getFullYear(),now.getMonth());
- let earned=paidAmountBetween(start,now,salary);
- let overtimeEarned=updateOvertime(end,signoff,now,salary);
+ let salary=Math.max(0,parseFloat($("salary").value)||0), start=getDate("start"), travelStart=getDate("travelStart"), end=getDate("end"), signoff=getDate("signoff"), now=new Date();
+ const basicWageNow=parseFloat($("woaBasicWage")?.value)||0;
+ const travelActive=travelStart && start && now>=travelStart && now<start;
+ const currentRate=travelActive ? basicWageNow : salary;
+ let currentPerSec=monthlyPerSecond(now.getFullYear(),now.getMonth(),currentRate);
+ let currentPaidDay=currentRate/payableDaysInMonth(now.getFullYear(),now.getMonth());
+ updateBoardTime(start,end,signoff,now);
+
+ let earnings=earningsAtDate(now,start,end,signoff,now,salary);
+ let overtimeEarned=updateOvertime(end,signoff,now,salary,start);
+ archiveCompletedContract(start,end,signoff,salary);
+
+ renderContractMonths(now,start,end,signoff,travelStart,salary,basicWageNow,getTravelExpenses());
+
+ // The large headline and the breakdown use exactly the same components.
+ const earned=earnings.total;
+ updateEarningsGoal(earned,salary,now);
  $("usd").textContent=fmtUSD(earned);
  $("paidDay").textContent=fmtUSD(currentPaidDay);
-$("sec").textContent=fmtUSD(currentPerSec);
-$("min").textContent=fmtUSD(currentPerSec*60);
-$("hour").textContent=fmtUSD(currentPerSec*3600);
+ $("sec").textContent=fmtUSD(currentPerSec);
+ $("min").textContent=fmtUSD(currentPerSec*60);
+ $("hour").textContent=fmtUSD(currentPerSec*3600);
  $("rub").textContent=rates.usdRub?"₽"+(earned*rates.usdRub).toLocaleString("ru-RU",{minimumFractionDigits:2,maximumFractionDigits:2}):"₽—";
  $("eur").textContent=rates.usdRub&&rates.eurRub?"€"+(earned*rates.usdRub/rates.eurRub).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}):"€—";
 
  if(start){
-  $("elapsed").textContent=fmtDuration(paidBetween(start,now));
-  $("period").textContent=start.toLocaleDateString("ru-RU")+" → "+(end?end.toLocaleDateString("ru-RU"):"—");
-  $("signoffStatus").textContent=signoff?signoff.toLocaleDateString("ru-RU"):"Не указано";
+  // Contract time is actual elapsed time inside the contract period.
+  // It must stop at Contract End (or earlier sign-off), unlike overtime.
+  const contractTimeEnd = end
+    ? new Date(Math.min(now.getTime(), end.getTime(), signoff ? signoff.getTime() : Infinity))
+    : (signoff ? new Date(Math.min(now.getTime(), signoff.getTime())) : now);
+  $("elapsed").innerHTML=fmtDurationHTML(start && contractTimeEnd>start ? (contractTimeEnd-start)/1000 : 0);
+  $("period").textContent=start.toLocaleDateString("en-US")+" → "+(end?end.toLocaleDateString("en-US"):"—");
+  $("signoffStatus").textContent=signoff?signoff.toLocaleDateString("en-US"):"Not specified";
  }
  if(end&&start){
   let all=(end-start)/1000, done=Math.max(0,Math.min(all,(now-start)/1000));
   let pct=all>0?done/all*100:0;
   $("bar").style.width=Math.min(100,pct)+"%";
   $("progressText").textContent=pct.toFixed(1)+"%";
-  $("remaining").textContent=now<end?"Осталось: "+fmtDuration((end-now)/1000):"Контракт завершён";
-  $("contractTotal").textContent=fmtUSD(totalPaidContract(start,end,salary));
+  $("remaining").innerHTML=now<end?"Remaining: "+fmtDurationHTML((end-now)/1000,true):"Contract completed";
+  {
+    const bw=parseFloat($("woaBasicWage")?.value)||0;
+    const travelPart=travelStart&&start&&travelStart<start ? travelEarnedBetween(travelStart,start,bw,start) : 0;
+    const onboardPart=end?totalPaidContract(start,end,salary):0;
+    const travelExpense=getTravelExpenses();
+    $("contractTotal").textContent=fmtUSD(Math.max(0,travelPart+onboardPart+travelExpense));
+  }
  }
- $("totalContract").textContent=fmtUSD(start&&end?totalPaidContract(start,end,salary):0);
- $("totalOvertime").textContent=fmtUSD(overtimeEarned);
- $("totalEarned").textContent=fmtUSD((start&&end?totalPaidContract(start,end,salary):0)+overtimeEarned);
- let is31=now.getDate()===31;
- $("day31").textContent=is31?"⏸ 31-е число не оплачивается":"✓ Оплачивается";
- $("day31").className=is31?"paused":"";
+ const is31=now.getDate()===31;
+ const paid31=is31 ? isPaidCalendarDay(now,start) : true;
+ $("day31").textContent=is31 ? (paid31 ? "✓ The 31st day is paid" : "⏸ The 31st day is not paid") : "✓ Paid";
+ $("day31").className=(is31 && !paid31)?"paused":"";
  const monthDays=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
- $("monthRule").textContent =
-   monthDays===28 ? "28 оплачиваемых дней" :
-   monthDays===29 ? "29 оплачиваемых дней" :
-   monthDays===31 ? "30 оплачиваемых дней (31-е не оплачивается)" :
-   "30 оплачиваемых дней";
+ const currentMonthIsFirstPartial=!!(start &&
+   start.getFullYear()===now.getFullYear() &&
+   start.getMonth()===now.getMonth() &&
+   start.getDate()!==1);
+ $("monthRule").textContent = monthDays===31
+   ? (currentMonthIsFirstPartial ? "31 paid days (first partial month)" : "30 paid days (31st day not paid)")
+   : monthDays===28 ? "28 paid days" : monthDays===29 ? "29 paid days" : "30 paid days";
+ // Today earnings are broken down using the same components as Total Earned.
  let dayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
- let today=paidAmountBetween(dayStart,now,salary);
- $("todayEarn").textContent=fmtUSD(today);
+ let paidSecondsToday=paidBetween(dayStart,now,start);
+ let onboardBasicToday=0;
+ if(start && now>dayStart){
+   const onboardFrom=dayStart>start?dayStart:start;
+   if(now>onboardFrom) onboardBasicToday=paidAmountBetween(onboardFrom,now,salary,start);
+ }
+ const basicWageToday=parseFloat($("woaBasicWage")?.value)||0;
+ let travelToday=0;
+ if(travelStart && start && dayStart>=travelStart && dayStart<start && now>dayStart){
+   const to=new Date(Math.min(now.getTime(),start.getTime()));
+   travelToday=paidAmountBetween(dayStart,to,basicWageToday,travelStart);
+ }
+ let basicToday=onboardBasicToday+travelToday;
+
+ // Overtime earned today, only for time after Contract End.
+ let overtimeToday=0;
+ if(end && now>end){
+   const otStart=dayStart>end?dayStart:end;
+   const otEnd=signoff && signoff<now?signoff:now;
+   if(otEnd>otStart) overtimeToday=paidAmountBetween(otStart,otEnd,salary,start);
+ }
+
+ // WOA is a daily allowance. As soon as today falls inside a WOA
+// entry, the full daily WOA amount is credited for Today.
+// This is separate from the overall 5-day minimum calculation.
+let woaToday=0;
+const woaMonthlyToday=parseFloat($("woaBasicWage")?.value)||0;
+const woaDailyToday=woaMonthlyToday/30;
+const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+const woaEntriesToday=getWoaEntries();
+const payStartForToday=start;
+if(woaDailyToday>0 && isPaidCalendarDay(todayStart,payStartForToday)){
+  woaEntriesToday.forEach(entry=>{
+    const ws=woaDate(entry.start);
+    const we=woaDate(entry.end);
+    if(!ws || todayStart<ws)return;
+    if(we && todayStart>we)return;
+    woaToday += woaDailyToday;
+  });
+} let today=basicToday+overtimeToday+woaToday;
+ $("todayEarnBig").textContent=fmtUSD(Math.max(0,today));
+
+ if($("todayTravel"))$("todayTravel").textContent=fmtUSD(travelToday);
+ if($("todayBasic"))$("todayBasic").textContent=fmtUSD(onboardBasicToday);
+ if($("todayOvertime"))$("todayOvertime").textContent=fmtUSD(overtimeToday);
+ if($("todayWoa"))$("todayWoa").textContent=fmtUSD(woaToday);
+
+
+ let dayProgress=(is31 && !paid31)?0:Math.min(100,(paidSecondsToday/86400)*100);
+ $("todayProgressBar").style.width=dayProgress+"%";
+ $("todayProgress").textContent=dayProgress.toFixed(1)+"%";
+ $("todayPaidTime").innerHTML=fmtDurationHTML(paidSecondsToday);
  let next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
- $("todayLeft").textContent=fmtDuration((next-now)/1000);
+ $("todayLeft").innerHTML=(is31 && !paid31)?"31st day is not paid":fmtDurationHTML((next-now)/1000,true);
 
  let f=getDate("forecast");
  if(f&&start){
-  let fe=paidAmountBetween(start,f,salary);
+  const bwForecast=parseFloat($("woaBasicWage")?.value)||0;
+  let forecastTravel=0, forecastOnboard=0;
+  if(travelStart&&start&&f>travelStart){
+    forecastTravel=travelEarnedBetween(travelStart,new Date(Math.min(f.getTime(),start.getTime())),bwForecast,start);
+  }
+  if(start&&f>start){
+    forecastOnboard=paidAmountBetween(start,f,salary,start);
+  }
+  let fe=forecastTravel+forecastOnboard;
+  const forecastExpense = f>=start ? getTravelExpenses() : 0;
+  fe=Math.max(0,fe+forecastExpense);
   $("forecastEarn").textContent=fmtUSD(fe);
   $("forecastLeft").textContent=fmtUSD(Math.max(0,fe-earned));
  }
- updateSleep(currentPerSec);
+ refreshWoaStats();
+ updateSleep(currentPerSec,start);
  save();
+ try{renderSalaryGraph(start,end,signoff,now,salary,earned);}catch(e){console.error(e);}
 }
-function updateSleep(perSec){
+function updateSleep(perSec,payStart){
  let ss=$("sleepStart").value,se=$("sleepEnd").value;if(!ss||!se)return;
  let now=new Date(),s=ss.split(":").map(Number),e=se.split(":").map(Number);
  let a=new Date(now.getFullYear(),now.getMonth(),now.getDate(),s[0],s[1]);
  let b=new Date(now.getFullYear(),now.getMonth(),now.getDate(),e[0],e[1]);
  if(b<=a)b.setDate(b.getDate()+1);
- let sec=paidBetween(a,b);$("sleepEarn").textContent=fmtUSD(sec*perSec);
+ const travel=getTravelStart();
+ const bw=parseFloat($("woaBasicWage")?.value)||0;
+ let travelEarn=0,onboardEarn=0;
+ if(travel&&payStart&&b>travel&&a<payStart){
+   const ta=a>travel?a:travel;
+   const tb=b<payStart?b:payStart;
+   if(tb>ta) travelEarn=paidAmountBetween(ta,tb,bw,travel);
+ }
+ if(payStart&&b>payStart){
+   const oa=a>payStart?a:payStart;
+   if(b>oa) onboardEarn=paidAmountBetween(oa,b,parseFloat($("salary").value)||0,payStart);
+ }
+ $("sleepEarn").textContent=fmtUSD(travelEarn+onboardEarn);
 }
-["salary","start","end","forecast","sleepStart","sleepEnd"].forEach(id=>$(id).addEventListener("input",update));
-$("reset").onclick=()=>{localStorage.removeItem("salaryTracker");initDates();$("salary").value=5100;update()};
+["salary","woaBasicWage","travelExpenses","travelStart","start","end","forecast","sleepStart","sleepEnd"].forEach(id=>$(id).addEventListener("input",update));
+$("reset").onclick=()=>{localStorage.removeItem("salaryTracker");localStorage.removeItem("salaryTrackerEarningsGoal");localStorage.removeItem(WOA_WAGE_KEY);$("earningsGoal").value="";$("travelStart").value="";$("woaBasicWage").value="";$("travelExpenses").value="";initDates();$("salary").value=5100;update()};
 $("nowEnd").onclick=()=>{let d=getDate("start")||new Date();d=new Date(d);d.setMonth(d.getMonth()+4);$("end").value=localInput(d);$("signoff").value=localInput(d);update()};
 $("nowForecast").onclick=()=>{let d=new Date();d.setDate(d.getDate()+30);$("forecast").value=localInput(d);update()};
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
-load();loadRates();update();setInterval(update,1000);setInterval(loadRates, 6*60*60*1000);setInterval(loadRates, 6*60*60*1000);
+const savedGoal=localStorage.getItem("salaryTrackerEarningsGoal");
+if(savedGoal!==null) $("earningsGoal").value=savedGoal;
+$("earningsGoal").addEventListener("input",()=>{localStorage.setItem("salaryTrackerEarningsGoal",$("earningsGoal").value);update();});
+load();renderHistory();loadRates();initWoa();update();$("testContract").addEventListener("click",createTestContract);$("clearTestHistory").addEventListener("click",clearTestHistory);setInterval(update,1000);setInterval(loadRates, 6*60*60*1000);
+
+
+function setScreen(screen){
+ const cards=document.querySelectorAll(".screen-card");
+ cards.forEach(card=>{
+   card.style.display=card.classList.contains("screen-"+screen)?"block":"none";
+ });
+ document.querySelectorAll(".screen-info").forEach(info=>{
+   info.style.display=info.classList.contains("screen-"+screen)?"block":"none";
+ });
+ document.querySelectorAll(".nav-btn").forEach(btn=>{
+   const active=btn.dataset.screen===screen;
+   btn.classList.toggle("active",active);
+   btn.setAttribute("aria-current",active?"page":"false");
+ });
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+// Navigation markup is placed after the main script, so bind after DOM is ready.
+document.addEventListener("DOMContentLoaded",()=>{
+ document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>setScreen(btn.dataset.screen));
+ });
+ setScreen("home");
+});
 </script>
+<div class="app-version">Salary Tracker • v0.13.2 • Build 2026-09-01</div>
+
+<nav class="bottom-nav" aria-label="Main navigation">
+ <div class="bottom-nav-inner">
+  <button class="nav-btn active" type="button" data-screen="home" aria-label="Home">
+   <span class="nav-icon">⌂</span><span class="nav-label">HOME</span>
+  </button>
+  <button class="nav-btn" type="button" data-screen="contract" aria-label="Contract">
+   <span class="nav-icon">▣</span><span class="nav-label">CONTRACT</span>
+  </button>
+  <button class="nav-btn" type="button" data-screen="woa" aria-label="WOA">
+   <span class="nav-icon">⚔</span><span class="nav-label">WOA</span>
+  </button>
+  <button class="nav-btn" type="button" data-screen="history" aria-label="History">
+   <span class="nav-icon">▤</span><span class="nav-label">HISTORY</span>
+  </button>
+  <button class="nav-btn" type="button" data-screen="more" aria-label="More">
+   <span class="nav-icon">⋯</span><span class="nav-label">MORE</span>
+  </button>
+ </div>
+</nav>
+
 </body>
 </html>
