@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101923"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Compass Log"><link rel="icon" type="image/svg+xml" href="./icon.svg"><link rel="apple-touch-icon" href="./icon.svg"><link rel="manifest" href="./manifest.webmanifest"><title>Compass Error Log</title>
-<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script src="./astronomy.browser.min.js"></script>
 <style>
 :root{color-scheme:dark;--panel:#14212d;--field:#0c1721;--line:#2c4051;--txt:#edf4f8;--muted:#9aabba;--accent:#70d6c5}*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#172a3a,#0b121a 55%);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--txt)}main{max-width:900px;margin:auto;padding:24px 15px 45px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.tag{color:var(--accent);font-size:11px;letter-spacing:.16em;font-weight:800}.top h1{font-size:clamp(26px,5vw,36px);margin:6px 0}.muted{color:var(--muted);font-size:13px}.mark{border:1px solid var(--line);border-radius:13px;padding:10px;color:var(--accent);font-weight:800}.tabs{display:flex;gap:6px;background:#09131c;padding:5px;border-radius:13px;margin-bottom:14px}.tabs button{flex:1;padding:11px 5px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:700}.tabs button.active{background:#203344;color:var(--txt)}.card{background:#14212def;border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0}.card h2{font-size:16px;margin:0 0 14px}.section{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.1em;margin:19px 0 10px}.section:first-child{margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field span{font-size:11px;color:var(--muted);font-weight:700}.field input,.field select{width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--txt);font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}.full{grid-column:1/-1}.btn{border:0;border-radius:11px;background:var(--accent);color:#08201c;font-weight:850;padding:14px;width:100%;margin-top:14px;font-size:14px}.secondary{background:#203344;color:var(--txt);border:1px solid var(--line);padding:10px 12px;border-radius:10px;font-weight:700}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{background:#0b1721;border:1px solid var(--line);border-radius:12px;padding:13px}.metric small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}.metric strong{font-size:24px;color:var(--accent)}.metric .detail{font-size:12px;color:var(--muted);margin-top:4px}.note{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}td,th{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:18px}.hidden{display:none!important}.warning{background:#392a18;border:1px solid #72552b;color:#f5d9a7;border-radius:11px;padding:12px;font-size:12px;line-height:1.5;margin:12px 0}footer{text-align:center;color:var(--muted);font-size:11px;line-height:1.5;margin:24px 0}@media(max-width:600px){.three{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){main{padding:18px 11px 35px}.card{padding:14px}.field input,.field select{padding:11px}.tabs button{font-size:12px}.metric strong{font-size:21px}}
 .time-panel{display:flex;align-items:end;gap:12px}.time-panel .field{flex:1}.utc-chip{background:#0b1721;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:12px;white-space:nowrap}.utc-chip b{color:var(--accent);margin-left:5px}.position-panel{background:linear-gradient(145deg,#102330,#0c1721);border:1px solid #294456;border-radius:14px;padding:14px}.position-head,.position-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.position-head{margin-bottom:9px}.position-head b{display:block;font-size:13px}.position-head small{color:var(--muted);font-size:10px}.coord-control{display:flex;align-items:center;gap:5px;min-width:0;background:#08131d;border:1px solid #2c4051;border-radius:11px;padding:6px}.coord-control select{appearance:none;-webkit-appearance:none;min-width:0;flex:1;background:#152635;border:1px solid #30495b;border-radius:8px;color:var(--txt);font:600 15px -apple-system,BlinkMacSystemFont,sans-serif;text-align:center;padding:10px 2px;outline:none}.coord-control select:focus{border-color:var(--accent)}.coord-control span{color:var(--muted);font-size:12px}.coord-control select:last-child{flex:0 0 40px;color:var(--accent)}.position-hint{font-size:10px;color:var(--muted);margin-top:10px}.time-panel input{font-variant-numeric:tabular-nums}@media(max-width:560px){.time-panel{align-items:stretch}.utc-chip{display:flex;align-items:center}.position-panel{padding:11px}.position-head,.position-grid{gap:7px}.coord-control{gap:3px;padding:5px 3px}.coord-control select{font-size:14px;padding:11px 0}.coord-control select:last-child{flex-basis:34px}}.app-version{display:flex;justify-content:center;align-items:center;gap:9px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:10px;letter-spacing:.08em;color:var(--muted)}.app-version b{color:var(--accent);font-size:11px}.app-version span{opacity:.7}
@@ -67,7 +67,7 @@ footer{line-height:1.7;margin:28px 8px 18px}
  .btn{padding:15px 10px;font-size:11px}
 }
 
-/* v1.4.1: high-contrast calculation result hierarchy */
+/* v1.5.0: high-contrast calculation result hierarchy */
 .result-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .result-heading h2{font-size:22px;letter-spacing:-.045em;margin:5px 0 0}
 .result-kicker{font-size:9px;font-weight:800;letter-spacing:.2em;color:var(--gold)}
@@ -148,7 +148,7 @@ footer{line-height:1.7;margin:28px 8px 18px}
 </div>
 <div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE OBSERVATION TO LOG</button></div></section>
 <section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.4.1</b><span>BUILD 2026-11-22</span></div></footer>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.4.1</b><span>BUILD 2026-11-22 · OFFLINE</span></div></footer>
 </main>
 <script>
 const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
@@ -239,9 +239,33 @@ $('calculate').onclick=()=>{
   $('result').classList.remove('hidden');
  }catch(e){alert(e.message||String(e))}
 };
-$('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));render();alert('Запись сохранена в журнале этого браузера.')};
+$('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));localStorage.removeItem(DRAFT_KEY);render();alert('Запись сохранена в журнале этого браузера.')};
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function render(){const body=$('rows');body.innerHTML=log.length?log.map(r=>'<tr><td>'+esc(r.gmt?.replace('T',' '))+'</td><td>'+r.lat.toFixed(4)+' / '+r.lon.toFixed(4)+'</td><td>'+esc(r.body)+'</td><td>'+f(r.azimuth)+'</td><td>'+f(r.gyroBearing)+'</td><td>'+signed(r.gyroError)+'</td><td>'+f(r.gyroHeading)+'</td><td>'+f(r.magHeading)+'</td><td>'+f(r.trueHeading)+'</td><td>'+signed(r.compassError)+'</td><td>'+signed(r.variation)+'</td><td>'+signed(r.deviation)+'</td><td>'+r.altitude.toFixed(1)+'°</td><td>'+esc(r.remarks)+'</td><td>'+esc(r.initials)+'</td></tr>').join(''):'<tr><td colspan="15" class="empty">Пока нет записей</td></tr>'}
 $('export').onclick=()=>{const keys=['gmt','lat','lon','body','azimuth','gyroBearing','gyroError','gyroHeading','magHeading','trueHeading','compassError','variation','deviation','altitude','heel','remarks','initials'],heads=['GMT','Latitude','Longitude','Celestial body','True azimuth','Gyro bearing','Gyro error','Gyro heading','Compass heading','True heading','Compass error','Variation','Deviation','Altitude','Heel','Remarks','Initials'];const csv='\ufeff'+[heads,...log.map(r=>keys.map(k=>r[k]??''))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='compass-error-log.csv';a.click();URL.revokeObjectURL(a.href)};
-$('clear').onclick=()=>{if(confirm('Удалить весь журнал?')){log=[];localStorage.removeItem('compassErrorLog');render()}};render();updateAzimuthPreview();
+$('clear').onclick=()=>{if(confirm('Удалить весь журнал?')){log=[];localStorage.removeItem('compassErrorLog');render()}};
+/* v1.5.0: persistent form draft */
+const DRAFT_KEY='compassErrorDraft';
+try{
+ const draft=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');
+ if(draft&&typeof draft==='object'){
+  Object.entries(draft).forEach(([id,value])=>{const el=$(id);if(el&&typeof value==='string')el.value=value});
+ }
+}catch(e){console.warn('Could not restore observation draft',e)}
+function saveDraft(){
+ const draft={};
+ document.querySelectorAll('#entry input, #entry select').forEach(el=>{if(el.id)draft[el.id]=el.value});
+ try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft))}catch(e){console.warn('Could not save observation draft',e)}
+}
+document.querySelectorAll('#entry input, #entry select').forEach(el=>{
+ el.addEventListener('input',saveDraft);
+ el.addEventListener('change',saveDraft);
+});
+
+render();updateAzimuthPreview();
+</script><script>
+/* Offline application shell. The app and astronomy engine are cached for use at sea. */
+if('serviceWorker' in navigator){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).catch(err=>console.warn('Offline cache registration failed',err)));
+}
 </script></body></html>
