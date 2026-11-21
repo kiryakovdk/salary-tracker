@@ -70,7 +70,7 @@ function visibleObjects(){
  }catch(e){return null}
 }
 function refreshVisibleObjects(){
- const visible=visibleObjects();if(!visible)return;
+ const visible=visibleObjects();if(!visible)return null;
  const type=$('bodyType'),oldType=type.value;
  Array.from(type.options).forEach(o=>{const show=o.value==='Sun'||o.value==='Moon'?visible[o.value]:o.value==='planet'?visible.planet.length>0:visible.star.length>0;o.hidden=!show;o.disabled=!show});
  if(type.selectedOptions[0]?.hidden){const first=Array.from(type.options).find(o=>!o.hidden);if(first)type.value=first.value}
@@ -84,6 +84,7 @@ function refreshVisibleObjects(){
  $('azPreviewDetail').textContent=noObjects?'Сейчас ни одного объекта не видно над горизонтом. Измени время или координаты.':$('azPreviewDetail').textContent;
  $('bodyType').disabled=noObjects;$('planet').disabled=!visible.planet.length;$('starName').disabled=!visible.star.length;
  const t=type.value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');
+ return visible;
 }
 $('starName').innerHTML=NAV_STARS.map((s,i)=>'<option value="'+i+'">'+s[0]+'</option>').join('');
 function updateBodyFields(){const t=$('bodyType').value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');updateAzimuthPreview()}
@@ -123,7 +124,7 @@ function getAstro(){
  const eq=Astronomy.Equator(body,date,obs,true,true),hor=Astronomy.Horizon(date,obs,eq.ra,eq.dec,'normal');
  return{date,az:norm(hor.azimuth),altitude:hor.altitude,lat,lon,bodyName};
 }
-function updateAzimuthPreview(){refreshVisibleObjects();try{const a=getAstro();$('azPreviewValue').textContent=f(a.az);$('azPreviewDetail').textContent=a.bodyName+' · Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · '+$('gmt').value.replace('T',' ')+' GMT';$('azPreview').style.borderColor=a.altitude<0?'#9b6336':'var(--accent)'}catch(e){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message}}
+function updateAzimuthPreview(){const visible=refreshVisibleObjects();if(visible&&!visible.Sun&&!visible.Moon&&!visible.planet.length&&!visible.star.length){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent='Сейчас нет видимых объектов над горизонтом';return}try{const a=getAstro();$('azPreviewValue').textContent=f(a.az);$('azPreviewDetail').textContent=a.bodyName+' · Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · '+$('gmt').value.replace('T',' ')+' GMT';$('azPreview').style.borderColor=a.altitude<0?'#9b6336':'var(--accent)'}catch(e){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message}}
 $('gmt').addEventListener('change',updateAzimuthPreview);
 $('calculate').onclick=()=>{
  try{
