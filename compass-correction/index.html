@@ -1,69 +1,85 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101923"><title>Compass Error Log</title>
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#0b121a;--panel:#14212d;--field:#0c1721;--line:#2c4051;--txt:#edf4f8;--muted:#9aabba;--accent:#70d6c5}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#172a3a,#0b121a 55%);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--txt)}main{max-width:900px;margin:auto;padding:24px 15px 45px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.tag{color:var(--accent);font-size:11px;letter-spacing:.16em;font-weight:800}.top h1{font-size:clamp(26px,5vw,36px);margin:6px 0}.muted{color:var(--muted);font-size:13px}.mark{border:1px solid var(--line);border-radius:13px;padding:10px;color:var(--accent);font-weight:800}.tabs{display:flex;gap:6px;background:#09131c;padding:5px;border-radius:13px;margin-bottom:14px}.tabs button{flex:1;padding:11px 5px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:700}.tabs button.active{background:#203344;color:var(--txt)}.card{background:#14212deF;border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0}.card h2{font-size:16px;margin:0 0 14px}.section{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.1em;margin:19px 0 10px}.section:first-child{margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field span{font-size:11px;color:var(--muted);font-weight:700}.field input,.field select{width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--txt);font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}.full{grid-column:1/-1}.btn{border:0;border-radius:11px;background:var(--accent);color:#08201c;font-weight:850;padding:14px;width:100%;margin-top:14px;font-size:14px}.secondary{background:#203344;color:var(--txt);border:1px solid var(--line);padding:10px 12px;border-radius:10px;font-weight:700}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{background:#0b1721;border:1px solid var(--line);border-radius:12px;padding:13px}.metric small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}.metric strong{font-size:24px;color:var(--accent)}.metric .detail{font-size:12px;color:var(--muted);margin-top:4px}.note{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}td,th{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted)}.tablewrap{overflow-x:auto}.empty{text-align:center;color:var(--muted);padding:18px}.hidden{display:none!important}footer{text-align:center;color:var(--muted);font-size:11px;line-height:1.5;margin:24px 0}
-@media(min-width:650px){.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:420px){main{padding:18px 11px 35px}.card{padding:14px}.field input,.field select{padding:11px}.tabs button{font-size:12px}.metric strong{font-size:21px}}
+:root{color-scheme:dark;--panel:#14212d;--field:#0c1721;--line:#2c4051;--txt:#edf4f8;--muted:#9aabba;--accent:#70d6c5}*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#172a3a,#0b121a 55%);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--txt)}main{max-width:900px;margin:auto;padding:24px 15px 45px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.tag{color:var(--accent);font-size:11px;letter-spacing:.16em;font-weight:800}.top h1{font-size:clamp(26px,5vw,36px);margin:6px 0}.muted{color:var(--muted);font-size:13px}.mark{border:1px solid var(--line);border-radius:13px;padding:10px;color:var(--accent);font-weight:800}.tabs{display:flex;gap:6px;background:#09131c;padding:5px;border-radius:13px;margin-bottom:14px}.tabs button{flex:1;padding:11px 5px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:700}.tabs button.active{background:#203344;color:var(--txt)}.card{background:#14212def;border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0}.card h2{font-size:16px;margin:0 0 14px}.section{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.1em;margin:19px 0 10px}.section:first-child{margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field span{font-size:11px;color:var(--muted);font-weight:700}.field input,.field select{width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--txt);font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}.full{grid-column:1/-1}.btn{border:0;border-radius:11px;background:var(--accent);color:#08201c;font-weight:850;padding:14px;width:100%;margin-top:14px;font-size:14px}.secondary{background:#203344;color:var(--txt);border:1px solid var(--line);padding:10px 12px;border-radius:10px;font-weight:700}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{background:#0b1721;border:1px solid var(--line);border-radius:12px;padding:13px}.metric small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}.metric strong{font-size:24px;color:var(--accent)}.metric .detail{font-size:12px;color:var(--muted);margin-top:4px}.note{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}td,th{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:18px}.hidden{display:none!important}.warning{background:#392a18;border:1px solid #72552b;color:#f5d9a7;border-radius:11px;padding:12px;font-size:12px;line-height:1.5;margin:12px 0}footer{text-align:center;color:var(--muted);font-size:11px;line-height:1.5;margin:24px 0}@media(max-width:600px){.three{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){main{padding:18px 11px 35px}.card{padding:14px}.field input,.field select{padding:11px}.tabs button{font-size:12px}.metric strong{font-size:21px}}
 </style></head><body><main>
-<div class="top"><div><div class="tag">BRIDGE TOOLS · NAVIGATION</div><h1>Compass Error Log</h1><div class="muted">Электронное заполнение судового журнала</div></div><div class="mark">CC<br>LOG</div></div>
+<div class="top"><div><div class="tag">BRIDGE TOOLS · NAVIGATION</div><h1>Compass Error Log</h1><div class="muted">Celestial observation calculator</div></div><div class="mark">CC<br>LOG</div></div>
 <div class="tabs"><button class="active" data-view="entry">Новая запись</button><button data-view="history">Журнал</button></div>
-<section id="entry">
-<div class="card">
-<div class="section">TIME & POSITION</div><div class="grid three">
-<label class="field"><span>GMT / DATE & TIME</span><input id="gmt" type="datetime-local"></label>
-<label class="field"><span>LATITUDE</span><input id="lat" placeholder="Напр. 43° 36.2' N"></label>
-<label class="field"><span>LONGITUDE</span><input id="lon" placeholder="Напр. 007° 02.5' E"></label>
+<section id="entry"><div class="card">
+<div class="section">TIME & POSITION · GMT / UTC</div><div class="grid three">
+<label class="field"><span>DATE & GMT TIME</span><input id="gmt" type="datetime-local"></label>
+<label class="field"><span>LATITUDE (decimal °)</span><input id="lat" type="number" step=".0001" placeholder="Напр. 43.6033"></label>
+<label class="field"><span>LONGITUDE (decimal °)</span><input id="lon" type="number" step=".0001" placeholder="Напр. 7.0417"></label></div>
+<div class="section">CELESTIAL BODY</div><div class="grid">
+<label class="field"><span>OBJECT TYPE</span><select id="bodyType"><option value="Sun">Sun</option><option value="Moon">Moon</option><option value="planet">Planet</option><option value="star">Star</option></select></label>
+<label class="field hidden" id="planetWrap"><span>PLANET</span><select id="planet"><option>Mercury</option><option>Venus</option><option>Mars</option><option>Jupiter</option><option>Saturn</option><option>Uranus</option><option>Neptune</option><option>Pluto</option></select></label>
+<label class="field hidden" id="starNameWrap"><span>STAR NAME</span><input id="starName" placeholder="Напр. Sirius"></label>
+<label class="field hidden" id="raWrap"><span>STAR RA J2000 (hours)</span><input id="ra" type="number" min="0" max="24" step=".0001" placeholder="0–24"></label>
+<label class="field hidden" id="decWrap"><span>STAR DEC J2000 (°)</span><input id="dec" type="number" min="-90" max="90" step=".0001" placeholder="-90 to +90"></label>
 </div>
-<div class="section">SHIP'S HEAD</div><div class="grid">
-<label class="field"><span>GYRO HEADING (°)</span><input id="headGyro" type="number" min="0" max="360" step=".1" placeholder="0–360"></label>
-<label class="field"><span>MAGNETIC HEADING (°)</span><input id="headMag" type="number" min="0" max="360" step=".1" placeholder="0–360"></label>
+<div class="section">SHIP'S HEAD & OBSERVED BEARING</div><div class="grid three">
+<label class="field"><span>GYRO HEADING (°)</span><input id="headGyro" type="number" min="0" max="360" step=".1" placeholder="Gyro course"></label>
+<label class="field"><span>MAGNETIC HEADING (°)</span><input id="headMag" type="number" min="0" max="360" step=".1" placeholder="Compass course"></label>
+<label class="field"><span>GYRO BEARING TO BODY (°)</span><input id="gyroBearing" type="number" min="0" max="360" step=".1" placeholder="Observed bearing"></label>
 </div>
-<div class="section">BEARING</div><div class="grid three">
-<label class="field"><span>TRUE BEARING (°)</span><input id="trueB" type="number" min="0" max="360" step=".1" placeholder="TB"></label>
-<label class="field"><span>GYRO BEARING (°)</span><input id="gyroB" type="number" min="0" max="360" step=".1" placeholder="GB"></label>
-<label class="field"><span>MAGNETIC BEARING (°)</span><input id="magB" type="number" min="0" max="360" step=".1" placeholder="MB"></label>
+<div class="section">CHART VARIATION</div><div class="grid">
+<label class="field"><span>VARIATION VALUE (°)</span><input id="varVal" type="number" min="0" max="180" step=".1" placeholder="Chart value"></label>
+<label class="field"><span>DIRECTION</span><select id="varDir"><option value="1">EAST (E)</option><option value="-1">WEST (W)</option></select></label>
 </div>
-<div class="grid" style="margin-top:11px">
-<label class="field"><span>OBJECT</span><input id="object" placeholder="Sun, star, distant object..."></label>
-<label class="field"><span>HEEL (°)</span><input id="heel" type="number" step=".1" placeholder="0"></label>
+<div class="grid" style="margin-top:11px"><label class="field"><span>HEEL (°)</span><input id="heel" type="number" step=".1" placeholder="Optional"></label><label class="field"><span>INITIALS</span><input id="initials" placeholder="Officer initials"></label><label class="field full"><span>REMARKS</span><input id="remarks" placeholder="Optional notes"></label></div>
+<div class="warning">Время вводится именно в GMT/UTC, не в местном судовом времени. Для звезды нужны её экваториальные координаты J2000: RA в часах, Dec в градусах. Источник координат должен быть проверен по актуальному каталогу/альманаху.</div>
+<button class="btn" id="calculate">CALCULATE CELESTIAL AZIMUTH & ERRORS</button>
+<p class="note">Расчёт истинного азимута выполняется астрономической библиотекой Astronomy Engine. Для объектов Солнечной системы используется топоцентрическое положение с учётом координат наблюдателя. Азимут отсчитывается от истинного севера по часовой стрелке.</p>
 </div>
-<div class="section">VARIATION</div><div class="grid">
-<label class="field"><span>VARIATION VALUE (°)</span><input id="varVal" type="number" min="0" max="180" step=".1" placeholder="Напр. 4.5"></label>
-<label class="field"><span>VARIATION DIRECTION</span><select id="varDir"><option value="1">EAST (E)</option><option value="-1">WEST (W)</option></select></label>
-</div>
-<div class="grid" style="margin-top:11px"><label class="field full"><span>REMARKS</span><input id="remarks" placeholder="Дополнительные сведения"></label><label class="field"><span>INITIALS</span><input id="initials" placeholder="Инициалы"></label></div>
-<button class="btn" id="calculate">CALCULATE ERRORS</button>
-<p class="note">Введите истинный, гироскопический и магнитный пеленги. Variation вводится отдельно с направлением E/W. Пустые поля не подменяются нулями.</p>
-</div>
-<div class="card hidden" id="result"><h2>Расчёт для записи в журнал</h2><div class="results">
-<div class="metric"><small>GYRO ERROR</small><strong id="gyroErr">—</strong><div class="detail">True Bearing − Gyro Bearing</div></div>
-<div class="metric"><small>MAG COMPASS ERROR</small><strong id="compErr">—</strong><div class="detail">True Bearing − Magnetic Bearing</div></div>
-<div class="metric"><small>VARIATION</small><strong id="varOut">—</strong><div class="detail">Введённое склонение</div></div>
+<div class="card hidden" id="result"><h2>Результат для COMPASS ERROR LOG</h2><div class="results">
+<div class="metric"><small>TRUE AZIMUTH (TA)</small><strong id="taOut">—</strong><div class="detail" id="altOut">Altitude —</div></div>
+<div class="metric"><small>GYRO ERROR</small><strong id="geOut">—</strong><div class="detail">TA − Gyro Bearing</div></div>
+<div class="metric"><small>TRUE HEADING</small><strong id="thOut">—</strong><div class="detail">Gyro Heading + Gyro Error</div></div>
+<div class="metric"><small>COMPASS ERROR</small><strong id="ceOut">—</strong><div class="detail">True Heading − Magnetic Heading</div></div>
+<div class="metric"><small>VARIATION</small><strong id="varOut">—</strong><div class="detail">Chart Variation entered</div></div>
 <div class="metric"><small>DEVIATION</small><strong id="devOut">—</strong><div class="detail">Compass Error − Variation</div></div>
-</div><button class="btn" id="save">SAVE TO LOG</button></div>
-</section>
-<section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Head G/M</th><th>Bearing T/G/M</th><th>Object</th><th>Gyro Err</th><th>Mag Err</th><th>Var</th><th>Dev</th><th>Heel</th><th>Remarks</th><th>Init.</th></tr></thead><tbody id="rows"><tr><td colspan="12" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Угловая разность приводится к диапазону ±180°.<br>Проверяйте расчёт и исходные данные перед внесением в официальный судовой журнал.</footer>
-</main><script>
-const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, fmt=x=>x===null||!Number.isFinite(x)?'—':Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W');
+</div><div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE TO COMPASS ERROR LOG</button></div></section>
+<section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Mag Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
 let current=null,log=[];try{log=JSON.parse(localStorage.getItem('compassErrorLog')||'[]')}catch{}
-$('gmt').value=new Date().toISOString().slice(0,16);
+function setDefaultTime(){const d=new Date();d.setUTCSeconds(0,0);$('gmt').value=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
+setDefaultTime();
+$('bodyType').onchange=()=>{let t=$('bodyType').value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');$('raWrap').classList.toggle('hidden',t!=='star');$('decWrap').classList.toggle('hidden',t!=='star')};
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));$('entry').classList.toggle('hidden',b.dataset.view!=='entry');$('history').classList.toggle('hidden',b.dataset.view!=='history');render()});
-function fmtGyro(x){return x===null||!Number.isFinite(x)?'—':(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'°'}
-function num(id){let v=$(id).value.trim();return v===''?null:Number(v)}
-function angle(v,id){return v!==null&&Number.isFinite(v)&&v>=0&&v<=360}
+function n(id){let s=$(id).value.trim();return s===''?null:Number(s)}
+function requiredAngle(id,label){let v=n(id);if(v===null||!Number.isFinite(v)||v<0||v>360)throw Error(label+' должен быть в диапазоне 0–360°');return v}
+function getAstro(){
+ if(!window.Astronomy)throw Error('Не загрузилась астрономическая библиотека. Проверь интернет-соединение и обнови страницу.');
+ const lat=n('lat'),lon=n('lon');if(lat===null||lat<-90||lat>90)throw Error('Проверь Latitude: от −90 до +90°');if(lon===null||lon<-180||lon>180)throw Error('Проверь Longitude: от −180 до +180°');
+ const raw=$('gmt').value;if(!raw)throw Error('Укажи дату и GMT.');
+ const date=new Date(raw+'Z');if(Number.isNaN(date.getTime()))throw Error('Некорректная дата/время GMT.');
+ const obs=new Astronomy.Observer(lat,lon,0),type=$('bodyType').value;let body;
+ if(type==='star'){
+  const ra=n('ra'),dec=n('dec');if(ra===null||ra<0||ra>=24)throw Error('RA звезды: от 0 включительно до 24 часов');if(dec===null||dec<-90||dec>90)throw Error('DEC звезды: от −90 до +90°');
+  Astronomy.DefineStar(Astronomy.Body.Star1,ra,dec,1000);body=Astronomy.Body.Star1;
+ }else if(type==='planet')body=Astronomy.Body[$('planet').value];else body=Astronomy.Body[type];
+ const eq=Astronomy.Equator(body,date,obs,true,true),hor=Astronomy.Horizon(date,obs,eq.ra,eq.dec,'normal');
+ return {date,az:norm(hor.azimuth),altitude:hor.altitude,lat,lon};
+}
 $('calculate').onclick=()=>{
- const t=num('trueB'),g=num('gyroB'),m=num('magB'),vv=num('varVal');
- if(!angle(t,'trueB')||!angle(g,'gyroB')||!angle(m,'magB')){alert('Заполните True, Gyro и Magnetic Bearing значениями от 0 до 360°.');return}
- if(vv!==null&&(!Number.isFinite(vv)||vv<0||vv>180)){alert('Variation должна быть от 0 до 180°.');return}
- const ge=diff(t,g),ce=diff(t,m),variation=vv===null?null:vv*Number($('varDir').value),de=variation===null?null:diff(ce,variation);
- current={gmt:$('gmt').value,lat:$('lat').value.trim(),lon:$('lon').value.trim(),headGyro:num('headGyro'),headMag:num('headMag'),trueB:t,gyroB:g,magB:m,object:$('object').value.trim(),gyroErr:ge,compErr:ce,variation,deviation:de,heel:num('heel'),remarks:$('remarks').value.trim(),initials:$('initials').value.trim()};
- $('gyroErr').textContent=fmtGyro(ge);$('compErr').textContent=fmt(ce);$('varOut').textContent=fmt(variation);$('devOut').textContent=fmt(de);$('result').classList.remove('hidden');
+ try{
+  const a=getAstro(),gh=requiredAngle('headGyro','Gyro Heading'),mh=requiredAngle('headMag','Magnetic Heading'),gb=requiredAngle('gyroBearing','Gyro Bearing');
+  const vv=n('varVal');if(vv===null||!Number.isFinite(vv)||vv<0||vv>180)throw Error('Введи Chart Variation от 0 до 180°');
+  const variation=vv*Number($('varDir').value),ge=diff(a.az,gb),trueHeading=norm(gh+ge),ce=diff(trueHeading,mh),dev=diff(ce,variation);
+  const type=$('bodyType').value,bodyName=type==='planet'?$('planet').value:type==='star'?$('starName').value.trim()||'Star':' '+type;
+  current={gmt:$('gmt').value,lat:a.lat,lon:a.lon,body:bodyName.trim(),azimuth:a.az,altitude:a.altitude,gyroBearing:gb,gyroError:ge,gyroHeading:gh,magHeading:mh,trueHeading,compassError:ce,variation,deviation:dev,heel:n('heel'),remarks:$('remarks').value.trim(),initials:$('initials').value.trim()};
+  $('taOut').textContent=f(a.az);$('altOut').textContent='Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'°';$('geOut').textContent=signed(ge);$('thOut').textContent=f(trueHeading);$('ceOut').textContent=signed(ce);$('varOut').textContent=signed(variation);$('devOut').textContent=signed(dev);
+  $('visibilityNote').textContent=a.altitude<0?'ВНИМАНИЕ: объект геометрически ниже горизонта в указанное время/месте. Проверь дату, GMT, координаты и наблюдение.':a.altitude<5?'Объект низко над горизонтом. Атмосферная рефракция и условия наблюдения могут заметно влиять на результат.':'Проверь совпадение выбранного объекта с фактически наблюдаемым телом и корректность исходных показаний.';
+  $('result').classList.remove('hidden');
+ }catch(e){alert(e.message||String(e))}
 };
-$('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));render();alert('Запись сохранена в этом браузере.')};
+$('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));render();alert('Запись сохранена в журнале этого браузера.')};
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function render(){const body=$('rows');body.innerHTML=log.length?log.map(r=>'<tr><td>'+esc(r.gmt?.replace('T',' '))+'</td><td>'+esc([r.lat,r.lon].filter(Boolean).join(' / '))+'</td><td>'+esc(r.headGyro??'—')+' / '+esc(r.headMag??'—')+'</td><td>'+r.trueB+' / '+r.gyroB+' / '+r.magB+'</td><td>'+esc(r.object)+'</td><td>'+fmt(r.gyroErr)+'</td><td>'+fmt(r.compErr)+'</td><td>'+fmt(r.variation)+'</td><td>'+fmt(r.deviation)+'</td><td>'+esc(r.heel??'—')+'</td><td>'+esc(r.remarks)+'</td><td>'+esc(r.initials)+'</td></tr>').join(''):'<tr><td colspan="12" class="empty">Пока нет записей</td></tr>'}
-$('export').onclick=()=>{const headers=['GMT','Latitude','Longitude','Gyro Head','Mag Head','True Bearing','Gyro Bearing','Mag Bearing','Object','Gyro Error','Compass Error','Variation','Deviation','Heel','Remarks','Initials'];const keys=['gmt','lat','lon','headGyro','headMag','trueB','gyroB','magB','object','gyroErr','compErr','variation','deviation','heel','remarks','initials'];const csv='\ufeff'+[headers,...log.map(r=>keys.map(k=>r[k]??''))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='compass-error-log.csv';a.click();URL.revokeObjectURL(a.href)};
-$('clear').onclick=()=>{if(confirm('Удалить весь журнал?')){log=[];localStorage.removeItem('compassErrorLog');render()}};
-render();
+function render(){const body=$('rows');body.innerHTML=log.length?log.map(r=>'<tr><td>'+esc(r.gmt?.replace('T',' '))+'</td><td>'+r.lat.toFixed(4)+' / '+r.lon.toFixed(4)+'</td><td>'+esc(r.body)+'</td><td>'+f(r.azimuth)+'</td><td>'+f(r.gyroBearing)+'</td><td>'+signed(r.gyroError)+'</td><td>'+f(r.gyroHeading)+'</td><td>'+f(r.magHeading)+'</td><td>'+f(r.trueHeading)+'</td><td>'+signed(r.compassError)+'</td><td>'+signed(r.variation)+'</td><td>'+signed(r.deviation)+'</td><td>'+r.altitude.toFixed(1)+'°</td><td>'+esc(r.remarks)+'</td><td>'+esc(r.initials)+'</td></tr>').join(''):'<tr><td colspan="15" class="empty">Пока нет записей</td></tr>'}
+$('export').onclick=()=>{const keys=['gmt','lat','lon','body','azimuth','gyroBearing','gyroError','gyroHeading','magHeading','trueHeading','compassError','variation','deviation','altitude','heel','remarks','initials'],heads=['GMT','Latitude','Longitude','Celestial body','True azimuth','Gyro bearing','Gyro error','Gyro heading','Magnetic heading','True heading','Compass error','Variation','Deviation','Altitude','Heel','Remarks','Initials'];const csv='\ufeff'+[heads,...log.map(r=>keys.map(k=>r[k]??''))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='compass-error-log.csv';a.click();URL.revokeObjectURL(a.href)};
+$('clear').onclick=()=>{if(confirm('Удалить весь журнал?')){log=[];localStorage.removeItem('compassErrorLog');render()}};render();
 </script></body></html>
