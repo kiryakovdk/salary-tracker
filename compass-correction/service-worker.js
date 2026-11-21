@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME='compass-error-log-v1.8.0';
+const CACHE_NAME='compass-error-log-v1.8.1';
 const APP_SHELL=[
  './',
  './index.html',
@@ -8,7 +8,10 @@ const APP_SHELL=[
  './astronomy.browser.min.js'
 ];
 self.addEventListener('install',event=>{
- event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));
+ event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
+});
+self.addEventListener('message',event=>{
+ if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();
 });
 self.addEventListener('activate',event=>{
  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('compass-error-log-')&&key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
