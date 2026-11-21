@@ -162,13 +162,13 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 <div class="celestial-picker">
  <label class="field"><span>SEARCH OBJECT BY NAME</span><input id="bodySearch" type="search" autocomplete="off" placeholder="Например, Sirius, Venus, Polaris"></label>
  <div class="category-tabs" id="bodyCategories">
-  <button type="button" class="active" data-category="all">All visible</button><button type="button" data-category="star">Stars</button><button type="button" data-category="planet">Planets</button><button type="button" data-category="luminary">Sun / Moon</button>
+  <button type="button" class="active" data-category="all">All objects</button><button type="button" data-category="star">Stars</button><button type="button" data-category="planet">Planets</button><button type="button" data-category="luminary">Sun / Moon</button>
  </div>
  <div class="quick-label">QUICK ACCESS · NAVIGATIONAL STARS</div>
  <div class="quick-stars" id="quickStars"></div>
- <div class="catalog-heading"><span id="catalogTitle">VISIBLE OBJECTS</span><span id="catalogCount">—</span></div>
+ <div class="catalog-heading"><span id="catalogTitle">OBJECT CATALOG</span><span id="catalogCount">—</span></div>
  <div class="celestial-list" id="celestialList"><div class="catalog-empty">Введи дату и координаты, чтобы рассчитать видимость</div></div>
- <div class="catalog-note">Показаны объекты выше геометрического горизонта. Высота и азимут рассчитываются для введённых GMT и координат судна.</div>
+ <div class="catalog-note">Показан каталог небесных тел. Отрицательная высота означает, что объект находится ниже геометрического горизонта. Высота и азимут рассчитываются для введённых GMT и координат судна.</div>
 </div>
 <label class="hidden"><select id="bodyType"><option value="Sun">Sun</option><option value="Moon">Moon</option><option value="planet">Planet</option><option value="star">Star</option></select></label>
 <label class="hidden" id="planetWrap"><select id="planet"><option>Mercury</option><option>Venus</option><option>Mars</option><option>Jupiter</option><option>Saturn</option><option>Uranus</option><option>Neptune</option><option>Pluto</option></select></label>
@@ -227,7 +227,7 @@ function visibleObjects(){
   const catalog=[];
   const add=(name,type,body,index=null)=>{
    const p=bodyPosition(body,date,obs);
-   if(p.altitude>0)catalog.push({name,type,index,altitude:p.altitude,azimuth:p.azimuth});
+   catalog.push({name,type,index,altitude:p.altitude,azimuth:p.azimuth});
   };
   add('Sun','Sun',Astronomy.Body.Sun);
   add('Moon','Moon',Astronomy.Body.Moon);
@@ -269,9 +269,9 @@ function renderCelestialCatalogItems(catalog){
  $('catalogCount').textContent=filtered.length+' / '+catalog.length;
  list.innerHTML=filtered.length?filtered.map(item=>{
   const itemKey=item.type==='star'?'star:'+item.index:item.type==='planet'?'planet:'+item.name:item.type;
-  const low=item.altitude<5;
-  return '<button type="button" class="celestial-option'+(itemKey===key?' selected':'')+(low?' low-alt':'')+'" data-object-type="'+item.type+'" data-object-name="'+esc(item.name)+'" data-object-index="'+(item.index??'')+'"><b>'+esc(item.name)+'</b><small>Alt '+(item.altitude>=0?'+':'')+item.altitude.toFixed(1)+'° · Az '+f(item.azimuth)+'°'+(low?' · <span class="low-tag">LOW ALT</span>':'')+'</small></button>';
- }).join(''):'<div class="catalog-empty">Нет видимых объектов по этому запросу</div>';
+  const below=item.altitude<0,low=item.altitude>=0&&item.altitude<5;
+  return '<button type="button" class="celestial-option'+(itemKey===key?' selected':'')+((below||low)?' low-alt':'')+'" data-object-type="'+item.type+'" data-object-name="'+esc(item.name)+'" data-object-index="'+(item.index??'')+'"><b>'+esc(item.name)+'</b><small>Alt '+(item.altitude>=0?'+':'')+item.altitude.toFixed(1)+'° · Az '+f(item.azimuth)+'°'+(below?' · <span class="low-tag">BELOW HORIZON</span>':low?' · <span class="low-tag">LOW ALT</span>':'')+'</small></button>';
+ }).join(''):'<div class="catalog-empty">Нет объектов по этому запросу</div>';
  const favorites=catalog.filter(item=>item.type==='star'&&QUICK_STAR_NAMES.includes(item.name));
  quick.innerHTML=favorites.map(item=>'<button type="button" data-object-type="star" data-object-name="'+esc(item.name)+'" data-object-index="'+item.index+'">'+esc(item.name)+'</button>').join('');
 }
