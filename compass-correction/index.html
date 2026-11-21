@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101923">
+<title>Compass Correction</title>
+<style>
+:root{color-scheme:dark;--bg:#0b121a;--panel:#131f2b;--panel2:#1a2937;--line:#2b3b4b;--text:#eef4f8;--muted:#9aabba;--accent:#66d1c2;--blue:#7eb8ff;--bad:#ff9a91}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#152332 0,#0b121a 42%);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);min-height:100vh}
+main{max-width:820px;margin:auto;padding:28px 18px 48px}.head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}h1{font-size:clamp(27px,6vw,38px);margin:7px 0 4px;letter-spacing:-.04em}.sub{color:var(--muted);font-size:14px}.mark{border:1px solid var(--line);border-radius:15px;padding:11px;color:var(--accent);font-weight:700}
+.tabs{display:flex;gap:8px;background:#0c151e;padding:5px;border-radius:14px;margin-bottom:16px}.tab{flex:1;border:0;border-radius:10px;padding:12px 8px;background:transparent;color:var(--muted);font-weight:650}.tab.active{background:var(--panel2);color:var(--text)}
+.card{background:rgba(19,31,43,.92);border:1px solid var(--line);border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 12px 35px #0002}.card h2{font-size:17px;margin:0 0 16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field span{font-size:12px;color:var(--muted);font-weight:650}.field input,.field select{width:100%;background:#0c151e;border:1px solid var(--line);border-radius:11px;padding:13px;color:var(--text);font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}
+.result{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:#0c151e;border-radius:13px;padding:15px}.metric small{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.metric strong{font-size:clamp(23px,5vw,30px);letter-spacing:-.03em}.metric.primary{border:1px solid #397e77}.metric.primary strong{color:var(--accent)}.sign{font-size:13px;color:var(--muted);margin-top:5px}
+button.action{width:100%;border:0;border-radius:12px;padding:14px;background:var(--accent);color:#08201d;font-weight:800;font-size:15px;margin-top:14px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.ghost{background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px;font-weight:650}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 6px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}.empty{text-align:center;color:var(--muted);padding:18px 6px}
+footer{color:var(--muted);font-size:11px;text-align:center;margin-top:26px;line-height:1.6}
+@media(max-width:520px){main{padding:22px 13px 36px}.card{padding:16px}.grid{gap:11px}.field input,.field select{padding:12px}.mark{font-size:12px;padding:9px}}
+</style>
+</head>
+<body>
+<main>
+ <div class="head"><div><div class="eyebrow">Bridge tools · Navigation</div><h1>Compass Correction</h1><div class="sub">Расчёт поправки компаса</div></div><div class="mark">CC<br>01</div></div>
+ <div class="tabs"><button class="tab active" data-tab="error">Поправка</button><button class="tab" data-tab="convert">Перевод пеленга</button><button class="tab" data-tab="log">Журнал</button></div>
+ <section id="error">
+  <div class="card"><h2>Расчёт Compass Error</h2>
+   <div class="grid">
+    <label class="field"><span>Истинный пеленг (TB), °</span><input id="tb" type="number" min="0" max="360" step="0.1" placeholder="Например, 125.0"></label>
+    <label class="field"><span>Компасный пеленг (CB), °</span><input id="cb" type="number" min="0" max="360" step="0.1" placeholder="Например, 122.5"></label>
+    <label class="field"><span>Дата / время</span><input id="obsDate" type="datetime-local"></label>
+    <label class="field"><span>Объект / примечание</span><input id="note" type="text" placeholder="Sun azimuth, transit..."></label>
+   </div>
+   <p class="hint">Compass Error = True Bearing − Compass Bearing. Результат нормализуется в диапазон ±180°. East считается положительным, West отрицательным.</p>
+   <button class="action" id="calcError">Рассчитать поправку</button>
+  </div>
+  <div class="card" id="errorOutput" hidden><h2>Результат</h2><div class="result">
+   <div class="metric primary"><small>COMPASS ERROR</small><strong id="ce">—</strong><div class="sign" id="ceSign"></div></div>
+   <div class="metric"><small>ПОДПИСЬ</small><strong id="ceEW">—</strong><div class="sign">East / West</div></div>
+  </div><button class="action" id="save">Сохранить в журнал</button></div>
+ </section>
+ <section id="convert" hidden>
+  <div class="card"><h2>Перевод между компасным и истинным</h2>
+   <div class="grid">
+    <label class="field"><span>Исходный пеленг, °</span><input id="bearing" type="number" min="0" max="360" step="0.1" placeholder="0–360"></label>
+    <label class="field"><span>Поправка компаса</span><input id="correction" type="number" min="-180" max="180" step="0.1" value="0"></label>
+    <label class="field"><span>Направление перевода</span><select id="direction"><option value="ct">Compass → True</option><option value="tc">True → Compass</option></select></label>
+   </div>
+   <p class="hint">Используется формула: TB = CB + CE; CB = TB − CE. Введите поправку со знаком: East (+), West (−).</p>
+   <div class="metric primary" style="margin-top:15px"><small id="convertedLabel">TRUE BEARING</small><strong id="converted">—</strong></div>
+  </div>
+ </section>
+ <section id="log" hidden>
+  <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">Журнал наблюдений</h2><button class="ghost" id="export">Экспорт CSV</button></div>
+   <div style="overflow-x:auto"><table><thead><tr><th>Дата</th><th>TB</th><th>CB</th><th>CE</th><th>Объект</th></tr></thead><tbody id="logBody"><tr><td colspan="5" class="empty">Записей пока нет</td></tr></tbody></table></div>
+   <button class="ghost" id="clear" style="margin-top:14px;width:100%">Очистить журнал</button>
+  </div>
+ </section>
+ <footer>Проверяйте знак и исходные данные перед использованием в навигации.<br>Вспомогательный расчётный инструмент, не заменяет проверку навигационных данных.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const norm=v=>((v%360)+360)%360;
+const signed=v=>{let n=norm(v);return n>180?n-360:n};
+let pending=null, records=[];
+try{records=JSON.parse(localStorage.getItem('compassLog')||'[]')}catch{}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+ ['error','convert','log'].forEach(id=>$(id).hidden=id!==b.dataset.tab);
+ if(b.dataset.tab==='log')renderLog();
+}));
+$('obsDate').value=new Date().toISOString().slice(0,16);
+$('calcError').addEventListener('click',()=>{
+ const tb=Number($('tb').value),cb=Number($('cb').value);
+ if($('tb').value===''||$('cb').value===''||tb<0||tb>360||cb<0||cb>360){alert('Введите оба пеленга в диапазоне 0–360°.');return}
+ const ce=signed(tb-cb),ew=ce>=0?'EAST':'WEST';
+ pending={date:$('obsDate').value||new Date().toISOString(),tb:norm(tb),cb:norm(cb),ce,note:$('note').value.trim()};
+ $('ce').textContent=Math.abs(ce).toFixed(1)+'°';
+ $('ceEW').textContent=ew;
+ $('ceSign').textContent='Знак: '+(ce>=0?'+':'−')+Math.abs(ce).toFixed(1)+'°';
+ $('errorOutput').hidden=false;
+});
+$('save').addEventListener('click',()=>{if(!pending)return;records.unshift(pending);localStorage.setItem('compassLog',JSON.stringify(records));renderLog();alert('Запись сохранена');});
+function updateConvert(){
+ if($('bearing').value===''||$('correction').value===''){$('converted').textContent='—';return}
+ const b=Number($('bearing').value),c=Number($('correction').value);
+ if(b<0||b>360){$('converted').textContent='Invalid';return}
+ const out=$('direction').value==='ct'?norm(b+c):norm(b-c);
+ $('converted').textContent=out.toFixed(1)+'°';
+ $('convertedLabel').textContent=$('direction').value==='ct'?'TRUE BEARING':'COMPASS BEARING';
+}
+['bearing','correction','direction'].forEach(id=>$(id).addEventListener('input',updateConvert));
+function renderLog(){
+ $('logBody').innerHTML=records.length?records.map(r=>'<tr><td>'+escapeHtml(r.date.replace('T',' '))+'</td><td>'+r.tb.toFixed(1)+'°</td><td>'+r.cb.toFixed(1)+'°</td><td>'+(r.ce>=0?'+':'−')+Math.abs(r.ce).toFixed(1)+'° '+(r.ce>=0?'E':'W')+'</td><td>'+escapeHtml(r.note||'—')+'</td></tr>').join(''):'<tr><td colspan="5" class="empty">Записей пока нет</td></tr>';
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('export').addEventListener('click',()=>{
+ const rows=[['Date','True Bearing','Compass Bearing','Compass Error','Note'],...records.map(r=>[r.date,r.tb,r.cb,r.ce,r.note])];
+ const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='compass-log.csv';a.click();URL.revokeObjectURL(a.href);
+});
+$('clear').addEventListener('click',()=>{if(confirm('Удалить все записи журнала?')){records=[];localStorage.removeItem('compassLog');renderLog()}});
+renderLog();
+</script>
+</body>
+</html>
