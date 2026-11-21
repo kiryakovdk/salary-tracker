@@ -66,6 +66,38 @@ footer{line-height:1.7;margin:28px 8px 18px}
  .tabs button{padding:12px 5px}
  .btn{padding:15px 10px;font-size:11px}
 }
+
+/* v1.4.1: high-contrast calculation result hierarchy */
+.result-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.result-heading h2{font-size:22px;letter-spacing:-.045em;margin:5px 0 0}
+.result-kicker{font-size:9px;font-weight:800;letter-spacing:.2em;color:var(--gold)}
+.result-stamp{width:44px;height:44px;border-radius:14px;display:grid;place-content:center;text-align:center;line-height:1.35;font-size:9px;font-weight:800;letter-spacing:.12em;color:var(--gold);border:1px solid rgba(215,183,122,.34);background:rgba(215,183,122,.06)}
+.result-hero-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:12px}
+.result-hero{position:relative;overflow:hidden;min-width:0;border-radius:21px;padding:21px 19px 17px;border:1px solid rgba(190,220,230,.2);box-shadow:inset 0 1px rgba(255,255,255,.09),0 14px 32px rgba(0,0,0,.24)}
+.result-hero:after{content:"";position:absolute;width:180px;height:180px;right:-75px;top:-90px;border-radius:50%;background:rgba(220,240,245,.07);filter:blur(2px);pointer-events:none}
+.ce-hero{background:radial-gradient(ellipse at 85% 0%,rgba(178,215,223,.22),transparent 55%),linear-gradient(145deg,#234354,#102432 72%)}
+.dev-hero{background:radial-gradient(ellipse at 85% 0%,rgba(215,183,122,.17),transparent 55%),linear-gradient(145deg,#3b3540,#1c2632 72%);border-color:rgba(215,183,122,.24)}
+.hero-label{font-size:10px;font-weight:850;letter-spacing:.17em;color:#c4d8df}
+.dev-hero .hero-label{color:#e2c994}
+.result-hero strong{display:block;position:relative;z-index:1;margin:15px 0 8px;font-size:clamp(34px,6.5vw,51px);line-height:1.02;letter-spacing:-.055em;font-weight:760;font-variant-numeric:tabular-nums;color:#f1fafb;white-space:nowrap}
+.dev-hero strong{font-size:clamp(29px,5.5vw,42px);color:#f4e5c7}
+.hero-formula{font-size:10px;color:rgba(224,237,242,.72);line-height:1.5}
+.hero-foot{border-top:1px solid rgba(220,240,245,.15);margin-top:15px;padding-top:10px;font-size:9px;letter-spacing:.13em;color:rgba(224,237,242,.58)}
+.result-subtitle{margin:23px 0 11px;font-size:9px;font-weight:850;letter-spacing:.2em;color:#a9bdc9}
+#result .results{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#result .metric{padding:15px 16px;min-height:93px}
+#result .metric strong{display:block;margin-top:4px}
+#result .warning{margin-top:16px}
+@media(max-width:520px){
+ .result-hero-grid{grid-template-columns:1fr 1fr;gap:8px}
+ .result-hero{padding:16px 12px 13px;border-radius:17px}
+ .result-hero strong{font-size:clamp(27px,7.5vw,38px);margin:13px 0 7px}
+ .dev-hero strong{font-size:clamp(25px,6.8vw,34px)}
+ .hero-label{font-size:9px;letter-spacing:.12em}
+ .hero-formula{font-size:9px}
+ .hero-foot{font-size:8px;letter-spacing:.08em;margin-top:12px}
+ .result-heading h2{font-size:20px}
+}
 </style></head><body><main>
 <div class="top"><div><div class="tag">BRIDGE TOOLS · NAVIGATION</div><h1>Compass Error Log</h1><div class="muted">Celestial observation calculator</div></div><div class="mark">CC<br>LOG</div></div>
 <div class="tabs"><button class="active" data-view="entry">Новая запись</button><button data-view="history">Журнал</button></div>
@@ -101,16 +133,22 @@ footer{line-height:1.7;margin:28px 8px 18px}
 <button class="btn" id="calculate">CALCULATE CELESTIAL AZIMUTH & ERRORS</button>
 <p class="note">Расчёт истинного азимута выполняется астрономической библиотекой Astronomy Engine. Для объектов Солнечной системы используется топоцентрическое положение с учётом координат наблюдателя. Азимут отсчитывается от истинного севера по часовой стрелке.</p>
 </div>
-<div class="card hidden" id="result"><h2>Результат для COMPASS ERROR LOG</h2><div class="results">
-<div class="metric"><small>TRUE AZIMUTH (TA)</small><strong id="taOut">—</strong><div class="detail" id="altOut">Altitude —</div></div>
-<div class="metric"><small>GYRO ERROR</small><strong id="geOut">—</strong><div class="detail">TA − Gyro Bearing</div></div>
-<div class="metric"><small>TRUE HEADING</small><strong id="thOut">—</strong><div class="detail">Gyro Heading + Gyro Error</div></div>
-<div class="metric"><small>COMPASS ERROR</small><strong id="ceOut">—</strong><div class="detail">True Heading − Compass Heading</div></div>
-<div class="metric"><small>VARIATION</small><strong id="varOut">—</strong><div class="detail">Chart Variation entered</div></div>
-<div class="metric"><small>DEVIATION</small><strong id="devOut">—</strong><div class="detail">Compass Error − Variation</div></div>
-</div><div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE TO COMPASS ERROR LOG</button></div></section>
+<div class="card hidden" id="result">
+<div class="result-heading"><div><div class="result-kicker">OBSERVATION COMPLETE</div><h2>Compass correction</h2></div><div class="result-stamp">CE<br>LOG</div></div>
+<div class="result-hero-grid">
+ <div class="result-hero ce-hero"><div class="hero-label">COMPASS ERROR</div><strong id="ceOut">—</strong><div class="hero-formula">True Heading − Compass Heading</div><div class="hero-foot">EAST (+) / WEST (−)</div></div>
+ <div class="result-hero dev-hero"><div class="hero-label">DEVIATION</div><strong id="devOut">—</strong><div class="hero-formula">Compass Error − Variation</div><div class="hero-foot">EAST (+) / WEST (−)</div></div>
+</div>
+<div class="result-subtitle">CALCULATION DETAILS</div>
+<div class="results">
+ <div class="metric"><small>TRUE AZIMUTH</small><strong id="taOut">—</strong><div class="detail" id="altOut">Altitude —</div></div>
+ <div class="metric"><small>GYRO ERROR</small><strong id="geOut">—</strong><div class="detail">TA − Gyro Bearing</div></div>
+ <div class="metric"><small>TRUE HEADING</small><strong id="thOut">—</strong><div class="detail">Gyro Heading + Gyro Error</div></div>
+ <div class="metric"><small>CHART VARIATION</small><strong id="varOut">—</strong><div class="detail">Entered chart value</div></div>
+</div>
+<div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE OBSERVATION TO LOG</button></div></section>
 <section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.4.0</b><span>BUILD 2026-11-22</span></div></footer>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.4.1</b><span>BUILD 2026-11-22</span></div></footer>
 </main>
 <script>
 const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
