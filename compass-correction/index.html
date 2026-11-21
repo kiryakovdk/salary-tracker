@@ -203,7 +203,7 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 </div>
 <div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE OBSERVATION TO LOG</button></div></section>
 <section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="backup-actions"><button class="secondary" id="backupExport">Сохранить резервную копию</button><button class="secondary" id="backupImport">Восстановить из файла</button><input id="backupFile" type="file" accept=".json,application/json"></div><p class="note">Резервная копия содержит сохранённые наблюдения. Храни файл отдельно от телефона.</p><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.9.0</b><span>BUILD 2026-11-22 · CELESTIAL SELECTOR</span></div></footer>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.9.1</b><span>BUILD 2026-11-22 · PWA UPDATE FIX</span></div></footer>
 </main>
 <script>
 const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
@@ -443,7 +443,7 @@ document.querySelectorAll('#entry input, #entry select').forEach(el=>{
 
 render();updateAzimuthPreview();
 </script><script>
-/* v1.8.1: controlled PWA updates with an explicit refresh action */
+/* v1.9.1: reliable update detection for installed iOS PWAs */
 if('serviceWorker' in navigator){
  let appRegistration=null,lastUpdateCheck=0,reloadOnControllerChange=false;
  const UPDATE_CHECK_INTERVAL=5*60*1000;
@@ -453,8 +453,7 @@ if('serviceWorker' in navigator){
   $('updateVersion').textContent='Установлена новая версия. Нажми, чтобы перезапустить приложение.';
   updateNotice.classList.add('show');
  }
- function watchInstalling(reg){
-  const worker=reg.installing;
+ function watchInstalling(reg,worker=reg.installing){
   if(!worker)return;
   worker.addEventListener('statechange',()=>{
    if(worker.state==='installed'&&navigator.serviceWorker.controller)showUpdate(reg.waiting||worker);
@@ -465,18 +464,24 @@ if('serviceWorker' in navigator){
   const now=Date.now();
   if(!force&&now-lastUpdateCheck<UPDATE_CHECK_INTERVAL)return;
   lastUpdateCheck=now;
-  try{await appRegistration.update()}catch(err){console.warn('PWA update check failed',err)}
+  try{
+   await appRegistration.update();
+   if(appRegistration.waiting&&navigator.serviceWorker.controller)showUpdate(appRegistration.waiting);
+   if(appRegistration.installing)watchInstalling(appRegistration,appRegistration.installing);
+  }catch(err){console.warn('PWA update check failed',err)}
  }
  window.addEventListener('load',async()=>{
   try{
    appRegistration=await navigator.serviceWorker.register('./service-worker.js',{scope:'./',updateViaCache:'none'});
    appRegistration.addEventListener('updatefound',()=>watchInstalling(appRegistration));
+   if(appRegistration.installing)watchInstalling(appRegistration,appRegistration.installing);
    if(appRegistration.waiting&&navigator.serviceWorker.controller)showUpdate(appRegistration.waiting);
    await checkForUpdate(true);
   }catch(err){console.warn('Offline cache registration failed',err)}
  });
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForUpdate()});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForUpdate(true)});
  window.addEventListener('online',()=>checkForUpdate(true));
+ setInterval(()=>checkForUpdate(),UPDATE_CHECK_INTERVAL);
  $('applyUpdate').addEventListener('click',()=>{
   const waiting=appRegistration&&appRegistration.waiting;
   if(!waiting)return;
