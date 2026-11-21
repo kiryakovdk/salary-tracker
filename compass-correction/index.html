@@ -122,6 +122,11 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 @media(max-width:360px){.position-grid{grid-template-columns:1fr}.position-head{display:none}}
  .utc-now{align-self:end;min-height:48px;padding:0 15px;white-space:nowrap}.time-panel{flex-wrap:wrap}@media(max-width:560px){.utc-now{min-height:50px;padding:0 13px}}
 #updateNotice{display:none;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px;padding:12px 13px;border:1px solid rgba(184,213,220,.28);border-radius:13px;background:linear-gradient(120deg,rgba(37,67,82,.94),rgba(13,29,43,.96));box-shadow:0 8px 24px #0003}#updateNotice.show{display:flex}#updateNotice .update-copy{font-size:12px;line-height:1.45;color:#dce9ed}#updateNotice .update-copy b{display:block;color:#f3f8fa;font-size:13px}#updateNotice button{flex:0 0 auto;margin:0;padding:10px 13px;min-height:40px;font-size:11px}
+/* v1.10.0: standalone manual Quick Calculator */
+#quick .results{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#quick .metric{min-height:96px}
+#quick .metric strong{display:block;margin-top:5px}
+@media(max-width:420px){.tabs button{font-size:11px;padding-left:3px;padding-right:3px}}
 /* v1.9.0: searchable celestial selector and visibility catalog */
 .celestial-picker{background:linear-gradient(145deg,rgba(9,23,36,.72),rgba(15,32,46,.78));border:1px solid var(--line);border-radius:17px;padding:14px;margin:10px 0 14px}
 .category-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;margin-top:10px;scrollbar-width:none}.category-tabs::-webkit-scrollbar{display:none}
@@ -145,7 +150,7 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 @media(max-width:420px){.celestial-picker{padding:11px}.celestial-list{gap:6px}.celestial-option{padding:9px;min-height:62px}.category-tabs button{padding:8px 10px}}
 </style></head><body><main>
 <div class="top"><div><div class="tag">BRIDGE TOOLS · NAVIGATION</div><h1>Compass Error Log</h1><div class="muted">Celestial observation calculator</div></div><div class="mark">CC<br>LOG</div></div>
-<div id="updateNotice" role="status" aria-live="polite"><div class="update-copy"><b>Доступна новая версия</b><span id="updateVersion">Обновление Compass Error Log</span></div><button class="secondary" id="applyUpdate" type="button">Обновить</button></div><div id="deviceStatus" class="offline" role="status" aria-live="polite"><div class="status-left"><span class="status-dot"></span><b id="connectionLabel">Проверка режима...</b></div><span class="status-detail" id="cacheLabel">Локальное сохранение</span></div><div class="tabs"><button class="active" data-view="entry">Новая запись</button><button data-view="history">Журнал</button></div>
+<div id="updateNotice" role="status" aria-live="polite"><div class="update-copy"><b>Доступна новая версия</b><span id="updateVersion">Обновление Compass Error Log</span></div><button class="secondary" id="applyUpdate" type="button">Обновить</button></div><div id="deviceStatus" class="offline" role="status" aria-live="polite"><div class="status-left"><span class="status-dot"></span><b id="connectionLabel">Проверка режима...</b></div><span class="status-detail" id="cacheLabel">Локальное сохранение</span></div><div class="tabs"><button class="active" data-view="entry">Новая запись</button><button data-view="quick">Quick Calc</button><button data-view="history">Журнал</button></div>
 <section id="entry"><div class="card">
 <div class="section">OBSERVATION TIME · GMT / UTC</div>
 <div class="time-panel"><label class="field"><span>DATE & TIME (GMT)</span><input id="gmt" type="datetime-local"></label><button class="secondary utc-now" id="setUtcNow" type="button">NOW</button><div class="utc-chip">UTC <b>+00:00</b></div></div>
@@ -202,8 +207,33 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
  <div class="metric"><small>CHART VARIATION</small><strong id="varOut">—</strong><div class="detail">Entered chart value</div></div>
 </div>
 <div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE OBSERVATION TO LOG</button></div></section>
+<section id="quick" class="hidden"><div class="card">
+<div class="section">QUICK CALCULATOR · MANUAL INPUT</div>
+<h2 style="margin:0 0 8px">Gyro / Compass calculations</h2>
+<p class="note" style="margin:0 0 16px">Расчёт без астрономического наблюдения. Введи истинный пеленг, гиропеленг, курс гирокомпаса, курс магнитного компаса и магнитное склонение с карты.</p>
+<div class="grid">
+<label class="field"><span>TRUE BEARING (°)</span><input id="qTrueBearing" type="number" min="0" max="360" step=".1" placeholder="True bearing"></label>
+<label class="field"><span>GYRO BEARING (°)</span><input id="qGyroBearing" type="number" min="0" max="360" step=".1" placeholder="Gyro bearing"></label>
+<label class="field"><span>GYRO HEADING (°)</span><input id="qGyroHeading" type="number" min="0" max="360" step=".1" placeholder="Gyro heading"></label>
+<label class="field"><span>COMPASS HEADING (°)</span><input id="qCompassHeading" type="number" min="0" max="360" step=".1" placeholder="Compass heading"></label>
+<label class="field"><span>VARIATION (°)</span><input id="qVariation" type="number" min="0" max="180" step=".1" placeholder="Chart variation"></label>
+<label class="field"><span>VARIATION DIRECTION</span><select id="qVariationDirection"><option value="1">EAST (E)</option><option value="-1">WEST (W)</option></select></label>
+</div>
+<div id="quickValidation" class="validation-box" aria-live="polite"></div>
+<button class="btn" id="quickCalculate" type="button">CALCULATE</button>
+<div id="quickResults" class="hidden">
+<div class="result-subtitle">CALCULATION RESULTS</div>
+<div class="results">
+<div class="metric"><small>GYRO ERROR</small><strong id="qGyroError">—</strong><div class="detail">True Bearing − Gyro Bearing</div></div>
+<div class="metric"><small>TRUE HEADING</small><strong id="qTrueHeading">—</strong><div class="detail">Gyro Heading + Gyro Error</div></div>
+<div class="metric"><small>COMPASS ERROR</small><strong id="qCompassError">—</strong><div class="detail">True Heading − Compass Heading</div></div>
+<div class="metric"><small>DEVIATION</small><strong id="qDeviation">—</strong><div class="detail">Compass Error − Variation</div></div>
+</div>
+<p class="note">East (+), West (−). Угловые разности нормализуются к ±180°.</p>
+</div>
+</div></section>
 <section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="backup-actions"><button class="secondary" id="backupExport">Сохранить резервную копию</button><button class="secondary" id="backupImport">Восстановить из файла</button><input id="backupFile" type="file" accept=".json,application/json"></div><p class="note">Резервная копия содержит сохранённые наблюдения. Храни файл отдельно от телефона.</p><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.9.2</b><span>BUILD 2026-11-22 · SEARCH RESET FIX</span></div></footer>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.10.0</b><span>BUILD 2026-11-22 · QUICK CALCULATOR</span></div></footer>
 </main>
 <script>
 const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
@@ -295,7 +325,26 @@ document.addEventListener('click',event=>{
 function updateBodyFields(){updateAzimuthPreview()}
 $('bodyType').onchange=updateBodyFields;
 $('planet').onchange=updateAzimuthPreview;$('starName').onchange=updateAzimuthPreview;
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));$('entry').classList.toggle('hidden',b.dataset.view!=='entry');$('history').classList.toggle('hidden',b.dataset.view!=='history');render()});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));['entry','quick','history'].forEach(id=>$(id).classList.toggle('hidden',b.dataset.view!==id));if(b.dataset.view==='history')render()});
+$('quickCalculate').onclick=()=>{
+ const fields=[['qTrueBearing','True Bearing',360],['qGyroBearing','Gyro Bearing',360],['qGyroHeading','Gyro Heading',360],['qCompassHeading','Compass Heading',360],['qVariation','Variation',180]];
+ const errors=[];
+ const values={};
+ fields.forEach(([id,label,max])=>{const raw=$(id).value.trim(),v=raw===''?null:Number(raw);if(v===null||!Number.isFinite(v)||v<0||v>max)errors.push(label+': введи значение от 0 до '+max+'°');else values[id]=v});
+ const box=$('quickValidation');
+ if(errors.length){box.className='validation-box show error';box.innerHTML='<b>Проверь исходные данные:</b><ul>'+errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';$('quickResults').classList.add('hidden');return}
+ box.className='validation-box';box.innerHTML='';
+ const variation=values.qVariation*Number($('qVariationDirection').value);
+ const gyroError=diff(values.qTrueBearing,values.qGyroBearing);
+ const trueHeading=norm(values.qGyroHeading+gyroError);
+ const compassError=diff(trueHeading,values.qCompassHeading);
+ const deviation=diff(compassError,variation);
+ $('qGyroError').textContent=signed(gyroError);
+ $('qTrueHeading').textContent=f(trueHeading);
+ $('qCompassError').textContent=signed(compassError);
+ $('qDeviation').textContent=signed(deviation);
+ $('quickResults').classList.remove('hidden');
+};
 function n(id){let s=$(id).value.trim();return s===''?null:Number(s)}
 function requiredAngle(id,label){let v=n(id);if(v===null||!Number.isFinite(v)||v<0||v>360)throw Error(label+' должен быть в диапазоне 0–360°');return v}
 function parsePosition(id,kind){
