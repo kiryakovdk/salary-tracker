@@ -49,6 +49,7 @@ th{font-size:9px;letter-spacing:.09em;text-transform:uppercase}
 footer{line-height:1.7;margin:28px 8px 18px}
 .app-version{border-top-color:var(--line);letter-spacing:.12em;padding-top:15px}
 .app-version b{color:var(--gold)}
+.validation-box{display:none;border:1px solid rgba(210,165,92,.35);background:rgba(89,63,29,.22);border-radius:13px;padding:13px 15px;margin:14px 0;color:#ead7b5;font-size:12px;line-height:1.6}.validation-box.show{display:block}.validation-box.error{border-color:rgba(222,112,99,.5);background:rgba(100,35,30,.24);color:#f0c1b9}.validation-box ul{margin:7px 0 0;padding-left:18px}.validation-box li+li{margin-top:4px}.field input.invalid,.coord-control.invalid{border-color:#d97869!important;box-shadow:0 0 0 2px rgba(217,120,105,.12)!important}
 @media(max-width:600px){
  main{padding:20px 12px 38px}
  .card{padding:17px;border-radius:19px;margin:12px 0}
@@ -130,7 +131,7 @@ footer{line-height:1.7;margin:28px 8px 18px}
 </div>
 <div class="grid" style="margin-top:11px"><label class="field"><span>HEEL (°)</span><input id="heel" type="number" step=".1" placeholder="Optional"></label><label class="field"><span>INITIALS</span><input id="initials" placeholder="Officer initials"></label><label class="field full"><span>REMARKS</span><input id="remarks" placeholder="Optional notes"></label></div>
 <div class="warning">Время вводится именно в GMT/UTC, не в местном судовом времени. Для звёзд используется встроенный каталог навигационных звёзд с координатами J2000. True Azimuth автоматически обновляется при изменении даты, времени, координат или выбранного объекта.</div>
-<button class="btn" id="calculate">CALCULATE CELESTIAL AZIMUTH & ERRORS</button>
+<div id="validationBox" class="validation-box" role="status" aria-live="polite"></div><button class="btn" id="calculate">CALCULATE CELESTIAL AZIMUTH & ERRORS</button>
 <p class="note">Расчёт истинного азимута выполняется астрономической библиотекой Astronomy Engine. Для объектов Солнечной системы используется топоцентрическое положение с учётом координат наблюдателя. Азимут отсчитывается от истинного севера по часовой стрелке.</p>
 </div>
 <div class="card hidden" id="result">
@@ -162,7 +163,7 @@ function visibleAltitude(body,date,obs){const eq=Astronomy.Equator(body,date,obs
 function visibleObjects(){
  if(!window.Astronomy||!$('gmt').value)return null;
  try{
-  const date=new Date($('gmt').value+'Z');if(Number.isNaN(date.getTime()))return null;
+  const date=parseUtcDateTime($('gmt').value);
   const obs=new Astronomy.Observer(parsePosition('lat','lat'),parsePosition('lon','lon'),0);
   const visible={Sun:visibleAltitude(Astronomy.Body.Sun,date,obs)>0,Moon:visibleAltitude(Astronomy.Body.Moon,date,obs)>0,planet:[],star:[]};
   ['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'].forEach(name=>{if(visibleAltitude(Astronomy.Body[name],date,obs)>0)visible.planet.push(name)});
@@ -195,12 +196,22 @@ document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.quer
 function n(id){let s=$(id).value.trim();return s===''?null:Number(s)}
 function requiredAngle(id,label){let v=n(id);if(v===null||!Number.isFinite(v)||v<0||v>360)throw Error(label+' должен быть в диапазоне 0–360°');return v}
 function parsePosition(id,kind){
- const isLat=kind==='lat',deg=Number($(id+'Deg').value),min=Number($(id+'Min').value)+Number($(id+'MinDec').value)/10,hem=$(id+'Hem').value;
- if(!Number.isFinite(deg)||!Number.isFinite(min))throw Error('Выбери координаты судна');
- if(min<0||min>=60)throw Error('Минуты координаты должны быть меньше 60');
- const max=isLat?90:180;if(deg<0||deg>max||(deg===max&&min!==0))throw Error('Координата выходит за допустимый диапазон');
- const sign=(hem==='S'||hem==='W')?-1:1;
- return sign*(deg+min/60);
+ const isLat=kind==='lat',degRaw=$(id+'Deg').value,minRaw=$(id+'Min').value,tenthRaw=$(id+'MinDec').value,hem=$(id+'Hem').value;
+ if(degRaw===''||minRaw===''||tenthRaw===''||!hem)throw Error('Заполни координаты судна полностью');
+ const deg=Number(degRaw),wholeMin=Number(minRaw),tenth=Number(tenthRaw),min=wholeMin+tenth/10;
+ if(!Number.isInteger(deg)||!Number.isInteger(wholeMin)||!Number.isInteger(tenth)||tenth<0||tenth>9)throw Error('Некорректный формат координат');
+ if(wholeMin<0||wholeMin>59)throw Error('Минуты координаты должны быть от 00 до 59');
+ const max=isLat?90:180;if(deg<0||deg>max||(deg===max&&min!==0))throw Error('Координата выходит за допустимый диапазон: '+(isLat?'широта 0–90°':'долгота 0–180°'));
+ if(isLat&&!['N','S'].includes(hem))throw Error('Для широты выбери N или S');
+ if(!isLat&&!['E','W'].includes(hem))throw Error('Для долготы выбери E или W');
+ return (hem==='S'||hem==='W'?-1:1)*(deg+min/60);
+}
+function parseUtcDateTime(raw){
+ if(!/^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d$/.test(raw||''))throw Error('Укажи корректные дату и время в формате GMT/UTC.');
+ const [datePart,timePart]=raw.split('T'),[y,m,d]=datePart.split('-').map(Number),[hh,mm]=timePart.split(':').map(Number);
+ const date=new Date(Date.UTC(y,m-1,d,hh,mm));
+ if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d||date.getUTCHours()!==hh||date.getUTCMinutes()!==mm)throw Error('Такой даты не существует. Проверь дату наблюдения.');
+ return date;
 }
 function initCoordinateWheels(){
  const fill=(id,max,format)=>{const el=$(id);el.innerHTML=Array.from({length:max+1},(_,i)=>'<option value="'+i+'">'+format(i)+'</option>').join('')};
@@ -217,7 +228,7 @@ function getAstro(){
  if(!window.Astronomy)throw Error('Не загрузилась астрономическая библиотека. Проверь интернет-соединение и обнови страницу.');
  const lat=parsePosition('lat','lat'),lon=parsePosition('lon','lon'),raw=$('gmt').value;
  if(!raw)throw Error('Укажи дату и GMT.');
- const date=new Date(raw+'Z');if(Number.isNaN(date.getTime()))throw Error('Некорректная дата/время GMT.');
+ const date=parseUtcDateTime(raw);
  const obs=new Astronomy.Observer(lat,lon,0),type=$('bodyType').value;let body,bodyName;
  if(type==='star'){const star=NAV_STARS[Number($('starName').value)];if(!star)throw Error('Выбери навигационную звезду');Astronomy.DefineStar(Astronomy.Body.Star1,star[1],star[2],1000);body=Astronomy.Body.Star1;bodyName=star[0]}
  else if(type==='planet'){bodyName=$('planet').value;body=Astronomy.Body[bodyName]}
@@ -227,17 +238,34 @@ function getAstro(){
 }
 function updateAzimuthPreview(){const visible=refreshVisibleObjects();if(visible&&!visible.Sun&&!visible.Moon&&!visible.planet.length&&!visible.star.length){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent='Сейчас нет видимых объектов над горизонтом';return}try{const a=getAstro();$('azPreviewValue').textContent=f(a.az);$('azPreviewDetail').textContent=a.bodyName+' · Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · '+$('gmt').value.replace('T',' ')+' GMT';$('azPreview').style.borderColor=a.altitude<0?'#9b6336':'var(--accent)'}catch(e){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message}}
 $('gmt').addEventListener('change',updateAzimuthPreview);
+function showValidation(errors,warnings){const box=$('validationBox');if(!errors.length&&!warnings.length){box.className='validation-box';box.innerHTML='';return}box.className='validation-box show'+(errors.length?' error':'');box.innerHTML=(errors.length?'<b>Нужно исправить:</b><ul>'+errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+(warnings.length?'<b style="display:block;margin-top:'+(errors.length?'10':'0')+'px">Проверь перед расчётом:</b><ul>'+warnings.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')}
+function validateInputs(){
+ const errors=[],warnings=[];
+ try{parseUtcDateTime($('gmt').value)}catch(e){errors.push(e.message)}
+ try{parsePosition('lat','lat')}catch(e){errors.push(e.message)}
+ try{parsePosition('lon','lon')}catch(e){errors.push(e.message)}
+ [['headGyro','Gyro Heading'],['headMag','Compass Heading'],['gyroBearing','Gyro Bearing']].forEach(([id,label])=>{const v=n(id);if(v===null||!Number.isFinite(v)||v<0||v>360)errors.push(label+': введи значение от 0 до 360°')});
+ const variation=n('varVal');if(variation===null||!Number.isFinite(variation)||variation<0||variation>180)errors.push('Chart Variation: введи значение от 0 до 180°');
+ const heel=n('heel');if(heel!==null&&(!Number.isFinite(heel)||heel < -90||heel>90))errors.push('Heel должен быть в диапазоне от −90° до +90°');
+ if(heel!==null&&Number.isFinite(heel)&&Math.abs(heel)>15)warnings.push('Heel больше 15°. Проверь знак и величину крена. Это предупреждение не блокирует расчёт.');
+ [['headGyro','Gyro Heading'],['headMag','Compass Heading'],['gyroBearing','Gyro Bearing']].forEach(([id,label])=>{if(n(id)===360)warnings.push(label+' введён как 360°. Это эквивалентно 000°. Проверь, что значение намеренное.')});
+ if(variation!==null&&Number.isFinite(variation)&&variation>30)warnings.push('Chart Variation больше 30°. Проверь значение и направление по актуальной карте.');
+ return{errors,warnings};
+}
 $('calculate').onclick=()=>{
+ const check=validateInputs();showValidation(check.errors,check.warnings);if(check.errors.length){$('validationBox').scrollIntoView({behavior:'smooth',block:'center'});return}
  try{
   const a=getAstro(),gh=requiredAngle('headGyro','Gyro Heading'),mh=requiredAngle('headMag','Compass Heading'),gb=requiredAngle('gyroBearing','Gyro Bearing');
-  const vv=n('varVal');if(vv===null||!Number.isFinite(vv)||vv<0||vv>180)throw Error('Введи Chart Variation от 0 до 180°');
+  const vv=n('varVal');
   const variation=vv*Number($('varDir').value),ge=diff(a.az,gb),trueHeading=norm(gh+ge),ce=diff(trueHeading,mh),dev=diff(ce,variation);
   const bodyName=a.bodyName;
   current={gmt:$('gmt').value,lat:a.lat,lon:a.lon,body:bodyName.trim(),azimuth:a.az,altitude:a.altitude,gyroBearing:gb,gyroError:ge,gyroHeading:gh,magHeading:mh,trueHeading,compassError:ce,variation,deviation:dev,heel:n('heel'),remarks:$('remarks').value.trim(),initials:$('initials').value.trim()};
   $('taOut').textContent=f(a.az);$('altOut').textContent='Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'°';$('geOut').textContent=signed(ge);$('thOut').textContent=f(trueHeading);$('ceOut').textContent=signed(ce);$('varOut').textContent=signed(variation);$('devOut').textContent=signed(dev);
   $('visibilityNote').textContent=a.altitude<0?'ВНИМАНИЕ: объект геометрически ниже горизонта в указанное время/месте. Проверь дату, GMT, координаты и наблюдение.':a.altitude<5?'Объект низко над горизонтом. Атмосферная рефракция и условия наблюдения могут заметно влиять на результат.':'Проверь совпадение выбранного объекта с фактически наблюдаемым телом и корректность исходных показаний.';
-  $('result').classList.remove('hidden');
- }catch(e){alert(e.message||String(e))}
+  if(a.altitude<0)check.warnings.push('Выбранный объект ниже геометрического горизонта. Убедись, что объект и время указаны верно.');
+  if(a.altitude>=0&&a.altitude<5)check.warnings.push('Объект ниже 5° над горизонтом. Рефракция и условия наблюдения могут влиять на результат.');
+  showValidation([],check.warnings);$('result').classList.remove('hidden');
+ }catch(e){showValidation([e.message||String(e)],[]);$('validationBox').scrollIntoView({behavior:'smooth',block:'center'})}
 };
 $('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));localStorage.removeItem(DRAFT_KEY);render();alert('Запись сохранена в журнале этого браузера.')};
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
