@@ -251,7 +251,7 @@ function chooseCelestialObject(item){
  updateAzimuthPreview();
  renderCelestialCatalog();
 }
-function renderCelestialCatalog(catalog){
+function renderCelestialCatalogItems(catalog){
  const list=$('celestialList'),quick=$('quickStars');
  if(!catalog){
   list.innerHTML='<div class="catalog-empty">Проверь дату GMT и координаты судна</div>';
@@ -277,7 +277,7 @@ function renderCelestialCatalog(catalog){
 }
 function renderCelestialCatalog(){
  const catalog=visibleObjects();
- renderCelestialCatalog(catalog);
+ renderCelestialCatalogItems(catalog);
 }
 $('bodyCategories').addEventListener('click',event=>{
  const button=event.target.closest('button[data-category]');if(!button)return;
