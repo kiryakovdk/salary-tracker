@@ -3,14 +3,21 @@
 <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
 <style>
 :root{color-scheme:dark;--panel:#14212d;--field:#0c1721;--line:#2c4051;--txt:#edf4f8;--muted:#9aabba;--accent:#70d6c5}*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#172a3a,#0b121a 55%);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--txt)}main{max-width:900px;margin:auto;padding:24px 15px 45px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.tag{color:var(--accent);font-size:11px;letter-spacing:.16em;font-weight:800}.top h1{font-size:clamp(26px,5vw,36px);margin:6px 0}.muted{color:var(--muted);font-size:13px}.mark{border:1px solid var(--line);border-radius:13px;padding:10px;color:var(--accent);font-weight:800}.tabs{display:flex;gap:6px;background:#09131c;padding:5px;border-radius:13px;margin-bottom:14px}.tabs button{flex:1;padding:11px 5px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:700}.tabs button.active{background:#203344;color:var(--txt)}.card{background:#14212def;border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0}.card h2{font-size:16px;margin:0 0 14px}.section{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.1em;margin:19px 0 10px}.section:first-child{margin-top:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field span{font-size:11px;color:var(--muted);font-weight:700}.field input,.field select{width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--txt);font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}.full{grid-column:1/-1}.btn{border:0;border-radius:11px;background:var(--accent);color:#08201c;font-weight:850;padding:14px;width:100%;margin-top:14px;font-size:14px}.secondary{background:#203344;color:var(--txt);border:1px solid var(--line);padding:10px 12px;border-radius:10px;font-weight:700}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{background:#0b1721;border:1px solid var(--line);border-radius:12px;padding:13px}.metric small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}.metric strong{font-size:24px;color:var(--accent)}.metric .detail{font-size:12px;color:var(--muted);margin-top:4px}.note{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0 0}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}td,th{text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:18px}.hidden{display:none!important}.warning{background:#392a18;border:1px solid #72552b;color:#f5d9a7;border-radius:11px;padding:12px;font-size:12px;line-height:1.5;margin:12px 0}footer{text-align:center;color:var(--muted);font-size:11px;line-height:1.5;margin:24px 0}@media(max-width:600px){.three{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){main{padding:18px 11px 35px}.card{padding:14px}.field input,.field select{padding:11px}.tabs button{font-size:12px}.metric strong{font-size:21px}}
-</style></head><body><main>
+.time-panel{display:flex;align-items:end;gap:12px}.time-panel .field{flex:1}.utc-chip{background:#0b1721;border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:12px;white-space:nowrap}.utc-chip b{color:var(--accent);margin-left:5px}.position-panel{background:linear-gradient(145deg,#102330,#0c1721);border:1px solid #294456;border-radius:14px;padding:14px}.position-head,.position-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.position-head{margin-bottom:9px}.position-head b{display:block;font-size:13px}.position-head small{color:var(--muted);font-size:10px}.coord-control{display:flex;align-items:center;gap:5px;min-width:0;background:#08131d;border:1px solid #2c4051;border-radius:11px;padding:6px}.coord-control select{appearance:none;-webkit-appearance:none;min-width:0;flex:1;background:#152635;border:1px solid #30495b;border-radius:8px;color:var(--txt);font:600 15px -apple-system,BlinkMacSystemFont,sans-serif;text-align:center;padding:10px 2px;outline:none}.coord-control select:focus{border-color:var(--accent)}.coord-control span{color:var(--muted);font-size:12px}.coord-control select:last-child{flex:0 0 40px;color:var(--accent)}.position-hint{font-size:10px;color:var(--muted);margin-top:10px}.time-panel input{font-variant-numeric:tabular-nums}@media(max-width:560px){.time-panel{align-items:stretch}.utc-chip{display:flex;align-items:center}.position-panel{padding:11px}.position-head,.position-grid{gap:7px}.coord-control{gap:3px;padding:5px 3px}.coord-control select{font-size:14px;padding:11px 0}.coord-control select:last-child{flex-basis:34px}}</style></head><body><main>
 <div class="top"><div><div class="tag">BRIDGE TOOLS · NAVIGATION</div><h1>Compass Error Log</h1><div class="muted">Celestial observation calculator</div></div><div class="mark">CC<br>LOG</div></div>
 <div class="tabs"><button class="active" data-view="entry">Новая запись</button><button data-view="history">Журнал</button></div>
 <section id="entry"><div class="card">
-<div class="section">TIME & POSITION · GMT / UTC</div><div class="grid three">
-<label class="field"><span>DATE & GMT TIME</span><input id="gmt" type="datetime-local"></label>
-<label class="field"><span>LATITUDE</span><input id="lat" type="text" inputmode="text" placeholder="44 38.4 N"></label>
-<label class="field"><span>LONGITUDE</span><input id="lon" type="text" inputmode="text" placeholder="007 02.5 E"></label></div>
+<div class="section">OBSERVATION TIME · GMT / UTC</div>
+<div class="time-panel"><label class="field"><span>DATE & TIME (GMT)</span><input id="gmt" type="datetime-local"></label><div class="utc-chip">UTC <b>+00:00</b></div></div>
+<div class="section">SHIP'S POSITION</div>
+<div class="position-panel">
+ <div class="position-head"><div><b>Latitude</b><small>North / South</small></div><div><b>Longitude</b><small>East / West</small></div></div>
+ <div class="position-grid">
+  <div class="coord-control"><select id="latDeg" aria-label="Latitude degrees"></select><span>°</span><select id="latMin" aria-label="Latitude minutes"></select><span>′</span><select id="latHem" aria-label="Latitude hemisphere"><option>N</option><option>S</option></select></div>
+  <div class="coord-control"><select id="lonDeg" aria-label="Longitude degrees"></select><span>°</span><select id="lonMin" aria-label="Longitude minutes"></select><span>′</span><select id="lonHem" aria-label="Longitude hemisphere"><option>E</option><option>W</option></select></div>
+ </div>
+ <div class="position-hint">Выбирай градусы и минуты из выпадающих колёсиков. Точность до 0.1′</div>
+</div>
 <div class="section">CELESTIAL BODY</div><div class="grid">
 <label class="field"><span>OBJECT TYPE</span><select id="bodyType"><option value="Sun">Sun</option><option value="Moon">Moon</option><option value="planet">Planet</option><option value="star">Star</option></select></label>
 <label class="field hidden" id="planetWrap"><span>PLANET</span><select id="planet"><option>Mercury</option><option>Venus</option><option>Mars</option><option>Jupiter</option><option>Saturn</option><option>Uranus</option><option>Neptune</option><option>Pluto</option></select></label>
@@ -58,19 +65,23 @@ document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.quer
 function n(id){let s=$(id).value.trim();return s===''?null:Number(s)}
 function requiredAngle(id,label){let v=n(id);if(v===null||!Number.isFinite(v)||v<0||v>360)throw Error(label+' должен быть в диапазоне 0–360°');return v}
 function parsePosition(id,kind){
- const raw=$(id).value.trim().toUpperCase();
- if(!raw)throw Error((kind==='lat'?'Latitude':'Longitude')+': введи координату, например '+(kind==='lat'?'44 38.4 N':'007 02.5 E'));
- const m=raw.match(/^([+-]?\\d{1,3})(?:[\\s°]+(\\d{1,2}(?:\\.\\d+)?))?\\s*['′]?\\s*([NSEW])?$/);
- if(!m)throw Error('Неверный формат '+(kind==='lat'?'Latitude':'Longitude')+'. Используй формат 44 38.4 N или 007 02.5 E');
- const deg=Number(m[1]),min=m[2]===undefined?0:Number(m[2]),hem=m[3];
- if(min>=60)throw Error('Минуты координаты должны быть меньше 60');
- if(kind==='lat'&&hem&&!['N','S'].includes(hem))throw Error('Для Latitude используй N или S');
- if(kind==='lon'&&hem&&!['E','W'].includes(hem))throw Error('Для Longitude используй E или W');
- if(kind==='lat'&&Math.abs(deg)>90||kind==='lon'&&Math.abs(deg)>180)throw Error('Координата выходит за допустимый диапазон');
- if(Math.abs(deg)===(kind==='lat'?90:180)&&min!==0)throw Error('На предельной широте/долготе минуты должны быть 0');
- let sign=deg<0?-1:1;if(hem)sign=['S','W'].includes(hem)?-1:1;
- return sign*(Math.abs(deg)+min/60);
+ const isLat=kind==='lat',deg=Number($(id+'Deg').value),min=Number($(id+'Min').value),hem=$(id+'Hem').value;
+ if(!Number.isFinite(deg)||!Number.isFinite(min))throw Error('Выбери координаты судна');
+ if(min<0||min>=60)throw Error('Минуты координаты должны быть меньше 60');
+ const max=isLat?90:180;if(deg<0||deg>max||(deg===max&&min!==0))throw Error('Координата выходит за допустимый диапазон');
+ const sign=(hem==='S'||hem==='W')?-1:1;
+ return sign*(deg+min/60);
 }
+function initCoordinateWheels(){
+ const fill=(id,max,format)=>{const el=$(id);el.innerHTML=Array.from({length:max+1},(_,i)=>'<option value="'+i+'">'+format(i)+'</option>').join('')};
+ fill('latDeg',90,v=>String(v).padStart(2,'0'));fill('lonDeg',180,v=>String(v).padStart(3,'0'));
+ const mins=Array.from({length:600},(_,i)=>{const v=(i/10).toFixed(1);return '<option value="'+v+'">'+v.padStart(4,'0')+'</option>'}).join('');
+ $('latMin').innerHTML=mins;$('lonMin').innerHTML=mins;
+ $('latDeg').value='44';$('latMin').value='38.4';$('latHem').value='N';
+ $('lonDeg').value='7';$('lonMin').value='2.5';$('lonHem').value='E';
+ ['latDeg','latMin','latHem','lonDeg','lonMin','lonHem'].forEach(id=>$(id).addEventListener('change',updateAzimuthPreview));
+}
+initCoordinateWheels();
 function getAstro(){
  if(!window.Astronomy)throw Error('Не загрузилась астрономическая библиотека. Проверь интернет-соединение и обнови страницу.');
  const lat=parsePosition('lat','lat'),lon=parsePosition('lon','lon'),raw=$('gmt').value;
@@ -84,8 +95,7 @@ function getAstro(){
  return{date,az:norm(hor.azimuth),altitude:hor.altitude,lat,lon,bodyName};
 }
 function updateAzimuthPreview(){try{const a=getAstro();$('azPreviewValue').textContent=f(a.az);$('azPreviewDetail').textContent=a.bodyName+' · Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · '+$('gmt').value.replace('T',' ')+' GMT';$('azPreview').style.borderColor=a.altitude<0?'#9b6336':'var(--accent)'}catch(e){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message}}
-['gmt','lat','lon'].forEach(id=>$(id).addEventListener('change',updateAzimuthPreview));
-['lat','lon'].forEach(id=>$(id).addEventListener('input',()=>{clearTimeout(window.__azTimer);window.__azTimer=setTimeout(updateAzimuthPreview,450)}));
+$('gmt').addEventListener('change',updateAzimuthPreview);
 $('calculate').onclick=()=>{
  try{
   const a=getAstro(),gh=requiredAngle('headGyro','Gyro Heading'),mh=requiredAngle('headMag','Compass Heading'),gb=requiredAngle('gyroBearing','Gyro Bearing');
