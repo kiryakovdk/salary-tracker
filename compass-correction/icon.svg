@@ -1,32 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 <defs>
- <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#07172c"/><stop offset=".58" stop-color="#102b43"/><stop offset="1" stop-color="#071522"/></linearGradient>
- <linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff0b4"/><stop offset=".35" stop-color="#d99a42"/><stop offset=".7" stop-color="#8f5420"/><stop offset="1" stop-color="#f5d58b"/></linearGradient>
- <linearGradient id="sea" x2="0" y2="1"><stop stop-color="#e7a05b"/><stop offset=".2" stop-color="#243b51"/><stop offset="1" stop-color="#071522"/></linearGradient>
- <radialGradient id="glow"><stop stop-color="#fff4cb" stop-opacity=".9"/><stop offset="1" stop-color="#f7b35e" stop-opacity="0"/></radialGradient>
- <clipPath id="clip"><rect x="12" y="12" width="488" height="488" rx="104"/></clipPath>
+  <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+    <stop offset="0" stop-color="#263746"/>
+    <stop offset="1" stop-color="#0b1219"/>
+  </radialGradient>
+  <linearGradient id="needle" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#f4f7f8"/>
+    <stop offset="1" stop-color="#9eabb5"/>
+  </linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#f2d49a"/>
+    <stop offset="1" stop-color="#b88749"/>
+  </linearGradient>
+  <filter id="soft"><feGaussianBlur stdDeviation="16"/></filter>
 </defs>
-<g clip-path="url(#clip)">
- <rect width="512" height="512" fill="url(#bg)"/>
- <circle cx="390" cy="105" r="80" fill="url(#glow)" opacity=".45"/>
- <g fill="#d9e8ff"><circle cx="84" cy="72" r="2"/><circle cx="148" cy="111" r="1.5"/><circle cx="231" cy="56" r="1.5"/><circle cx="344" cy="67" r="2"/><circle cx="450" cy="160" r="1.5"/><circle cx="403" cy="43" r="1.2"/></g>
- <path d="M0 318 Q115 294 220 321 T512 310 V512 H0Z" fill="url(#sea)"/>
- <circle cx="93" cy="322" r="52" fill="url(#glow)"/><circle cx="93" cy="322" r="17" fill="#ffd38a"/>
- <path d="M0 354 Q100 343 190 357 T512 350" fill="none" stroke="#d89b61" stroke-opacity=".45" stroke-width="2"/>
- <g transform="translate(256 204)" fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M-139 65 A154 154 0 0 1 139 65" stroke-width="13"/>
-  <path d="M-122 65 A136 136 0 0 1 122 65" stroke-width="2"/>
-  <path d="M-108 53 L-115 36 M-76 30 L-83 13 M-40 15 L-44 -4 M0 9 V-10 M40 15 L44 -4 M76 30 L83 13 M108 53 L115 36" stroke-width="4"/>
-  <path d="M0 -145 V65 M-139 65 L0 -145 L139 65 M-102 -30 L102 -30" stroke-width="8"/>
-  <circle cy="-112" r="42" stroke-width="8" fill="#10243a"/>
-  <path d="M-12 -112 H12 M0 -124 V-100" stroke-width="5"/>
-  <path d="M0 -145 L8 -170 L17 -166 L10 -136" stroke-width="7"/>
-  <path d="M-139 65 Q0 130 139 65" stroke-width="7"/>
-  <path d="M-5 65 L-5 100 H5 V65" stroke-width="7"/>
-  <circle cy="101" r="12" fill="url(#gold)" stroke-width="4"/>
- </g>
- <path d="M60 405 H452" stroke="#d99e50" stroke-opacity=".8" stroke-width="2"/>
- <text x="256" y="443" text-anchor="middle" fill="#f7f1e5" font-family="Georgia,serif" font-size="43" letter-spacing="5">COMPASS</text>
- <text x="256" y="473" text-anchor="middle" fill="#e9b76e" font-family="Arial,sans-serif" font-size="17" letter-spacing="8">ERROR LOG</text>
- <rect x="12" y="12" width="488" height="488" rx="104" fill="none" stroke="#6c9fc5" stroke-opacity=".55" stroke-width="5"/>
-</g></svg>
+<rect width="512" height="512" fill="url(#bg)"/>
+<circle cx="256" cy="256" r="176" fill="none" stroke="#dce5eb" stroke-opacity=".10" stroke-width="2"/>
+<circle cx="256" cy="256" r="145" fill="none" stroke="#dce5eb" stroke-opacity=".22" stroke-width="2"/>
+<circle cx="256" cy="256" r="118" fill="none" stroke="#dce5eb" stroke-opacity=".08" stroke-width="1.5"/>
+<path d="M256 58V91 M256 421V454 M58 256H91 M421 256H454" stroke="#e7edf1" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+<path d="M256 112L294 256L256 400L218 256Z" fill="url(#needle)" opacity=".95"/>
+<path d="M256 112L256 256L218 256Z" fill="url(#gold)"/>
+<path d="M256 400L256 256L294 256Z" fill="#687987"/>
+<circle cx="256" cy="256" r="13" fill="#101a23" stroke="url(#gold)" stroke-width="5"/>
+<circle cx="256" cy="256" r="4" fill="#f4d8a5"/>
+<path d="M256 78L263 97H249Z" fill="#f0d39a"/>
+</svg>
