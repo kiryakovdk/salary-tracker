@@ -122,6 +122,27 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 @media(max-width:360px){.position-grid{grid-template-columns:1fr}.position-head{display:none}}
  .utc-now{align-self:end;min-height:48px;padding:0 15px;white-space:nowrap}.time-panel{flex-wrap:wrap}@media(max-width:560px){.utc-now{min-height:50px;padding:0 13px}}
 #updateNotice{display:none;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px;padding:12px 13px;border:1px solid rgba(184,213,220,.28);border-radius:13px;background:linear-gradient(120deg,rgba(37,67,82,.94),rgba(13,29,43,.96));box-shadow:0 8px 24px #0003}#updateNotice.show{display:flex}#updateNotice .update-copy{font-size:12px;line-height:1.45;color:#dce9ed}#updateNotice .update-copy b{display:block;color:#f3f8fa;font-size:13px}#updateNotice button{flex:0 0 auto;margin:0;padding:10px 13px;min-height:40px;font-size:11px}
+/* v1.9.0: searchable celestial selector and visibility catalog */
+.celestial-picker{background:linear-gradient(145deg,rgba(9,23,36,.72),rgba(15,32,46,.78));border:1px solid var(--line);border-radius:17px;padding:14px;margin:10px 0 14px}
+.category-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;margin-top:10px;scrollbar-width:none}.category-tabs::-webkit-scrollbar{display:none}
+.category-tabs button{flex:0 0 auto;min-height:38px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(5,16,27,.55);color:var(--muted);font-size:11px;font-weight:750}
+.category-tabs button.active{background:rgba(184,213,220,.17);border-color:rgba(184,213,220,.42);color:#edf7fa}
+.quick-label,.catalog-heading{font-size:9px;font-weight:850;letter-spacing:.16em;color:#a9bdc9;margin:10px 0}
+.quick-stars{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin}
+.quick-stars button{flex:0 0 auto;min-height:36px;padding:8px 11px;border:1px solid rgba(215,183,122,.24);border-radius:10px;background:rgba(215,183,122,.07);color:#ead8b6;font-size:11px;font-weight:750}
+.catalog-heading{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+.catalog-heading span:last-child{color:var(--muted);font-variant-numeric:tabular-nums}
+.celestial-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:300px;overflow-y:auto;padding:1px}
+.celestial-option{display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:5px;min-width:0;min-height:64px;padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(5,16,27,.55);color:var(--txt)}
+.celestial-option.selected{border-color:#b8d5dc;background:rgba(115,157,170,.18);box-shadow:inset 0 0 0 1px rgba(184,213,220,.1)}
+.celestial-option.low-alt{border-color:rgba(215,183,122,.42)}
+.celestial-option b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.celestial-option small{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.celestial-option .low-tag{color:#e7c58d}
+.catalog-empty{grid-column:1/-1;padding:17px 10px;text-align:center;color:var(--muted);font-size:11px;line-height:1.5}
+.catalog-note{font-size:10px;color:var(--muted);line-height:1.5;margin-top:10px}
+#selectedVisibility{margin-top:5px;color:#d8c39a}
+@media(max-width:420px){.celestial-picker{padding:11px}.celestial-list{gap:6px}.celestial-option{padding:9px;min-height:62px}.category-tabs button{padding:8px 10px}}
 </style></head><body><main>
 <div class="top"><div><div class="tag">BRIDGE TOOLS · NAVIGATION</div><h1>Compass Error Log</h1><div class="muted">Celestial observation calculator</div></div><div class="mark">CC<br>LOG</div></div>
 <div id="updateNotice" role="status" aria-live="polite"><div class="update-copy"><b>Доступна новая версия</b><span id="updateVersion">Обновление Compass Error Log</span></div><button class="secondary" id="applyUpdate" type="button">Обновить</button></div><div id="deviceStatus" class="offline" role="status" aria-live="polite"><div class="status-left"><span class="status-dot"></span><b id="connectionLabel">Проверка режима...</b></div><span class="status-detail" id="cacheLabel">Локальное сохранение</span></div><div class="tabs"><button class="active" data-view="entry">Новая запись</button><button data-view="history">Журнал</button></div>
@@ -137,12 +158,22 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
  </div>
  <div class="position-hint">Градусы, целые минуты и десятые минуты выбираются отдельно. Точность до 0.1′</div>
 </div>
-<div class="section">CELESTIAL BODY</div><div class="grid">
-<label class="field"><span>OBJECT TYPE</span><select id="bodyType"><option value="Sun">Sun</option><option value="Moon">Moon</option><option value="planet">Planet</option><option value="star">Star</option></select></label>
-<label class="field hidden" id="planetWrap"><span>PLANET</span><select id="planet"><option>Mercury</option><option>Venus</option><option>Mars</option><option>Jupiter</option><option>Saturn</option><option>Uranus</option><option>Neptune</option><option>Pluto</option></select></label>
-<label class="field hidden" id="starNameWrap"><span>NAVIGATIONAL STAR</span><select id="starName"></select></label>
+<div class="section">CELESTIAL BODY · OBJECT SELECTOR</div>
+<div class="celestial-picker">
+ <label class="field"><span>SEARCH OBJECT BY NAME</span><input id="bodySearch" type="search" autocomplete="off" placeholder="Например, Sirius, Venus, Polaris"></label>
+ <div class="category-tabs" id="bodyCategories">
+  <button type="button" class="active" data-category="all">All visible</button><button type="button" data-category="star">Stars</button><button type="button" data-category="planet">Planets</button><button type="button" data-category="luminary">Sun / Moon</button>
+ </div>
+ <div class="quick-label">QUICK ACCESS · NAVIGATIONAL STARS</div>
+ <div class="quick-stars" id="quickStars"></div>
+ <div class="catalog-heading"><span id="catalogTitle">VISIBLE OBJECTS</span><span id="catalogCount">—</span></div>
+ <div class="celestial-list" id="celestialList"><div class="catalog-empty">Введи дату и координаты, чтобы рассчитать видимость</div></div>
+ <div class="catalog-note">Показаны объекты выше геометрического горизонта. Высота и азимут рассчитываются для введённых GMT и координат судна.</div>
 </div>
-<div class="metric full" id="azPreview" style="margin:12px 0"><small>AUTOMATIC TRUE AZIMUTH / TRUE BEARING</small><strong id="azPreviewValue">—</strong><div class="detail" id="azPreviewDetail">Выбери объект и введи дату GMT и координаты</div></div>
+<label class="hidden"><select id="bodyType"><option value="Sun">Sun</option><option value="Moon">Moon</option><option value="planet">Planet</option><option value="star">Star</option></select></label>
+<label class="hidden" id="planetWrap"><select id="planet"><option>Mercury</option><option>Venus</option><option>Mars</option><option>Jupiter</option><option>Saturn</option><option>Uranus</option><option>Neptune</option><option>Pluto</option></select></label>
+<label class="hidden" id="starNameWrap"><select id="starName"></select></label>
+<div class="metric full" id="azPreview" style="margin:12px 0"><small>AUTOMATIC TRUE AZIMUTH / TRUE BEARING</small><strong id="azPreviewValue">—</strong><div class="detail" id="azPreviewDetail">Выбери объект и введи дату GMT и координаты</div><div class="detail" id="selectedVisibility"></div></div>
 <div class="section">SHIP'S HEAD & OBSERVED BEARING</div><div class="grid three">
 <label class="field"><span>GYRO HEADING (°)</span><input id="headGyro" type="number" min="0" max="360" step=".1" placeholder="Gyro course"></label>
 <label class="field"><span>COMPASS HEADING (°)</span><input id="headMag" type="number" min="0" max="360" step=".1" placeholder="Magnetic compass course"></label>
@@ -172,7 +203,7 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 </div>
 <div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE OBSERVATION TO LOG</button></div></section>
 <section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="backup-actions"><button class="secondary" id="backupExport">Сохранить резервную копию</button><button class="secondary" id="backupImport">Восстановить из файла</button><input id="backupFile" type="file" accept=".json,application/json"></div><p class="note">Резервная копия содержит сохранённые наблюдения. Храни файл отдельно от телефона.</p><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.8.1</b><span>BUILD 2026-11-22 · SMART UPDATES</span></div></footer>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.9.0</b><span>BUILD 2026-11-22 · CELESTIAL SELECTOR</span></div></footer>
 </main>
 <script>
 const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
@@ -183,37 +214,84 @@ $('setUtcNow').onclick=()=>{setDefaultTime();saveDraft();updateAzimuthPreview()}
 const NAV_STARS=[
 ['Acamar',2.9710,-40.3047],['Achernar',1.6286,-57.2368],['Acrux',12.4433,-63.0991],['Adhara',6.9771,-28.9721],['Aldebaran',4.5987,16.5093],['Alioth',12.9005,55.9598],['Alkaid',13.7923,49.3133],['Al Na’ir',22.1372,-46.9609],['Alnilam',5.6036,-1.2019],['Alphard',9.4598,-8.6586],['Alphecca',15.5781,26.7147],['Altair',19.8464,8.8683],['Ankaa',0.4380,-42.3060],['Antares',16.4901,-26.4320],['Arcturus',14.2610,19.1824],['Atria',16.8111,-69.0277],['Avior',8.3752,-59.5095],['Bellatrix',5.4189,6.3497],['Betelgeuse',5.9195,7.4071],['Canopus',6.3992,-52.6957],['Capella',5.2782,45.9980],['Deneb',20.6905,45.2803],['Denebola',11.8177,14.5721],['Diphda',0.7265,-17.9866],['Dubhe',11.0621,61.7508],['Elnath',5.4382,28.6075],['Eltanin',17.9434,51.4889],['Enif',21.7364,9.8750],['Fomalhaut',22.9608,-29.6222],['Gacrux',12.5194,-57.1132],['Gienah',12.2634,-17.5419],['Hadar',14.0637,-60.3730],['Hamal',2.1196,23.4624],['Kaus Australis',18.4029,-34.3846],['Kochab',14.8451,74.1555],['Markab',23.0793,15.2053],['Menkar',3.0379,4.0897],['Menkent',14.1114,-36.3700],['Miaplacidus',9.2200,-69.7172],['Mirfak',3.4054,49.8612],['Nunki',18.9211,-26.2967],['Peacock',20.4275,-56.7351],['Polaris',2.5303,89.2641],['Pollux',7.7553,28.0262],['Procyon',7.6550,5.2250],['Rasalhague',17.5822,12.5600],['Regulus',10.1395,11.9672],['Rigel',5.2423,-8.2016],['Rigil Kentaurus',14.6599,-60.8354],['Sabik',17.1729,-15.7249],['Schedar',0.6751,56.5373],['Shaula',17.5601,-37.1038],['Sirius',6.7522,-16.7161],['Spica',13.4199,-11.1613],['Suhail',9.1333,-43.4326],['Vega',18.6156,38.7837],['Zubenelgenubi',14.8479,-16.0418]
 ];
-function visibleAltitude(body,date,obs){const eq=Astronomy.Equator(body,date,obs,true,true);return Astronomy.Horizon(date,obs,eq.ra,eq.dec,'normal').altitude}
+function bodyPosition(body,date,obs){
+ const eq=Astronomy.Equator(body,date,obs,true,true);
+ const hor=Astronomy.Horizon(date,obs,eq.ra,eq.dec,'normal');
+ return{altitude:hor.altitude,azimuth:norm(hor.azimuth)};
+}
 function visibleObjects(){
  if(!window.Astronomy||!$('gmt').value)return null;
  try{
   const date=parseUtcDateTime($('gmt').value);
   const obs=new Astronomy.Observer(parsePosition('lat','lat'),parsePosition('lon','lon'),0);
-  const visible={Sun:visibleAltitude(Astronomy.Body.Sun,date,obs)>0,Moon:visibleAltitude(Astronomy.Body.Moon,date,obs)>0,planet:[],star:[]};
-  ['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'].forEach(name=>{if(visibleAltitude(Astronomy.Body[name],date,obs)>0)visible.planet.push(name)});
-  NAV_STARS.forEach((s,i)=>{Astronomy.DefineStar(Astronomy.Body.Star1,s[1],s[2],1000);if(visibleAltitude(Astronomy.Body.Star1,date,obs)>0)visible.star.push(i)});
-  return visible;
+  const catalog=[];
+  const add=(name,type,body,index=null)=>{
+   const p=bodyPosition(body,date,obs);
+   if(p.altitude>0)catalog.push({name,type,index,altitude:p.altitude,azimuth:p.azimuth});
+  };
+  add('Sun','Sun',Astronomy.Body.Sun);
+  add('Moon','Moon',Astronomy.Body.Moon);
+  ['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'].forEach(name=>add(name,'planet',Astronomy.Body[name]));
+  NAV_STARS.forEach((s,i)=>{
+   Astronomy.DefineStar(Astronomy.Body.Star1,s[1],s[2],1000);
+   add(s[0],'star',Astronomy.Body.Star1,i);
+  });
+  return catalog;
  }catch(e){return null}
 }
-function refreshVisibleObjects(){
- const visible=visibleObjects();if(!visible)return null;
- const type=$('bodyType'),oldType=type.value;
- Array.from(type.options).forEach(o=>{const show=o.value==='Sun'||o.value==='Moon'?visible[o.value]:o.value==='planet'?visible.planet.length>0:visible.star.length>0;o.hidden=!show;o.disabled=!show});
- if(type.selectedOptions[0]?.hidden){const first=Array.from(type.options).find(o=>!o.hidden);if(first)type.value=first.value}
- const planet=$('planet'),oldPlanet=planet.value;
- planet.innerHTML=visible.planet.map(v=>'<option>'+v+'</option>').join('');
- if(visible.planet.includes(oldPlanet))planet.value=oldPlanet;
- const star=$('starName'),oldStar=Number(star.value);
- star.innerHTML=visible.star.map(i=>'<option value="'+i+'">'+NAV_STARS[i][0]+'</option>').join('');
- if(visible.star.includes(oldStar))star.value=String(oldStar);
- const noObjects=!visible.Sun&&!visible.Moon&&!visible.planet.length&&!visible.star.length;
- $('azPreviewDetail').textContent=noObjects?'Сейчас ни одного объекта не видно над горизонтом. Измени время или координаты.':$('azPreviewDetail').textContent;
- $('bodyType').disabled=noObjects;$('planet').disabled=!visible.planet.length;$('starName').disabled=!visible.star.length;
- const t=type.value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');
- return visible;
+let activeBodyCategory='all';
+const QUICK_STAR_NAMES=['Sirius','Canopus','Vega','Arcturus','Polaris','Aldebaran','Capella','Rigel','Spica','Altair','Antares','Procyon'];
+function selectedBodyKey(){const t=$('bodyType').value;return t==='star'?'star:'+$('starName').value:t==='planet'?'planet:'+ $('planet').value:t}
+function chooseCelestialObject(item){
+ $('bodyType').value=item.type;
+ if(item.type==='planet')$('planet').value=item.name;
+ if(item.type==='star')$('starName').value=String(item.index);
+ $('bodySearch').value=item.name;
+ saveDraft();
+ updateAzimuthPreview();
+ renderCelestialCatalog();
 }
-$('starName').innerHTML=NAV_STARS.map((s,i)=>'<option value="'+i+'">'+s[0]+'</option>').join('');
-function updateBodyFields(){const t=$('bodyType').value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');updateAzimuthPreview()}
+function renderCelestialCatalog(catalog){
+ const list=$('celestialList'),quick=$('quickStars');
+ if(!catalog){
+  list.innerHTML='<div class="catalog-empty">Проверь дату GMT и координаты судна</div>';
+  quick.innerHTML='';
+  $('catalogCount').textContent='—';
+  return;
+ }
+ const query=$('bodySearch').value.trim().toLowerCase();
+ const filtered=catalog.filter(item=>{
+  const category=activeBodyCategory==='all'||(activeBodyCategory==='star'&&item.type==='star')||(activeBodyCategory==='planet'&&item.type==='planet')||(activeBodyCategory==='luminary'&&(item.type==='Sun'||item.type==='Moon'));
+  return category&&item.name.toLowerCase().includes(query);
+ });
+ const key=selectedBodyKey();
+ $('catalogTitle').textContent=activeBodyCategory==='all'?'VISIBLE OBJECTS':activeBodyCategory==='star'?'VISIBLE STARS':activeBodyCategory==='planet'?'VISIBLE PLANETS':'SUN / MOON';
+ $('catalogCount').textContent=filtered.length+' / '+catalog.length;
+ list.innerHTML=filtered.length?filtered.map(item=>{
+  const itemKey=item.type==='star'?'star:'+item.index:item.type==='planet'?'planet:'+item.name:item.type;
+  const low=item.altitude<5;
+  return '<button type="button" class="celestial-option'+(itemKey===key?' selected':'')+(low?' low-alt':'')+'" data-object-type="'+item.type+'" data-object-name="'+esc(item.name)+'" data-object-index="'+(item.index??'')+'"><b>'+esc(item.name)+'</b><small>Alt '+(item.altitude>=0?'+':'')+item.altitude.toFixed(1)+'° · Az '+f(item.azimuth)+'°'+(low?' · <span class="low-tag">LOW ALT</span>':'')+'</small></button>';
+ }).join(''):'<div class="catalog-empty">Нет видимых объектов по этому запросу</div>';
+ const favorites=catalog.filter(item=>item.type==='star'&&QUICK_STAR_NAMES.includes(item.name));
+ quick.innerHTML=favorites.map(item=>'<button type="button" data-object-type="star" data-object-name="'+esc(item.name)+'" data-object-index="'+item.index+'">'+esc(item.name)+'</button>').join('');
+}
+function renderCelestialCatalog(){
+ const catalog=visibleObjects();
+ renderCelestialCatalog(catalog);
+}
+$('bodyCategories').addEventListener('click',event=>{
+ const button=event.target.closest('button[data-category]');if(!button)return;
+ activeBodyCategory=button.dataset.category;
+ $('bodyCategories').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===button));
+ renderCelestialCatalog();
+});
+$('bodySearch').addEventListener('input',renderCelestialCatalog);
+document.addEventListener('click',event=>{
+ const button=event.target.closest('button[data-object-type]');if(!button)return;
+ const item={type:button.dataset.objectType,name:button.dataset.objectName,index:button.dataset.objectIndex===''?null:Number(button.dataset.objectIndex)};
+ chooseCelestialObject(item);
+});
+function updateBodyFields(){updateAzimuthPreview()}
 $('bodyType').onchange=updateBodyFields;
 $('planet').onchange=updateAzimuthPreview;$('starName').onchange=updateAzimuthPreview;
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));$('entry').classList.toggle('hidden',b.dataset.view!=='entry');$('history').classList.toggle('hidden',b.dataset.view!=='history');render()});
@@ -260,7 +338,19 @@ function getAstro(){
  const eq=Astronomy.Equator(body,date,obs,true,true),hor=Astronomy.Horizon(date,obs,eq.ra,eq.dec,'normal');
  return{date,az:norm(hor.azimuth),altitude:hor.altitude,lat,lon,bodyName};
 }
-function updateAzimuthPreview(){const visible=refreshVisibleObjects();if(visible&&!visible.Sun&&!visible.Moon&&!visible.planet.length&&!visible.star.length){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent='Сейчас нет видимых объектов над горизонтом';return}try{const a=getAstro();$('azPreviewValue').textContent=f(a.az);$('azPreviewDetail').textContent=a.bodyName+' · Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · '+$('gmt').value.replace('T',' ')+' GMT';$('azPreview').style.borderColor=a.altitude<0?'#9b6336':'var(--accent)'}catch(e){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message}}
+function updateAzimuthPreview(){
+ const catalog=visibleObjects();
+ renderCelestialCatalog(catalog);
+ try{
+  const a=getAstro();
+  $('azPreviewValue').textContent=f(a.az);
+  $('azPreviewDetail').textContent=a.bodyName+' · '+$('gmt').value.replace('T',' ')+' GMT';
+  $('selectedVisibility').textContent='Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · True Azimuth '+f(a.az)+'°'+(a.altitude<5?' · НИЗКО НАД ГОРИЗОНТОМ':'');
+  $('azPreview').style.borderColor=a.altitude<5?'#9b6336':'var(--accent)';
+ }catch(e){
+  $('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message;$('selectedVisibility').textContent='';
+ }
+}
 $('gmt').addEventListener('change',updateAzimuthPreview);
 function showValidation(errors,warnings){const box=$('validationBox');if(!errors.length&&!warnings.length){box.className='validation-box';box.innerHTML='';return}box.className='validation-box show'+(errors.length?' error':'');box.innerHTML=(errors.length?'<b>Нужно исправить:</b><ul>'+errors.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+(warnings.length?'<b style="display:block;margin-top:'+(errors.length?'10':'0')+'px">Проверь перед расчётом:</b><ul>'+warnings.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')}
 function validateInputs(){
