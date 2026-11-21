@@ -49,6 +49,7 @@ const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>
 let current=null,log=[];try{log=JSON.parse(localStorage.getItem('compassErrorLog')||'[]')}catch{}
 $('gmt').value=new Date().toISOString().slice(0,16);
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));$('entry').classList.toggle('hidden',b.dataset.view!=='entry');$('history').classList.toggle('hidden',b.dataset.view!=='history');render()});
+function fmtGyro(x){return x===null||!Number.isFinite(x)?'—':(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'°'}
 function num(id){let v=$(id).value.trim();return v===''?null:Number(v)}
 function angle(v,id){return v!==null&&Number.isFinite(v)&&v>=0&&v<=360}
 $('calculate').onclick=()=>{
@@ -57,7 +58,7 @@ $('calculate').onclick=()=>{
  if(vv!==null&&(!Number.isFinite(vv)||vv<0||vv>180)){alert('Variation должна быть от 0 до 180°.');return}
  const ge=diff(t,g),ce=diff(t,m),variation=vv===null?null:vv*Number($('varDir').value),de=variation===null?null:diff(ce,variation);
  current={gmt:$('gmt').value,lat:$('lat').value.trim(),lon:$('lon').value.trim(),headGyro:num('headGyro'),headMag:num('headMag'),trueB:t,gyroB:g,magB:m,object:$('object').value.trim(),gyroErr:ge,compErr:ce,variation,deviation:de,heel:num('heel'),remarks:$('remarks').value.trim(),initials:$('initials').value.trim()};
- $('gyroErr').textContent=fmt(ge);$('compErr').textContent=fmt(ce);$('varOut').textContent=fmt(variation);$('devOut').textContent=fmt(de);$('result').classList.remove('hidden');
+ $('gyroErr').textContent=fmtGyro(ge);$('compErr').textContent=fmt(ce);$('varOut').textContent=fmt(variation);$('devOut').textContent=fmt(de);$('result').classList.remove('hidden');
 };
 $('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));render();alert('Запись сохранена в этом браузере.')};
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
