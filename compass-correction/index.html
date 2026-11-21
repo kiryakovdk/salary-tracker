@@ -207,7 +207,7 @@ function parsePosition(id,kind){
  return (hem==='S'||hem==='W'?-1:1)*(deg+min/60);
 }
 function parseUtcDateTime(raw){
- if(!/^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d$/.test(raw||''))throw Error('Укажи корректные дату и время в формате GMT/UTC.');
+ if(!/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d$/.test(raw||''))throw Error('Укажи корректные дату и время в формате GMT/UTC.');
  const [datePart,timePart]=raw.split('T'),[y,m,d]=datePart.split('-').map(Number),[hh,mm]=timePart.split(':').map(Number);
  const date=new Date(Date.UTC(y,m-1,d,hh,mm));
  if(date.getUTCFullYear()!==y||date.getUTCMonth()!==m-1||date.getUTCDate()!==d||date.getUTCHours()!==hh||date.getUTCMinutes()!==mm)throw Error('Такой даты не существует. Проверь дату наблюдения.');
