@@ -14,13 +14,12 @@
 <div class="section">CELESTIAL BODY</div><div class="grid">
 <label class="field"><span>OBJECT TYPE</span><select id="bodyType"><option value="Sun">Sun</option><option value="Moon">Moon</option><option value="planet">Planet</option><option value="star">Star</option></select></label>
 <label class="field hidden" id="planetWrap"><span>PLANET</span><select id="planet"><option>Mercury</option><option>Venus</option><option>Mars</option><option>Jupiter</option><option>Saturn</option><option>Uranus</option><option>Neptune</option><option>Pluto</option></select></label>
-<label class="field hidden" id="starNameWrap"><span>STAR NAME</span><input id="starName" placeholder="Напр. Sirius"></label>
-<label class="field hidden" id="raWrap"><span>STAR RA J2000 (hours)</span><input id="ra" type="number" min="0" max="24" step=".0001" placeholder="0–24"></label>
-<label class="field hidden" id="decWrap"><span>STAR DEC J2000 (°)</span><input id="dec" type="number" min="-90" max="90" step=".0001" placeholder="-90 to +90"></label>
+<label class="field hidden" id="starNameWrap"><span>NAVIGATIONAL STAR</span><select id="starName"></select></label>
 </div>
+<div class="metric full" id="azPreview" style="margin:12px 0"><small>AUTOMATIC TRUE AZIMUTH / TRUE BEARING</small><strong id="azPreviewValue">—</strong><div class="detail" id="azPreviewDetail">Выбери объект и введи дату GMT и координаты</div></div>
 <div class="section">SHIP'S HEAD & OBSERVED BEARING</div><div class="grid three">
 <label class="field"><span>GYRO HEADING (°)</span><input id="headGyro" type="number" min="0" max="360" step=".1" placeholder="Gyro course"></label>
-<label class="field"><span>MAGNETIC HEADING (°)</span><input id="headMag" type="number" min="0" max="360" step=".1" placeholder="Compass course"></label>
+<label class="field"><span>COMPASS HEADING (°)</span><input id="headMag" type="number" min="0" max="360" step=".1" placeholder="Magnetic compass course"></label>
 <label class="field"><span>GYRO BEARING TO BODY (°)</span><input id="gyroBearing" type="number" min="0" max="360" step=".1" placeholder="Observed bearing"></label>
 </div>
 <div class="section">CHART VARIATION</div><div class="grid">
@@ -28,7 +27,7 @@
 <label class="field"><span>DIRECTION</span><select id="varDir"><option value="1">EAST (E)</option><option value="-1">WEST (W)</option></select></label>
 </div>
 <div class="grid" style="margin-top:11px"><label class="field"><span>HEEL (°)</span><input id="heel" type="number" step=".1" placeholder="Optional"></label><label class="field"><span>INITIALS</span><input id="initials" placeholder="Officer initials"></label><label class="field full"><span>REMARKS</span><input id="remarks" placeholder="Optional notes"></label></div>
-<div class="warning">Время вводится именно в GMT/UTC, не в местном судовом времени. Для звезды нужны её экваториальные координаты J2000: RA в часах, Dec в градусах. Источник координат должен быть проверен по актуальному каталогу/альманаху.</div>
+<div class="warning">Время вводится именно в GMT/UTC, не в местном судовом времени. Для звёзд используется встроенный каталог навигационных звёзд с координатами J2000. True Azimuth автоматически обновляется при изменении даты, времени, координат или выбранного объекта.</div>
 <button class="btn" id="calculate">CALCULATE CELESTIAL AZIMUTH & ERRORS</button>
 <p class="note">Расчёт истинного азимута выполняется астрономической библиотекой Astronomy Engine. Для объектов Солнечной системы используется топоцентрическое положение с учётом координат наблюдателя. Азимут отсчитывается от истинного севера по часовой стрелке.</p>
 </div>
@@ -36,11 +35,11 @@
 <div class="metric"><small>TRUE AZIMUTH (TA)</small><strong id="taOut">—</strong><div class="detail" id="altOut">Altitude —</div></div>
 <div class="metric"><small>GYRO ERROR</small><strong id="geOut">—</strong><div class="detail">TA − Gyro Bearing</div></div>
 <div class="metric"><small>TRUE HEADING</small><strong id="thOut">—</strong><div class="detail">Gyro Heading + Gyro Error</div></div>
-<div class="metric"><small>COMPASS ERROR</small><strong id="ceOut">—</strong><div class="detail">True Heading − Magnetic Heading</div></div>
+<div class="metric"><small>COMPASS ERROR</small><strong id="ceOut">—</strong><div class="detail">True Heading − Compass Heading</div></div>
 <div class="metric"><small>VARIATION</small><strong id="varOut">—</strong><div class="detail">Chart Variation entered</div></div>
 <div class="metric"><small>DEVIATION</small><strong id="devOut">—</strong><div class="detail">Compass Error − Variation</div></div>
 </div><div class="warning" id="visibilityNote"></div><button class="btn" id="save">SAVE TO COMPASS ERROR LOG</button></div></section>
-<section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Mag Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
+<section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
 <footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.</footer>
 </main>
 <script>
@@ -48,7 +47,13 @@ const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>
 let current=null,log=[];try{log=JSON.parse(localStorage.getItem('compassErrorLog')||'[]')}catch{}
 function setDefaultTime(){const d=new Date();d.setUTCSeconds(0,0);$('gmt').value=d.toISOString().slice(0,16)}
 setDefaultTime();
-$('bodyType').onchange=()=>{let t=$('bodyType').value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');$('raWrap').classList.toggle('hidden',t!=='star');$('decWrap').classList.toggle('hidden',t!=='star')};
+const NAV_STARS=[
+['Acamar',2.9710,-40.3047],['Achernar',1.6286,-57.2368],['Acrux',12.4433,-63.0991],['Adhara',6.9771,-28.9721],['Aldebaran',4.5987,16.5093],['Alioth',12.9005,55.9598],['Alkaid',13.7923,49.3133],['Al Na’ir',22.1372,-46.9609],['Alnilam',5.6036,-1.2019],['Alphard',9.4598,-8.6586],['Alphecca',15.5781,26.7147],['Altair',19.8464,8.8683],['Ankaa',0.4380,-42.3060],['Antares',16.4901,-26.4320],['Arcturus',14.2610,19.1824],['Atria',16.8111,-69.0277],['Avior',8.3752,-59.5095],['Bellatrix',5.4189,6.3497],['Betelgeuse',5.9195,7.4071],['Canopus',6.3992,-52.6957],['Capella',5.2782,45.9980],['Deneb',20.6905,45.2803],['Denebola',11.8177,14.5721],['Diphda',0.7265,-17.9866],['Dubhe',11.0621,61.7508],['Elnath',5.4382,28.6075],['Eltanin',17.9434,51.4889],['Enif',21.7364,9.8750],['Fomalhaut',22.9608,-29.6222],['Gacrux',12.5194,-57.1132],['Gienah',12.2634,-17.5419],['Hadar',14.0637,-60.3730],['Hamal',2.1196,23.4624],['Kaus Australis',18.4029,-34.3846],['Kochab',14.8451,74.1555],['Markab',23.0793,15.2053],['Menkar',3.0379,4.0897],['Menkent',14.1114,-36.3700],['Miaplacidus',9.2200,-69.7172],['Mirfak',3.4054,49.8612],['Nunki',18.9211,-26.2967],['Peacock',20.4275,-56.7351],['Polaris',2.5303,89.2641],['Pollux',7.7553,28.0262],['Procyon',7.6550,5.2250],['Rasalhague',17.5822,12.5600],['Regulus',10.1395,11.9672],['Rigel',5.2423,-8.2016],['Rigil Kentaurus',14.6599,-60.8354],['Sabik',17.1729,-15.7249],['Schedar',0.6751,56.5373],['Shaula',17.5601,-37.1038],['Sirius',6.7522,-16.7161],['Spica',13.4199,-11.1613],['Suhail',9.1333,-43.4326],['Vega',18.6156,38.7837],['Zubenelgenubi',14.8479,-16.0418]
+];
+$('starName').innerHTML=NAV_STARS.map((s,i)=>'<option value="'+i+'">'+s[0]+'</option>').join('');
+function updateBodyFields(){const t=$('bodyType').value;$('planetWrap').classList.toggle('hidden',t!=='planet');$('starNameWrap').classList.toggle('hidden',t!=='star');updateAzimuthPreview()}
+$('bodyType').onchange=updateBodyFields;
+$('planet').onchange=updateAzimuthPreview;$('starName').onchange=updateAzimuthPreview;
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));$('entry').classList.toggle('hidden',b.dataset.view!=='entry');$('history').classList.toggle('hidden',b.dataset.view!=='history');render()});
 function n(id){let s=$(id).value.trim();return s===''?null:Number(s)}
 function requiredAngle(id,label){let v=n(id);if(v===null||!Number.isFinite(v)||v<0||v>360)throw Error(label+' должен быть в диапазоне 0–360°');return v}
@@ -68,23 +73,25 @@ function parsePosition(id,kind){
 }
 function getAstro(){
  if(!window.Astronomy)throw Error('Не загрузилась астрономическая библиотека. Проверь интернет-соединение и обнови страницу.');
- const lat=parsePosition('lat','lat'),lon=parsePosition('lon','lon');
- const raw=$('gmt').value;if(!raw)throw Error('Укажи дату и GMT.');
+ const lat=parsePosition('lat','lat'),lon=parsePosition('lon','lon'),raw=$('gmt').value;
+ if(!raw)throw Error('Укажи дату и GMT.');
  const date=new Date(raw+'Z');if(Number.isNaN(date.getTime()))throw Error('Некорректная дата/время GMT.');
- const obs=new Astronomy.Observer(lat,lon,0),type=$('bodyType').value;let body;
- if(type==='star'){
-  const ra=n('ra'),dec=n('dec');if(ra===null||ra<0||ra>=24)throw Error('RA звезды: от 0 включительно до 24 часов');if(dec===null||dec<-90||dec>90)throw Error('DEC звезды: от −90 до +90°');
-  Astronomy.DefineStar(Astronomy.Body.Star1,ra,dec,1000);body=Astronomy.Body.Star1;
- }else if(type==='planet')body=Astronomy.Body[$('planet').value];else body=Astronomy.Body[type];
+ const obs=new Astronomy.Observer(lat,lon,0),type=$('bodyType').value;let body,bodyName;
+ if(type==='star'){const star=NAV_STARS[Number($('starName').value)];if(!star)throw Error('Выбери навигационную звезду');Astronomy.DefineStar(Astronomy.Body.Star1,star[1],star[2],1000);body=Astronomy.Body.Star1;bodyName=star[0]}
+ else if(type==='planet'){bodyName=$('planet').value;body=Astronomy.Body[bodyName]}
+ else{bodyName=type;body=Astronomy.Body[type]}
  const eq=Astronomy.Equator(body,date,obs,true,true),hor=Astronomy.Horizon(date,obs,eq.ra,eq.dec,'normal');
- return {date,az:norm(hor.azimuth),altitude:hor.altitude,lat,lon};
+ return{date,az:norm(hor.azimuth),altitude:hor.altitude,lat,lon,bodyName};
 }
+function updateAzimuthPreview(){try{const a=getAstro();$('azPreviewValue').textContent=f(a.az);$('azPreviewDetail').textContent=a.bodyName+' · Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · '+$('gmt').value.replace('T',' ')+' GMT';$('azPreview').style.borderColor=a.altitude<0?'#9b6336':'var(--accent)'}catch(e){$('azPreviewValue').textContent='—';$('azPreviewDetail').textContent=e.message}}
+['gmt','lat','lon'].forEach(id=>$(id).addEventListener('change',updateAzimuthPreview));
+['lat','lon'].forEach(id=>$(id).addEventListener('input',()=>{clearTimeout(window.__azTimer);window.__azTimer=setTimeout(updateAzimuthPreview,450)}));
 $('calculate').onclick=()=>{
  try{
-  const a=getAstro(),gh=requiredAngle('headGyro','Gyro Heading'),mh=requiredAngle('headMag','Magnetic Heading'),gb=requiredAngle('gyroBearing','Gyro Bearing');
+  const a=getAstro(),gh=requiredAngle('headGyro','Gyro Heading'),mh=requiredAngle('headMag','Compass Heading'),gb=requiredAngle('gyroBearing','Gyro Bearing');
   const vv=n('varVal');if(vv===null||!Number.isFinite(vv)||vv<0||vv>180)throw Error('Введи Chart Variation от 0 до 180°');
   const variation=vv*Number($('varDir').value),ge=diff(a.az,gb),trueHeading=norm(gh+ge),ce=diff(trueHeading,mh),dev=diff(ce,variation);
-  const type=$('bodyType').value,bodyName=type==='planet'?$('planet').value:type==='star'?$('starName').value.trim()||'Star':' '+type;
+  const bodyName=a.bodyName;
   current={gmt:$('gmt').value,lat:a.lat,lon:a.lon,body:bodyName.trim(),azimuth:a.az,altitude:a.altitude,gyroBearing:gb,gyroError:ge,gyroHeading:gh,magHeading:mh,trueHeading,compassError:ce,variation,deviation:dev,heel:n('heel'),remarks:$('remarks').value.trim(),initials:$('initials').value.trim()};
   $('taOut').textContent=f(a.az);$('altOut').textContent='Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'°';$('geOut').textContent=signed(ge);$('thOut').textContent=f(trueHeading);$('ceOut').textContent=signed(ce);$('varOut').textContent=signed(variation);$('devOut').textContent=signed(dev);
   $('visibilityNote').textContent=a.altitude<0?'ВНИМАНИЕ: объект геометрически ниже горизонта в указанное время/месте. Проверь дату, GMT, координаты и наблюдение.':a.altitude<5?'Объект низко над горизонтом. Атмосферная рефракция и условия наблюдения могут заметно влиять на результат.':'Проверь совпадение выбранного объекта с фактически наблюдаемым телом и корректность исходных показаний.';
@@ -94,6 +101,6 @@ $('calculate').onclick=()=>{
 $('save').onclick=()=>{if(!current)return;log.unshift(current);localStorage.setItem('compassErrorLog',JSON.stringify(log));render();alert('Запись сохранена в журнале этого браузера.')};
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function render(){const body=$('rows');body.innerHTML=log.length?log.map(r=>'<tr><td>'+esc(r.gmt?.replace('T',' '))+'</td><td>'+r.lat.toFixed(4)+' / '+r.lon.toFixed(4)+'</td><td>'+esc(r.body)+'</td><td>'+f(r.azimuth)+'</td><td>'+f(r.gyroBearing)+'</td><td>'+signed(r.gyroError)+'</td><td>'+f(r.gyroHeading)+'</td><td>'+f(r.magHeading)+'</td><td>'+f(r.trueHeading)+'</td><td>'+signed(r.compassError)+'</td><td>'+signed(r.variation)+'</td><td>'+signed(r.deviation)+'</td><td>'+r.altitude.toFixed(1)+'°</td><td>'+esc(r.remarks)+'</td><td>'+esc(r.initials)+'</td></tr>').join(''):'<tr><td colspan="15" class="empty">Пока нет записей</td></tr>'}
-$('export').onclick=()=>{const keys=['gmt','lat','lon','body','azimuth','gyroBearing','gyroError','gyroHeading','magHeading','trueHeading','compassError','variation','deviation','altitude','heel','remarks','initials'],heads=['GMT','Latitude','Longitude','Celestial body','True azimuth','Gyro bearing','Gyro error','Gyro heading','Magnetic heading','True heading','Compass error','Variation','Deviation','Altitude','Heel','Remarks','Initials'];const csv='\ufeff'+[heads,...log.map(r=>keys.map(k=>r[k]??''))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='compass-error-log.csv';a.click();URL.revokeObjectURL(a.href)};
-$('clear').onclick=()=>{if(confirm('Удалить весь журнал?')){log=[];localStorage.removeItem('compassErrorLog');render()}};render();
+$('export').onclick=()=>{const keys=['gmt','lat','lon','body','azimuth','gyroBearing','gyroError','gyroHeading','magHeading','trueHeading','compassError','variation','deviation','altitude','heel','remarks','initials'],heads=['GMT','Latitude','Longitude','Celestial body','True azimuth','Gyro bearing','Gyro error','Gyro heading','Compass heading','True heading','Compass error','Variation','Deviation','Altitude','Heel','Remarks','Initials'];const csv='\ufeff'+[heads,...log.map(r=>keys.map(k=>r[k]??''))].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='compass-error-log.csv';a.click();URL.revokeObjectURL(a.href)};
+$('clear').onclick=()=>{if(confirm('Удалить весь журнал?')){log=[];localStorage.removeItem('compassErrorLog');render()}};render();updateAzimuthPreview();
 </script></body></html>
