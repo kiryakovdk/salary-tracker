@@ -346,7 +346,7 @@ document.addEventListener('click',event=>{
 function updateBodyFields(){updateAzimuthPreview()}
 $('bodyType').onchange=updateBodyFields;
 $('planet').onchange=updateAzimuthPreview;$('starName').onchange=updateAzimuthPreview;
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));['entry','quick','history'].forEach(id=>$(id).classList.toggle('hidden',b.dataset.view!==id));if(b.dataset.view==='history')render()});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x===b));['entry','quick','history','deviation'].forEach(id=>$(id).classList.toggle('hidden',b.dataset.view!==id));if(b.dataset.view==='history')render()});
 $('quickCalculate').onclick=()=>{
  const fields=[['qTrueBearing','True Bearing',360],['qGyroBearing','Gyro Bearing',360],['qGyroHeading','Gyro Heading',360],['qCompassHeading','Compass Heading',360],['qVariation','Variation',180]];
  const errors=[];
