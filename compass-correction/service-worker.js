@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME='compass-error-log-v1.10.0';
+const CACHE_NAME='compass-error-log-v1.11.0';
 const APP_SHELL=[
  './',
  './index.html',
