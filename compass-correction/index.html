@@ -255,7 +255,7 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 <p class="note">Reference values: N −0.1°, NE +0.6°, E −0.9°, SE −1.9°, S −0.9°, SW +0.1°, W +0.1°, NW −1.0°. Interpolation is circular across 315°–000°.</p>
 </div></section>
 <section id="history" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><h2 style="margin:0">Saved observations</h2><button class="secondary" id="export">Export CSV</button></div><div class="backup-actions"><button class="secondary" id="backupExport">Сохранить резервную копию</button><button class="secondary" id="backupImport">Восстановить из файла</button><input id="backupFile" type="file" accept=".json,application/json"></div><p class="note">Резервная копия содержит сохранённые наблюдения. Храни файл отдельно от телефона.</p><div class="tablewrap"><table><thead><tr><th>GMT</th><th>Position</th><th>Body</th><th>TA</th><th>Gyro Brg</th><th>Gyro Err</th><th>Gyro Head</th><th>Compass Head</th><th>True Head</th><th>Compass Err</th><th>Var</th><th>Dev</th><th>Alt</th><th>Remarks</th><th>Initials</th></tr></thead><tbody id="rows"><tr><td colspan="15" class="empty">Пока нет записей</td></tr></tbody></table></div><button class="secondary" id="clear" style="width:100%;margin-top:13px">Clear log</button></div></section>
-<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.13.0</b><span>BUILD 2026-11-22 · GYRO BEARING TRIM</span></div></footer>
+<footer>East (+), West (−). Все угловые разности нормализуются к ±180°.<br>Не использовать как единственный источник для навигационных решений. Сверяйте с Nautical Almanac / approved bridge procedures.<div class="app-version">COMPASS ERROR LOG <b>v1.14.0</b><span>BUILD 2026-11-22 · AUTO GYRO BEARING</span></div></footer>
 </main>
 <script>
 const $=id=>document.getElementById(id), norm=x=>((x%360)+360)%360, diff=(a,b)=>{let d=norm(a-b);return d>180?d-360:d}, f=x=>Number.isFinite(x)?norm(x).toFixed(1)+'°':'—', signed=x=>Number.isFinite(x)?(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'° '+(x>=0?'E':'W'):'—';
@@ -465,6 +465,9 @@ function updateAzimuthPreview(){
  renderCelestialCatalog(catalog);
  try{
   const a=getAstro();
+  // Pre-fill gyro bearing with the nearest whole degree to the calculated true azimuth.
+  $('gyroBearing').value=String(norm(Math.round(a.az)));
+  saveDraft();
   $('azPreviewValue').textContent=f(a.az);
   $('azPreviewDetail').textContent=a.bodyName+' · '+$('gmt').value.replace('T',' ')+' GMT';
   $('selectedVisibility').textContent='Altitude '+(a.altitude>=0?'+':'')+a.altitude.toFixed(1)+'° · True Azimuth '+f(a.az)+'°'+(a.altitude<5?' · НИЗКО НАД ГОРИЗОНТОМ':'');
