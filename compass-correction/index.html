@@ -247,7 +247,7 @@ button{min-height:44px;-webkit-tap-highlight-color:transparent}
 <label class="field"><span>315° DEVIATION (°)</span><input class="dev-card-value" id="devCard315" type="number" step=".1" value="-1"></label>
 <label class="field"><span>WARNING THRESHOLD (°)</span><input id="devWarnThreshold" type="number" min="0" max="30" step=".1" value="2"></label>
 <label class="field"><span>CRITICAL THRESHOLD (°)</span><input id="devCriticalThreshold" type="number" min="0" max="30" step=".1" value="3"></label>
-<label class="field full"><span>CARD / CERTIFICATE DATE</span><input id="devCardDate" type="text" value="21 Apr 2026"></label>
+<label class="field full"><span>IMO RECERTIFY DATE</span><input id="devCardDate" type="text" value="21 Apr 2028"></label>
 </div>
 <div id="devCardStatus" class="note" style="margin-top:12px"></div>
 <div class="backup-actions"><button class="secondary" id="saveDeviationCard" type="button">Save Deviation Card</button><button class="secondary" id="resetDeviationCard" type="button">Restore certificate values</button></div>
@@ -369,7 +369,7 @@ $('quickCalculate').onclick=()=>{
 };
 
 /* v1.11.0: ship deviation card and comparison */
-const DEVIATION_CARD_DEFAULT={values:[-0.1,0.6,-0.9,-1.9,-0.9,0.1,0.1,-1.0],warning:2,critical:3,date:'21 Apr 2026'};
+const DEVIATION_CARD_DEFAULT={values:[-0.1,0.6,-0.9,-1.9,-0.9,0.1,0.1,-1.0],warning:2,critical:3,date:'21 Apr 2028'};
 let deviationCard={...DEVIATION_CARD_DEFAULT,values:[...DEVIATION_CARD_DEFAULT.values]};
 function loadDeviationCard(){
  try{const saved=JSON.parse(localStorage.getItem('compassDeviationCard')||'null');if(saved&&Array.isArray(saved.values)&&saved.values.length===8&&saved.values.every(Number.isFinite))deviationCard={...DEVIATION_CARD_DEFAULT,...saved,values:[...saved.values]}}catch(e){console.warn('Deviation Card load failed',e)}
